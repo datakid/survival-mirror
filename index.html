@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system" data-resolved="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="theme-color" content="#F4F1E9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131317" media="(prefers-color-scheme: dark)">
+<title>Survival Mirror</title>
+<link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cstyle%3E.c{stroke:%23585A87}.x{stroke:%23C9C3B4}@media(prefers-color-scheme:dark){.c{stroke:%23ADABDA}.x{stroke:%233A3945}}%3C/style%3E%3Cpath class='x' d='M6 56h52' fill='none' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath class='c' d='M8 11C21.3 11.8 33.3 21 40 35c5.3 10 10.7 14.4 16 15.6' fill='none' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="mask-icon" color="#585A87" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M8 11C21.3 11.8 33.3 21 40 35c5.3 10 10.7 14.4 16 15.6' fill='none' stroke='black' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+<script>
+(function(){
+  var root = document.documentElement;
+  var pref = "system";
+  try { pref = localStorage.getItem("survivalMirror.theme") || "system"; } catch(e){}
+  if(pref !== "light" && pref !== "dark") pref = "system";
+  root.setAttribute("data-theme", pref);
+  var dark = pref === "dark";
+  if(pref === "system"){
+    try { dark = window.matchMedia("(prefers-color-scheme: dark)").matches; } catch(e){ dark = false; }
+  }
+  root.setAttribute("data-resolved", dark ? "dark" : "light");
+})();
+</script>
+
+<style>
+:root{
+  --bg:#F4F1E9;
+  --bg-deep:#EAE5D9;
+  --ink:#211F1B;
+  --ink-soft:#5B564C;
+  --ink-faint:#8B8578;
+  --rule:#DBD5C7;
+  --accent:#585A87;
+  --accent-soft:#ACAAC8;
+  --accent-wash:#EDECF3;
+  --accent-ring:rgba(88,90,135,0.14);
+
+  --glass:rgba(255,255,255,0.50);
+  --glass-border:rgba(255,255,255,0.65);
+  --glass-inset:rgba(255,255,255,0.50);
+  --field:rgba(255,255,255,0.60);
+  --field-quiet:rgba(255,255,255,0.35);
+  --shadow-hero:0 20px 60px -20px rgba(33,31,27,0.18);
+  --shadow-block:0 16px 50px -22px rgba(33,31,27,0.16);
+  --shadow-btn:0 10px 30px -10px rgba(33,31,27,0.40);
+
+  --btn-bg:#211F1B;
+  --btn-fg:#F4F1E9;
+
+  --atm-1:rgba(88,90,135,0.16);
+  --atm-2:rgba(88,90,135,0.10);
+  --atm-3:rgba(33,31,27,0.08);
+
+  --grain-opacity:0.045;
+  --grain-blend:multiply;
+
+  --chart-axis:#DBD5C7;
+  --chart-base:#ACAAC8;
+  --chart-full:#585A87;
+  --chart-label:#8B8578;
+  --chart-track:#EAE5D9;
+
+  --glass-blur:20px;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --maxw:760px;
+  --r-lg:26px; --r-md:16px; --r-sm:12px;
+
+  color-scheme:light;
+}
+
+[data-resolved="dark"]{
+  --bg:#131317;
+  --bg-deep:#0E0E11;
+  --ink:#EDEAE2;
+  --ink-soft:#A8A398;
+  --ink-faint:#797466;
+  --rule:#2C2B33;
+  --accent:#ADABDA;
+  --accent-soft:#6E6F9E;
+  --accent-wash:rgba(173,171,218,0.14);
+  --accent-ring:rgba(173,171,218,0.20);
+
+  --glass:rgba(255,255,255,0.055);
+  --glass-border:rgba(255,255,255,0.10);
+  --glass-inset:rgba(255,255,255,0.07);
+  --field:rgba(255,255,255,0.05);
+  --field-quiet:rgba(255,255,255,0.035);
+  --shadow-hero:0 22px 60px -22px rgba(0,0,0,0.75);
+  --shadow-block:0 18px 50px -24px rgba(0,0,0,0.70);
+  --shadow-btn:0 10px 30px -12px rgba(0,0,0,0.80);
+
+  --btn-bg:#EDEAE2;
+  --btn-fg:#17161B;
+
+  --atm-1:rgba(120,122,190,0.22);
+  --atm-2:rgba(120,122,190,0.13);
+  --atm-3:rgba(0,0,0,0.45);
+
+  --grain-opacity:0.05;
+  --grain-blend:screen;
+
+  --chart-axis:#33323B;
+  --chart-base:#6E6F9E;
+  --chart-full:#ADABDA;
+  --chart-label:#8B8578;
+  --chart-track:#26252D;
+
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(ellipse 900px 500px at 12% -8%, var(--atm-1), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 95% 10%, var(--atm-2), transparent 55%),
+    radial-gradient(ellipse 900px 700px at 50% 115%, var(--atm-3), transparent 60%);
+  background-attachment:fixed;
+  transition:background-color .35s ease, color .35s ease;
+}
+@media (prefers-reduced-motion: reduce){ body{transition:none;} }
+
+.grain{
+  position:fixed;inset:0;pointer-events:none;
+  opacity:var(--grain-opacity);
+  z-index:9999;
+  mix-blend-mode:var(--grain-blend);
+}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:64px 20px 120px;}
+
+header.hero, section.block, footer.appfoot{
+  background:var(--glass);
+  backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow-block), inset 0 1px 0 var(--glass-inset);
+}
+header.hero{margin-bottom:36px;padding:38px 36px 30px;box-shadow:var(--shadow-hero), inset 0 1px 0 var(--glass-inset);}
+section.block{margin-bottom:26px;padding:32px 34px;}
+
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:16px;}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin:0;}
+
+.themeswitch{
+  display:inline-flex;gap:2px;padding:3px;
+  background:var(--field-quiet);
+  border:1px solid var(--glass-border);
+  border-radius:999px;flex:none;
+}
+.themeswitch button{
+  font-family:var(--sans);font-size:12px;letter-spacing:.02em;
+  border:none;background:none;color:var(--ink-faint);
+  padding:6px 13px;border-radius:999px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;
+  transition:background .18s ease,color .18s ease;
+}
+.themeswitch button:hover{color:var(--ink);}
+.themeswitch button[aria-checked="true"]{
+  background:var(--accent-wash);color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent-soft);
+}
+.themeswitch svg{width:13px;height:13px;flex:none;}
+
+h1{font-family:var(--serif);font-weight:400;font-size:46px;line-height:1.12;margin:0 0 18px;letter-spacing:-.01em;}
+.lede{font-size:17.5px;color:var(--ink-soft);max-width:58ch;margin:0 0 16px;}
+h2{font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 22px;}
+h3{font-family:var(--serif);font-weight:400;font-size:24px;margin:0 0 12px;}
+p{margin:0 0 16px;}
+.small{font-size:13.5px;color:var(--ink-soft);}
+.hero-svg{width:100%;height:auto;display:block;margin:26px 0 4px;}
+
+.field{margin-bottom:26px;}
+.field:last-child{margin-bottom:0;}
+.field .qlabel{display:block;font-size:15.5px;font-weight:600;margin-bottom:4px;}
+.field .qsource{display:block;font-size:12.5px;color:var(--ink-faint);margin-bottom:12px;}
+.options{display:flex;flex-wrap:wrap;gap:8px;}
+.opt{
+  display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--glass-border);background:var(--field-quiet);
+  transition:box-shadow .15s ease,border-color .15s ease,background .15s ease;
+}
+.opt:hover{border-color:var(--accent-soft);}
+.opt input{accent-color:var(--accent);width:15px;height:15px;flex:none;}
+.opt.selected{background:var(--accent-wash);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-ring);}
+.opt span{font-size:14.5px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+input[type="number"]{
+  font-family:var(--sans);font-size:16px;padding:11px 14px;
+  border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  background:var(--field);width:100%;color:var(--ink);
+}
+input[type="number"][aria-invalid="true"]{border-color:#B4544E;box-shadow:0 0 0 3px rgba(180,84,78,.16);}
+.inline-err{display:none;font-size:13px;color:#B4544E;margin-top:6px;}
+[data-resolved="dark"] .inline-err{color:#E08C86;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.opt input:focus-visible+span{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+.radio-row{display:flex;gap:10px;flex-wrap:wrap;}
+.radio-row label{
+  display:flex;align-items:center;gap:6px;font-size:14.5px;cursor:pointer;
+  padding:8px 16px;border-radius:999px;border:1px solid var(--glass-border);background:var(--field-quiet);
+}
+.radio-row input{accent-color:var(--accent);}
+.gate{border:1px solid var(--glass-border);padding:24px 26px;border-radius:var(--r-md);background:var(--field-quiet);}
+.gate .radio-row{margin-top:14px;}
+
+button.primary{
+  font-family:var(--sans);font-size:15.5px;font-weight:600;
+  background:var(--btn-bg);color:var(--btn-fg);border:none;
+  padding:15px 30px;border-radius:999px;cursor:pointer;
+  box-shadow:var(--shadow-btn);transition:box-shadow .2s ease,transform .2s ease;
+}
+button.primary:hover{transform:translateY(-1px);box-shadow:0 12px 34px -8px var(--accent-ring),var(--shadow-btn);}
+button.secondary{
+  font-family:var(--sans);font-size:14px;background:var(--field-quiet);color:var(--ink-soft);
+  border:1px solid var(--glass-border);padding:10px 18px;border-radius:999px;cursor:pointer;
+}
+button.secondary:hover{border-color:var(--ink-soft);color:var(--ink);}
+@media (prefers-reduced-motion: reduce){ button.primary:hover{transform:none;} }
+
+#declineMsg,#cautionMsg,#formArea,#results{display:none;}
+
+.freq-sentence{font-size:17px;margin-bottom:8px;}
+.freq-sentence b{font-weight:600;color:var(--accent);}
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:28px 0 8px;}
+.stat,.compare-item{padding:16px 18px;border-radius:var(--r-md);background:var(--field-quiet);border:1px solid var(--glass-border);}
+.stat .label,.compare-item .label{font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.stat .val,.compare-item .val{font-family:var(--serif);font-size:25px;font-variant-numeric:tabular-nums;}
+.compare-row{display:flex;gap:16px;margin:24px 0 8px;flex-wrap:wrap;}
+.compare-item{flex:1;min-width:160px;}
+.compare-item .val{font-size:21px;}
+
+table.ledger{width:100%;border-collapse:separate;border-spacing:0;font-size:14.5px;margin-top:8px;}
+table.ledger th{
+  text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--ink-faint);font-weight:600;padding:0 10px 10px 0;border-bottom:1px solid var(--glass-border);
+}
+table.ledger td{padding:13px 10px;border-bottom:1px solid var(--rule);vertical-align:top;}
+table.ledger tr.weak td{color:var(--ink-faint);}
+table.ledger .factor-name{font-weight:600;}
+table.ledger .cite{font-size:11.5px;color:var(--ink-faint);display:block;margin-top:2px;}
+table.ledger .hrnum{font-variant-numeric:tabular-nums;}
+.tablescroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+.cibar{position:relative;height:6px;background:var(--chart-track);border-radius:999px;width:100%;min-width:110px;max-width:150px;margin-top:7px;}
+.cibar .fill{position:absolute;top:0;bottom:0;background:var(--accent-soft);border-radius:999px;}
+.cibar .mid{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--accent);}
+.yearsdelta{font-family:var(--serif);font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.yearsdelta.pos{color:var(--accent);}
+.qualdelta{font-size:13.5px;color:var(--ink-soft);}
+
+.limits-list{padding-left:20px;margin:0;}
+.limits-list li{margin-bottom:10px;font-size:14.5px;color:var(--ink-soft);}
+.choices dt{font-weight:600;font-size:14.5px;margin-top:14px;}
+.choices dd{margin:2px 0 0;font-size:14px;color:var(--ink-soft);}
+.choices dt:first-child{margin-top:0;}
+
+.togglebar{display:flex;align-items:center;gap:10px;margin:20px 0 4px;font-size:14px;color:var(--ink-soft);}
+.switch{
+  width:40px;height:24px;border-radius:12px;background:var(--rule);
+  position:relative;cursor:pointer;flex:none;border:none;padding:0;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.18);
+}
+.switch.on{background:var(--accent);}
+.switch .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s ease;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.switch.on .knob{left:19px;}
+@media (prefers-reduced-motion: reduce){ .switch .knob{transition:none;} }
+
+.curve-wrap{margin:20px 0 8px;}
+svg.curve text{font-family:var(--sans);}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
+footer.appfoot{margin-top:8px;padding:26px 34px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.csp-note{font-size:13px;color:var(--ink-faint);margin-top:16px;line-height:1.6;padding:0 4px;}
+.csp-note code{background:var(--bg-deep);padding:1px 6px;border-radius:999px;font-size:12px;}
+
+@media (prefers-reduced-motion: no-preference){ #medianDot{animation:mirrorpulse 3.4s ease-in-out infinite;} }
+@keyframes mirrorpulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+
+@media (max-width:600px){
+  h1{font-size:32px;}
+  .two-col,.stat-row{grid-template-columns:1fr;}
+  .stat-row{gap:12px;}
+  .wrap{padding:36px 14px 90px;}
+  header.hero,section.block,footer.appfoot{padding:26px 22px;border-radius:20px;}
+  .hero-top{flex-direction:column-reverse;align-items:flex-start;}
+}
+
+@media print{
+  .grain,.themeswitch,footer.appfoot,.togglebar,button{display:none !important;}
+  body{background:#fff;color:#000;}
+  header.hero,section.block{background:#fff;border:1px solid #ccc;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+
+<svg class="grain" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence>
+    <feColorMatrix type="saturate" values="0"></feColorMatrix>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#noiseFilter)"></rect>
+</svg>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="hero-top">
+    <p class="eyebrow">A statistical mirror, not a prophecy</p>
+    <div class="themeswitch" role="radiogroup" aria-label="Colour theme">
+      <button type="button" role="radio" aria-checked="false" data-theme-choice="light">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.4M12 19.4v2.4M4.1 4.1l1.7 1.7M18.2 18.2l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.1 19.9l1.7-1.7M18.2 5.8l1.7-1.7"/></svg>Light</button>
+      <button type="button" role="radio" aria-checked="false" data-theme-choice="dark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 1 1 9.4 3.5a6.9 6.9 0 0 0 11.1 11.1z"/></svg>Dark</button>
+      <button type="button" role="radio" aria-checked="true" data-theme-choice="system">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="18.8" height="12.4" rx="2"/><path d="M8.4 20.4h7.2"/></svg>System</button>
+    </div>
+  </div>
+
+  <h1>Survival Mirror</h1>
+  <p class="lede">This isn't a death clock. It doesn't know your death date &mdash; nobody's software does. What it can show you is a survival curve: how a population that looks like you, on paper, tends to age. Every number below comes with its source, its uncertainty, and an honest list of everything it can't see.</p>
+  <p class="small">Population data: U.S. Social Security Administration, 2023 period life table. If that isn't roughly your population, treat every number below as further off than it already is.</p>
+  <svg class="hero-svg" viewBox="0 0 720 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <line x1="0" y1="120" x2="720" y2="120" stroke="var(--chart-axis)" stroke-width="1"></line>
+    <path d="M0,20 C 200,22 380,45 480,80 C 560,105 640,116 720,119" fill="none" stroke="var(--chart-base)" stroke-width="1.6"></path>
+    <path d="M0,20 C 220,24 400,60 520,100 C 600,116 660,119 720,120" fill="none" stroke="var(--chart-full)" stroke-width="1.6"></path>
+  </svg>
+</header>
+
+<section class="block" id="gateSection">
+  <h2>Before we start</h2>
+  <div class="gate">
+    <p style="margin-bottom:2px;">Do you have a diagnosis your doctor has described as terminal or significantly life-limiting?</p>
+    <p class="small">This model is built entirely from general-population lifestyle data. It has no way to account for a specific diagnosis, and answering honestly here matters more than anything else on this page.</p>
+    <div class="radio-row">
+      <label><input type="radio" name="gate" value="no" checked> No</label>
+      <label><input type="radio" name="gate" value="yes"> Yes</label>
+      <label><input type="radio" name="gate" value="skip"> Prefer not to say</label>
+    </div>
+  </div>
+
+  <div id="declineMsg">
+    <p style="margin-top:20px;">Then this tool isn't going to give you anything useful, and I'd rather say so than pretend otherwise. A lifestyle-hazard model built from healthy-population cohort data cannot meaningfully estimate a prognosis once a specific diagnosis is involved &mdash; that number lives with your care team, using information this page will never have.</p>
+    <p class="small">If you'd like to see how the method works anyway &mdash; out of curiosity, or to understand what it's built from &mdash; you're welcome to keep reading below without entering your own information.</p>
+  </div>
+
+  <div id="cautionMsg">
+    <p style="margin-top:20px;" class="small">That's a fair thing to keep to yourself. Worth knowing before you go on: if a significant diagnosis does apply to you, everything this page produces will be optimistic by an amount it has no way to estimate. The seven questions can't detect it.</p>
+  </div>
+
+  <div style="margin-top:18px;">
+    <button class="primary" id="proceedBtn" type="button">Continue</button>
+  </div>
+</section>
+
+<div id="formArea">
+<section class="block">
+  <h2>About you</h2>
+  <div class="two-col">
+    <div class="field">
+      <label class="qlabel" for="ageInput">Current age</label>
+      <input type="number" id="ageInput" min="18" max="99" step="1" value="45" inputmode="numeric" aria-describedby="ageErr">
+      <span class="inline-err" id="ageErr" role="alert">Enter a whole age between 18 and 99.</span>
+    </div>
+    <div class="field">
+      <span class="qlabel" id="sexLabel">Sex</span>
+      <div class="radio-row" style="margin-top:10px;" role="group" aria-labelledby="sexLabel">
+        <label><input type="radio" name="sex" value="male" checked> Male</label>
+        <label><input type="radio" name="sex" value="female"> Female</label>
+      </div>
+    </div>
+  </div>
+  <p class="small">The underlying table is published as male/female only &mdash; see the limitations panel below for what that means for you.</p>
+</section>
+
+<section class="block">
+  <h2>Seven questions</h2>
+  <div id="questionsHost"></div>
+</section>
+
+<section class="block" style="margin-bottom:56px;">
+  <button class="primary" id="calcBtn" type="button">Draw the curve</button>
+</section>
+</div>
+
+<div id="results" tabindex="-1">
+<section class="block">
+  <h2>What the model says</h2>
+  <p class="small" style="margin-bottom:14px;">U.S. population baseline (SSA 2023) &mdash; not adjusted for country, ancestry, or healthcare system.</p>
+  <div aria-live="polite">
+    <p class="freq-sentence" id="freqSentence"></p>
+    <div class="stat-row" id="statRow"></div>
+  </div>
+  <div class="togglebar">
+    <button class="switch" id="hideAgesSwitch" type="button" aria-pressed="false" aria-labelledby="hideAgesLabel"><span class="knob"></span></button>
+    <span id="hideAgesLabel">Hide the specific ages &mdash; show only what moves the needle</span>
+  </div>
+</section>
+
+<section class="block">
+  <h2>The curve, and the age-only version</h2>
+  <p class="small">The muted line uses only your age and sex &mdash; the same starting point everyone in this model gets. The indigo line adds your seven answers. The gap between them is everything this questionnaire changed.</p>
+  <div class="curve-wrap"><svg class="curve" id="curveSvg" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="curveTitle curveDesc"><title id="curveTitle">Survival curves</title><desc id="curveDesc"></desc></svg></div>
+  <div class="compare-row" id="compareRow"></div>
+</section>
+
+<section class="block">
+  <h2>How sure is this, really</h2>
+  <p id="mcExplain" class="small"></p>
+</section>
+
+<section class="block">
+  <h2>The ledger</h2>
+  <p class="small">Every factor, its published hazard ratio, and its own marginal effect on the median age &mdash; holding everything else at what you entered, and replacing just that one answer with the population average. Rows in gray have a confidence interval that crosses &ldquo;no effect&rdquo; for the category you picked.</p>
+  <div class="tablescroll">
+    <table class="ledger" id="ledgerTable">
+      <thead><tr><th scope="col">Factor</th><th scope="col">Your answer</th><th scope="col">Hazard ratio</th><th scope="col">Marginal effect</th></tr></thead>
+      <tbody id="ledgerBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block">
+  <h2>Modeling choices I made up</h2>
+  <p class="small">These aren't in any of the cited papers. They're my judgment calls about how to combine published numbers, and they move your result. You should see them.</p>
+  <dl class="choices" id="choicesList"></dl>
+</section>
+
+<section class="block">
+  <h2>What this can't see</h2>
+  <ul class="limits-list" id="limitsList"></ul>
+</section>
+
+<footer class="appfoot">
+  <button class="secondary" id="exportBtn" type="button">Export my answers as JSON</button>
+  <button class="secondary" id="wipeBtn" type="button">Wipe everything</button>
+  <button class="secondary" id="recalcBtn" type="button">Change my answers</button>
+</footer>
+<p class="csp-note">Nothing on this page is sent anywhere. There's no server to send it to, and the page's own Content-Security-Policy sets <code>connect-src 'none'</code>, which blocks scripted network requests outright rather than just promising not to make them. Open DevTools &rarr; Network and reload; you'll see one HTML file and nothing else. It works with your wifi off. Two honest caveats: a meta-tag CSP governs scripted requests, not a link you click yourself, and your answers <em>are</em> written to this browser's <code>localStorage</code> so they survive a reload &mdash; &ldquo;Wipe everything&rdquo; deletes them.</p>
+</div>
+
+</div>
+
+<script>
+"use strict";
+
+const SSA_2023_QX_MALE = [
+0.006015,0.000479,0.000320,0.000249,0.000194,0.000159,0.000137,0.000125,0.000120,0.000120,
+0.000125,0.000140,0.000173,0.000233,0.000327,0.000463,0.000634,0.000819,0.000999,0.001138,
+0.001235,0.001315,0.001378,0.001439,0.001509,0.001595,0.001685,0.001783,0.001876,0.001970,
+0.002085,0.002202,0.002308,0.002407,0.002490,0.002577,0.002665,0.002764,0.002864,0.002987,
+0.003115,0.003253,0.003419,0.003600,0.003777,0.003931,0.004073,0.004245,0.004477,0.004795,
+0.005126,0.005496,0.005917,0.006404,0.006923,0.007491,0.008173,0.008938,0.009714,0.010494,
+0.011337,0.012232,0.013196,0.014229,0.015316,0.016455,0.017574,0.018735,0.019981,0.021366,
+0.022903,0.024615,0.026504,0.028648,0.031071,0.033802,0.037010,0.041158,0.045461,0.050346,
+0.055633,0.061757,0.068358,0.075420,0.083364,0.092680,0.103459,0.115502,0.129018,0.143810,
+0.159458,0.176551,0.195360,0.216286,0.238799,0.262268,0.286291,0.310944,0.332325,0.349036,
+0.366568,0.384960,0.404252,0.424488,0.445712,0.467998,0.491398,0.515968,0.541766,0.568854,
+0.597297,0.627162,0.658520,0.691446,0.726018,0.762319,0.800435,0.840457,0.882480,0.926604
+];
+const SSA_2023_QX_FEMALE = [
+0.005125,0.000392,0.000229,0.000188,0.000155,0.000133,0.000115,0.000105,0.000100,0.000098,
+0.000101,0.000111,0.000126,0.000152,0.000188,0.000229,0.000273,0.000323,0.000372,0.000410,
+0.000441,0.000476,0.000513,0.000546,0.000582,0.000609,0.000641,0.000683,0.000740,0.000808,
+0.000878,0.000947,0.001018,0.001089,0.001154,0.001209,0.001263,0.001347,0.001438,0.001533,
+0.001643,0.001742,0.001845,0.001954,0.002075,0.002187,0.002306,0.002438,0.002595,0.002791,
+0.003030,0.003288,0.003554,0.003847,0.004172,0.004532,0.004923,0.005365,0.005815,0.006333,
+0.006923,0.007555,0.008220,0.008881,0.009514,0.010188,0.010880,0.011659,0.012543,0.013581,
+0.014769,0.016153,0.017705,0.019495,0.021533,0.023846,0.026458,0.029700,0.033135,0.036982,
+0.041183,0.045959,0.051282,0.057262,0.064107,0.071752,0.080490,0.090566,0.102204,0.115178,
+0.129176,0.144229,0.160353,0.177635,0.196502,0.216846,0.238750,0.261359,0.283899,0.306491,
+0.329680,0.353333,0.377300,0.401416,0.425501,0.451031,0.478092,0.506778,0.537185,0.568854,
+0.597297,0.627162,0.658520,0.691446,0.726018,0.762319,0.800435,0.840457,0.882480,0.926604
+];
+
+const LI_2018      = "Li et al. 2018, Circulation 138(4):345\u2013355";
+const SHEN_2016    = "Shen, Wu & Zhang 2016, Scientific Reports 6:21480";
+const DESALVO_2006 = "DeSalvo et al. 2006, J Gen Intern Med 21(3):267\u2013275";
+const ALC_RECODE   = "Re-coded by this tool \u2014 see note. Basis: GBD 2020 Alcohol Collaborators (Lancet 2022) and burden-of-proof / Mendelian-randomization work (Carr et al. 2024, Nature Communications), which find no protective effect at low intake.";
+
+function hrEntry(id,label,hr,lo,hi,prev){ return {id:id,label:label,hr:hr,ci:[lo,hi],prevalence:prev}; }
+
+const FACTORS = [
+  { id:"smoking", question:"Smoking", group:"substance", source:LI_2018, options:[
+      hrEntry("never","Never smoked",1.00,1.00,1.00,0.60),
+      hrEntry("former","Former smoker",1.41,1.38,1.44,0.28),
+      hrEntry("light","Current, 1\u201314 cigarettes/day",2.02,1.93,2.10,0.04),
+      hrEntry("moderate","Current, 15\u201324 cigarettes/day",2.33,2.21,2.45,0.045),
+      hrEntry("heavy","Current, 25+ cigarettes/day",2.87,2.70,3.06,0.035)
+  ]},
+  { id:"bmi", question:"Body mass index", group:"metabolic", source:LI_2018, options:[
+      hrEntry("low_normal","18.5\u201322.9",1.06,1.02,1.09,0.14),
+      hrEntry("high_normal","23\u201324.9",1.00,1.00,1.00,0.14),
+      hrEntry("overweight","25\u201329.9",1.05,1.02,1.08,0.32),
+      hrEntry("obese_1","30\u201334.9",1.25,1.21,1.29,0.21),
+      hrEntry("obese_2plus","35 or higher",1.67,1.61,1.74,0.19)
+  ]},
+  { id:"activity", question:"Moderate-to-vigorous physical activity", group:"metabolic", source:LI_2018, options:[
+      hrEntry("a0","Under 30 min/week",1.00,1.00,1.00,0.30),
+      hrEntry("a1","30 min \u2013 2 hr/week",0.65,0.63,0.66,0.25),
+      hrEntry("a2","2 \u2013 3.5 hr/week",0.56,0.54,0.58,0.20),
+      hrEntry("a3","3.5 \u2013 5.5 hr/week",0.50,0.48,0.52,0.15),
+      hrEntry("a4","5.5+ hr/week",0.44,0.43,0.46,0.10)
+  ]},
+  { id:"diet", question:"Diet quality (fruit, vegetables, whole grains, nuts vs. red/processed meat, sugary drinks, sodium)", group:"metabolic", source:LI_2018, options:[
+      hrEntry("d1","Bottom fifth",1.00,1.00,1.00,0.20),
+      hrEntry("d2","Second fifth",0.86,0.83,0.88,0.20),
+      hrEntry("d3","Middle fifth",0.77,0.75,0.79,0.20),
+      hrEntry("d4","Fourth fifth",0.70,0.68,0.72,0.20),
+      hrEntry("d5","Top fifth",0.63,0.61,0.65,0.20)
+  ]},
+  { id:"alcohol", question:"Alcohol", group:"substance", source:ALC_RECODE, options:[
+      hrEntry("none","None or almost none",1.00,1.00,1.00,0.35),
+      hrEntry("low","Light (up to ~1 drink/day)",1.02,0.96,1.09,0.35),
+      hrEntry("moderate","Moderate (~1\u20132 drinks/day)",1.10,1.02,1.20,0.20),
+      hrEntry("high","Higher (~2\u20133 drinks/day)",1.25,1.14,1.38,0.07),
+      hrEntry("very_high","Heavy (3+ drinks/day)",1.50,1.33,1.70,0.03)
+  ]},
+  { id:"sleep", question:"Typical nightly sleep", group:"sleep", source:SHEN_2016, options:[
+      hrEntry("s4","4 hours",1.07,1.03,1.13,0.02),
+      hrEntry("s5","5 hours",1.04,1.01,1.07,0.06),
+      hrEntry("s6","6 hours",1.01,1.00,1.02,0.24),
+      hrEntry("s7","7 hours",1.00,1.00,1.00,0.28),
+      hrEntry("s8","8 hours",1.07,1.06,1.09,0.27),
+      hrEntry("s9","9 hours",1.21,1.18,1.24,0.08),
+      hrEntry("s10","10 hours",1.37,1.32,1.42,0.03),
+      hrEntry("s11","11+ hours",1.55,1.47,1.63,0.02)
+  ]},
+  { id:"self_rated_health", question:"In general, how would you rate your overall health?", group:"self_rated", source:DESALVO_2006, options:[
+      hrEntry("excellent","Excellent",1.00,1.00,1.00,0.20),
+      hrEntry("good","Good",1.23,1.09,1.39,0.55),
+      hrEntry("fair","Fair",1.44,1.21,1.71,0.18),
+      hrEntry("poor","Poor",1.92,1.64,2.25,0.07)
+  ]}
+];
+
+const CORRELATION_GROUPS = {
+  metabolic:  { label:"Diet, weight and activity", lambda:0.75, rationale:"These three overlap heavily \u2014 diet drives weight, weight constrains activity capacity \u2014 so their combined contribution is shrunk by 25% to avoid triple-counting one underlying signal." },
+  substance:  { label:"Smoking and alcohol",       lambda:0.85, rationale:"Correlated in the population and sharing some downstream pathways, so this pair's combined contribution is shrunk by 15%." },
+  sleep:      { label:"Sleep",                      lambda:1.00, rationale:"Modeled independently, no shrinkage applied." },
+  self_rated: { label:"Self-rated health",          lambda:0.55, rationale:"A single self-rated-health answer statistically absorbs much of what the other six questions already measure \u2014 diagnosed and undiagnosed conditions, fitness, mental health \u2014 so it is shrunk by 45%." }
+};
+
+const EXTRA_CHOICES = [
+  { label:"Hazard ratios fade with age", body:"Lifestyle hazard ratios are estimated mostly in midlife cohorts and are known to compress at older ages. This model linearly decays every factor's effect from full strength at age 50 down to 40% at age 90, and holds it there. The 40% floor is a judgment call with no single citation behind it \u2014 a different floor would shift your median age by a year or more." },
+  { label:"Everything is centered on the population, not on a reference category", body:"Each answer is scored as the gap between your hazard and the prevalence-weighted population average for that question, so the muted \u2018age and sex only\u2019 curve really is the raw SSA table rather than an idealized reference person." },
+  { label:"Alcohol is not modeled as a J-curve", body:"Li 2018 and many older cohorts show non-drinkers dying sooner than moderate drinkers. That pattern is now largely attributed to sick-quitter bias \u2014 people who stopped drinking because they were already ill \u2014 and abstainer misclassification. Mendelian-randomization and burden-of-proof analyses find no protective effect. This tool therefore uses non-drinking as the reference and treats risk as flat-then-rising. It will not tell you to start drinking." }
+];
+
+const DEFAULTS = { smoking:"never", bmi:"overweight", activity:"a0", diet:"d3", alcohol:"none", sleep:"s7", self_rated_health:"good" };
+
+function hazardFromQx(qx){ return -Math.log(1-qx); }
+function qxFromHazard(h){ return 1-Math.exp(-h); }
+function betaOfOption(o){ return Math.log(o.hr); }
+function seOfOption(o){ return o.ci[0]===o.ci[1] ? 0 : (Math.log(o.ci[1])-Math.log(o.ci[0]))/(2*1.96); }
+
+const _popBetaCache = Object.create(null);
+function populationMeanBeta(factor){
+  if(_popBetaCache[factor.id] === undefined){
+    let s = 0;
+    for(const o of factor.options) s += o.prevalence * betaOfOption(o);
+    _popBetaCache[factor.id] = s;
+  }
+  return _popBetaCache[factor.id];
+}
+
+const ATTEN_START = 50, ATTEN_END = 90, ATTEN_FLOOR = 0.40;
+function ageAttenuation(age){
+  if(age <= ATTEN_START) return 1;
+  if(age >= ATTEN_END) return ATTEN_FLOOR;
+  return 1 - ((age-ATTEN_START)/(ATTEN_END-ATTEN_START))*(1-ATTEN_FLOOR);
+}
+
+function computeLRel(selections, factors, groups, betaOverride){
+  const byGroup = Object.create(null);
+  for(const factor of factors){
+    const opt = factor.options.find(function(o){ return o.id === selections[factor.id]; });
+    if(!opt) continue;
+    const personBeta = (betaOverride && betaOverride[factor.id] !== undefined) ? betaOverride[factor.id] : betaOfOption(opt);
+    const delta = personBeta - populationMeanBeta(factor);
+    byGroup[factor.group] = (byGroup[factor.group] || 0) + delta;
+  }
+  let total = 0; const contributions = Object.create(null);
+  for(const g in byGroup){
+    const lambda = (groups[g] && groups[g].lambda !== undefined) ? groups[g].lambda : 1;
+    contributions[g] = byGroup[g]*lambda;
+    total += contributions[g];
+  }
+  return { total:total, contributions:contributions };
+}
+
+function buildSurvival(qxArray, startAge, lRelOfAge){
+  const n = qxArray.length;
+  const rows = [{age:startAge, survival:1}];
+  let survival = 1;
+  for(let age=startAge; age<n; age++){
+    const adjH = hazardFromQx(qxArray[age]) * Math.exp(lRelOfAge(age));
+    survival *= (1 - qxFromHazard(adjH));
+    rows.push({age:age+1, survival:survival});
+  }
+  return rows;
+}
+
+function lifeExpectancy(rows){
+  let t = 0;
+  for(let i=0;i<rows.length-1;i++) t += (rows[i].survival + rows[i+1].survival)/2;
+  return t;
+}
+
+function quantileAge(rows, q){
+  const target = 1-q;
+  for(let i=0;i<rows.length-1;i++){
+    const s0 = rows[i].survival, s1 = rows[i+1].survival;
+    if(s0 >= target && s1 < target){
+      return rows[i].age + (s0-target)/(s0-s1);
+    }
+  }
+  return rows[rows.length-1].age;
+}
+
+function mulberry32(a){
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hashString(str){
+  let h = 2166136261;
+  for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function makeNormal(rand){
+  let spare = null;
+  return function(){
+    if(spare !== null){ const s = spare; spare = null; return s; }
+    let u=0, v=0;
+    while(u===0) u = rand();
+    while(v===0) v = rand();
+    const r = Math.sqrt(-2*Math.log(u));
+    spare = r*Math.sin(2*Math.PI*v);
+    return r*Math.cos(2*Math.PI*v);
+  };
+}
+
+function monteCarloMedian(qxArray, startAge, selections, factors, groups, runs, seed){
+  const rand = mulberry32(seed);
+  const normal = makeNormal(rand);
+  const results = [];
+  const meta = factors.map(function(f){
+    const opt = f.options.find(function(o){ return o.id === selections[f.id]; });
+    return opt ? {id:f.id, mean:betaOfOption(opt), se:seOfOption(opt)} : null;
+  }).filter(Boolean);
+
+  for(let r=0;r<runs;r++){
+    const override = Object.create(null);
+    for(const m of meta) override[m.id] = m.se > 0 ? m.mean + normal()*m.se : m.mean;
+    const lRel = computeLRel(selections, factors, groups, override).total;
+    const rows = buildSurvival(qxArray, startAge, function(age){ return lRel*ageAttenuation(age); });
+    results.push(quantileAge(rows, 0.5));
+  }
+  results.sort(function(a,b){ return a-b; });
+  const pick = function(p){ return results[Math.min(results.length-1, Math.floor(p*results.length))]; };
+  return { p05:pick(0.05), p50:pick(0.50), p95:pick(0.95) };
+}
+</script>
+
+<script>
+(function(){
+"use strict";
+
+const THEME_KEY = "survivalMirror.theme";
+const root = document.documentElement;
+const mql = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+let themeListeners = [];
+
+function currentPref(){ return root.getAttribute("data-theme") || "system"; }
+function resolveTheme(pref){
+  if(pref === "dark") return "dark";
+  if(pref === "light") return "light";
+  return (mql && mql.matches) ? "dark" : "light";
+}
+function applyTheme(pref, persistIt){
+  root.setAttribute("data-theme", pref);
+  root.setAttribute("data-resolved", resolveTheme(pref));
+  document.querySelectorAll("[data-theme-choice]").forEach(function(b){
+    b.setAttribute("aria-checked", b.getAttribute("data-theme-choice") === pref ? "true" : "false");
+    b.tabIndex = b.getAttribute("data-theme-choice") === pref ? 0 : -1;
+  });
+  if(persistIt){ try{ localStorage.setItem(THEME_KEY, pref); }catch(e){} }
+  themeListeners.forEach(function(fn){ fn(); });
+}
+function onThemeChange(fn){ themeListeners.push(fn); }
+
+const themeButtons = Array.prototype.slice.call(document.querySelectorAll("[data-theme-choice]"));
+themeButtons.forEach(function(btn, i){
+  btn.addEventListener("click", function(){ applyTheme(btn.getAttribute("data-theme-choice"), true); btn.focus(); });
+  btn.addEventListener("keydown", function(ev){
+    let d = 0;
+    if(ev.key === "ArrowRight" || ev.key === "ArrowDown") d = 1;
+    else if(ev.key === "ArrowLeft" || ev.key === "ArrowUp") d = -1;
+    else return;
+    ev.preventDefault();
+    const next = themeButtons[(i + d + themeButtons.length) % themeButtons.length];
+    applyTheme(next.getAttribute("data-theme-choice"), true);
+    next.focus();
+  });
+});
+if(mql){
+  const sysHandler = function(){ if(currentPref() === "system") applyTheme("system", false); };
+  if(mql.addEventListener) mql.addEventListener("change", sysHandler);
+  else if(mql.addListener) mql.addListener(sysHandler);
+}
+applyTheme(currentPref(), false);
+
+let faviconLink = document.getElementById("favicon");
+function faviconHref(mode){
+  const ink  = mode === "dark" ? "%23ADABDA" : "%23585A87";
+  const axis = mode === "dark" ? "%233A3945" : "%23C9C3B4";
+  return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E" +
+    "%3Cpath d='M6 56h52' fill='none' stroke='" + axis + "' stroke-width='2.5' stroke-linecap='round'/%3E" +
+    "%3Cpath d='M8 11C21.3 11.8 33.3 21 40 35c5.3 10 10.7 14.4 16 15.6' fill='none' stroke='" + ink +
+    "' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
+}
+function syncFavicon(){
+  if(!faviconLink || !faviconLink.parentNode) return;
+  const next = faviconLink.cloneNode(false);
+  next.setAttribute("href", faviconHref(resolveTheme(currentPref())));
+  faviconLink.parentNode.replaceChild(next, faviconLink);
+  faviconLink = next;
+}
+onThemeChange(syncFavicon);
+syncFavicon();
+
+function cssVar(name){
+  return getComputedStyle(root).getPropertyValue(name).trim() || "#888";
+}
+
+let selections = Object.assign({}, DEFAULTS);
+let lastResult = null;
+let agesHidden = false;
+const STORAGE_KEY = "survivalMirror.v2";
+
+function safeScroll(node){
+  if(!node || typeof node.scrollIntoView !== "function") return;
+  try{ node.scrollIntoView({behavior:"smooth", block:"start"}); }
+  catch(e){ try{ node.scrollIntoView(); }catch(e2){} }
+}
+function el(tag, attrs, kids){
+  const e = document.createElement(tag);
+  if(attrs) for(const k in attrs){
+    if(k === "class") e.className = attrs[k];
+    else if(k === "text") e.textContent = attrs[k];
+    else if(k === "html") e.innerHTML = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  }
+  if(kids) kids.forEach(function(c){ if(c) e.appendChild(c); });
+  return e;
+}
+function fmt1(n){ return n.toFixed(1); }
+
+function renderQuestions(){
+  const host = document.getElementById("questionsHost");
+  host.innerHTML = "";
+  FACTORS.forEach(function(factor){
+    const fieldset = el("fieldset", {class:"field", style:"border:none;padding:0;margin:0 0 26px;"});
+    fieldset.appendChild(el("legend", {class:"qlabel", style:"padding:0;", text:factor.question}));
+    fieldset.appendChild(el("span", {class:"qsource", text:"Source: " + factor.source}));
+    const wrap = el("div", {class:"options"});
+    factor.options.forEach(function(opt){
+      const label = el("label", {class:"opt"});
+      const input = el("input", {type:"radio", name:factor.id, value:opt.id});
+      if(selections[factor.id] === opt.id) input.checked = true;
+      label.appendChild(input);
+      label.appendChild(el("span", {text:opt.label}));
+      wrap.appendChild(label);
+    });
+    fieldset.appendChild(wrap);
+    host.appendChild(fieldset);
+  });
+  refreshSelectedStyles();
+}
+function refreshSelectedStyles(){
+  document.querySelectorAll(".opt").forEach(function(label){
+    const input = label.querySelector("input");
+    label.classList.toggle("selected", !!(input && input.checked));
+  });
+}
+
+document.addEventListener("change", function(ev){
+  const t = ev.target;
+  if(!t) return;
+  if(t.type === "radio" && t.closest && t.closest("#questionsHost")){
+    selections[t.name] = t.value;
+    refreshSelectedStyles();
+    persist();
+    liveRecalc();
+  }
+  if(t.name === "gate") handleGate();
+});
+
+function handleGate(){
+  const v = (document.querySelector('input[name="gate"]:checked') || {}).value;
+  document.getElementById("declineMsg").style.display = v === "yes" ? "block" : "none";
+  document.getElementById("cautionMsg").style.display = v === "skip" ? "block" : "none";
+}
+
+document.getElementById("proceedBtn").addEventListener("click", function(){
+  const v = (document.querySelector('input[name="gate"]:checked') || {}).value;
+  if(v === "yes"){ document.getElementById("declineMsg").style.display = "block"; return; }
+  if(v === "skip") document.getElementById("cautionMsg").style.display = "block";
+  document.getElementById("formArea").style.display = "block";
+  safeScroll(document.getElementById("formArea"));
+});
+
+const AGE_MIN = 18, AGE_MAX = 99;
+function readAge(){
+  const input = document.getElementById("ageInput");
+  const raw = parseFloat(input.value);
+  const err = document.getElementById("ageErr");
+  const bad = isNaN(raw) || raw < AGE_MIN || raw > AGE_MAX;
+  input.setAttribute("aria-invalid", bad ? "true" : "false");
+  err.style.display = bad ? "block" : "none";
+  if(isNaN(raw)) return 45;
+  return Math.max(AGE_MIN, Math.min(AGE_MAX, Math.round(raw)));
+}
+function currentSex(){ return (document.querySelector('input[name="sex"]:checked') || {}).value || "male"; }
+function currentQx(){ return currentSex() === "female" ? SSA_2023_QX_FEMALE : SSA_2023_QX_MALE; }
+
+function computeAll(){
+  const age = readAge();
+  const qx = currentQx();
+  const lRel = computeLRel(selections, FACTORS, CORRELATION_GROUPS).total;
+  const rowsFull = buildSurvival(qx, age, function(a){ return lRel*ageAttenuation(a); });
+  const rowsBase = buildSurvival(qx, age, function(){ return 0; });
+  const seed = hashString(age + "|" + currentSex() + "|" + FACTORS.map(function(f){ return selections[f.id]; }).join(","));
+  return {
+    age:age, qx:qx, lRelFull:lRel, rowsFull:rowsFull, rowsBase:rowsBase,
+    q10:quantileAge(rowsFull,0.1), q50:quantileAge(rowsFull,0.5), q90:quantileAge(rowsFull,0.9),
+    q50base:quantileAge(rowsBase,0.5),
+    exFull:lifeExpectancy(rowsFull), exBase:lifeExpectancy(rowsBase),
+    mc:monteCarloMedian(qx, age, selections, FACTORS, CORRELATION_GROUPS, 700, seed)
+  };
+}
+function liveRecalc(){
+  if(document.getElementById("results").style.display === "block") renderAll(computeAll());
+}
+
+function renderFreqSentence(r){
+  const t = document.getElementById("freqSentence");
+  if(agesHidden){ t.textContent = "Ages are hidden. Flip the toggle below to see them."; return; }
+  t.innerHTML = "Of 1,000 people whose age, sex, and seven answers matched what you entered: about <b>900</b> are still alive at age <b>"+fmt1(r.q10)+"</b>, about <b>500</b> at age <b>"+fmt1(r.q50)+"</b>, and about <b>100</b> at age <b>"+fmt1(r.q90)+"</b>. These are population frequencies, not a forecast about one person.";
+}
+function renderStatRow(r){
+  const host = document.getElementById("statRow");
+  host.innerHTML = "";
+  const stats = agesHidden
+    ? [["Direction of your answers", (r.lRelFull < 0 ? "Below average risk" : r.lRelFull > 0 ? "Above average risk" : "About average")],
+       ["Relative hazard vs. average", Math.exp(r.lRelFull).toFixed(2) + "\u00d7"],
+       ["Ages", "hidden"]]
+    : [["Median age, this model", fmt1(r.q50)],
+       ["Remaining life expectancy", fmt1(r.exFull) + " yr"],
+       ["90% uncertainty on the median", fmt1(r.mc.p05) + "\u2013" + fmt1(r.mc.p95)]];
+  stats.forEach(function(s){
+    host.appendChild(el("div",{class:"stat"},[el("div",{class:"label",text:s[0]}), el("div",{class:"val",text:s[1]})]));
+  });
+}
+function renderCompareRow(r){
+  const host = document.getElementById("compareRow");
+  host.innerHTML = "";
+  if(agesHidden){
+    host.appendChild(el("p",{class:"small",text:"Hidden while ages are hidden."}));
+    return;
+  }
+  const d = r.q50 - r.q50base;
+  [["Full model median", fmt1(r.q50)],
+   ["Age-and-sex-only median", fmt1(r.q50base)],
+   ["What your seven answers changed", (d>=0?"+":"") + fmt1(d) + " yr"]
+  ].forEach(function(c){
+    host.appendChild(el("div",{class:"compare-item"},[el("div",{class:"label",text:c[0]}), el("div",{class:"val",text:c[1]})]));
+  });
+}
+function renderMcExplain(r){
+  const p = document.getElementById("mcExplain");
+  if(agesHidden){ p.textContent = "Hidden while ages are hidden."; return; }
+  p.textContent = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing all seven from their own uncertainty and rebuilding the curve 700 times, the median age landed between "+fmt1(r.mc.p05)+" and "+fmt1(r.mc.p95)+" in 90% of those runs. The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in seven published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
+}
+
+const LOG_MIN = Math.log(0.3), LOG_MAX = Math.log(3.3);
+function hrToPct(hr){
+  const v = (Math.log(hr) - LOG_MIN) / (LOG_MAX - LOG_MIN) * 100;
+  return Math.max(0, Math.min(100, v));
+}
+function qualitative(marginal){
+  const a = Math.abs(marginal);
+  const dir = marginal > 0 ? "longer" : "shorter";
+  if(a < 0.25) return "negligible";
+  if(a < 1.0)  return "small \u2014 " + dir;
+  if(a < 2.5)  return "moderate \u2014 " + dir;
+  return "large \u2014 " + dir;
+}
+function renderLedger(r){
+  const body = document.getElementById("ledgerBody");
+  body.innerHTML = "";
+  FACTORS.forEach(function(factor){
+    const opt = factor.options.find(function(o){ return o.id === selections[factor.id]; });
+    if(!opt) return;
+    const weak = opt.hr !== 1 && opt.ci[0] <= 1 && opt.ci[1] >= 1;
+
+    const override = Object.create(null);
+    override[factor.id] = populationMeanBeta(factor);
+    const lRelWithout = computeLRel(selections, FACTORS, CORRELATION_GROUPS, override).total;
+    const rowsWithout = buildSurvival(r.qx, r.age, function(a){ return lRelWithout*ageAttenuation(a); });
+    const marginal = r.q50 - quantileAge(rowsWithout, 0.5);
+
+    const tr = document.createElement("tr");
+    if(weak) tr.className = "weak";
+
+    const tdName = el("td");
+    tdName.appendChild(el("span",{class:"factor-name", text:factor.question}));
+    tdName.appendChild(el("span",{class:"cite", text:factor.source}));
+    tr.appendChild(tdName);
+
+    tr.appendChild(el("td",{text:opt.label}));
+
+    const tdHr = el("td");
+    tdHr.appendChild(el("div",{class:"hrnum",
+      text:(opt.hr === 1 ? "reference" : opt.hr.toFixed(2)) + "  (" + opt.ci[0].toFixed(2) + "\u2013" + opt.ci[1].toFixed(2) + ")"}));
+    const bar = el("div",{class:"cibar", role:"img",
+      "aria-label":"Confidence interval " + opt.ci[0].toFixed(2) + " to " + opt.ci[1].toFixed(2)});
+    const left = hrToPct(opt.ci[0]);
+    const fill = el("div",{class:"fill"});
+    fill.style.left = left + "%";
+    fill.style.width = Math.max(1.5, hrToPct(opt.ci[1]) - left) + "%";
+    const mid = el("div",{class:"mid"});
+    mid.style.left = hrToPct(1) + "%";
+    bar.appendChild(fill); bar.appendChild(mid);
+    tdHr.appendChild(bar);
+    tr.appendChild(tdHr);
+
+    const tdYears = el("td");
+    if(agesHidden){
+      tdYears.appendChild(el("span",{class:"qualdelta", text:qualitative(marginal)}));
+    } else {
+      tdYears.appendChild(el("span",{
+        class:"yearsdelta" + (marginal > 0 ? " pos" : ""),
+        text:(marginal >= 0 ? "+" : "") + marginal.toFixed(1) + " yr"
+      }));
+    }
+    tr.appendChild(tdYears);
+    body.appendChild(tr);
+  });
+}
+
+function renderChoices(){
+  const host = document.getElementById("choicesList");
+  host.innerHTML = "";
+  for(const key in CORRELATION_GROUPS){
+    const g = CORRELATION_GROUPS[key];
+    host.appendChild(el("dt",{text:g.label + " \u2014 shrinkage \u03bb = " + g.lambda.toFixed(2)}));
+    host.appendChild(el("dd",{text:g.rationale}));
+  }
+  EXTRA_CHOICES.forEach(function(c){
+    host.appendChild(el("dt",{text:c.label}));
+    host.appendChild(el("dd",{text:c.body}));
+  });
+}
+function renderLimits(){
+  const items = [
+    "Genetics, family history, and undiagnosed conditions aren't in this model at all.",
+    "Accidents and other external causes are folded into the population baseline but aren't personalized to you.",
+    "Healthcare access, income, and where you live shift real mortality risk substantially and aren't asked about here.",
+    "The hazard ratios come from a small number of cohort studies \u2014 mainly the Nurses' Health Study and Health Professionals Follow-up Study, whose participants skew white, health-literate, and higher-income than the general population \u2014 plus separate meta-analyses for sleep and self-rated health. How well they transfer to you personally isn't fully known.",
+    "These are observational associations, not randomized trials. \u201cPeople who exercise more live longer\u201d and \u201cexercising more makes you live longer\u201d are related claims but not the same claim.",
+    "The seven factors are not the seven most important determinants of how long you'll live. They're seven things that are cheap to ask about and have published hazard ratios attached. That is a different list.",
+    "The life table underneath everything is a single U.S. Social Security Administration national table (2023, as used in the 2026 Trustees Report). If that population doesn't represent your country, the baseline is off before any of your seven answers are applied.",
+    "The table publishes only two sex categories and has no way to reflect hormonal, surgical, or other individual variation beyond that binary.",
+    "The confidence interval shown covers sampling error in the published coefficients only. It does not cover the shrinkage factors, the age-attenuation curve, or the possibility that a coefficient is simply wrong for you \u2014 all of which are probably larger sources of error."
+  ];
+  const host = document.getElementById("limitsList");
+  host.innerHTML = "";
+  items.forEach(function(t){ host.appendChild(el("li",{text:t})); });
+}
+
+const SVGNS = "http://www.w3.org/2000/svg";
+function svgEl(tag, attrs){
+  const e = document.createElementNS(SVGNS, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function pathD(rows, a0, a1, xs, ys){
+  let d = "";
+  for(let i=0;i<rows.length;i++){
+    const row = rows[i];
+    if(row.age < a0 || row.age > a1) continue;
+    d += (d === "" ? "M" : "L") + xs(row.age).toFixed(2) + "," + ys(row.survival).toFixed(2) + " ";
+  }
+  return d.trim();
+}
+function renderCurve(r){
+  const svg = document.getElementById("curveSvg");
+  const desc = document.getElementById("curveDesc");
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  svg.appendChild(el("title",{id:"curveTitle",text:"Survival curves"}));
+  const d2 = document.createElementNS(SVGNS,"desc"); d2.id = "curveDesc"; svg.appendChild(d2);
+
+  const C = {
+    axis:cssVar("--chart-axis"), base:cssVar("--chart-base"),
+    full:cssVar("--chart-full"), label:cssVar("--chart-label")
+  };
+
+  if(agesHidden){
+    const t = svgEl("text",{x:20,y:40,fill:C.label,"font-size":14});
+    t.textContent = "Curve hidden while ages are hidden.";
+    svg.appendChild(t);
+    d2.textContent = "Chart hidden.";
+    return;
+  }
+
+  const W = 680, H = 320, padL = 52, padR = 18, padT = 18, padB = 34;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+
+  function lastAbove(rows, thr){
+    let last = rows[0].age;
+    for(let i=0;i<rows.length;i++) if(rows[i].survival > thr) last = rows[i].age;
+    return last;
+  }
+  let end = Math.max(lastAbove(r.rowsFull,0.02), lastAbove(r.rowsBase,0.02));
+  end = Math.max(end, r.age + 15);
+  end = Math.min(end, r.rowsBase[r.rowsBase.length-1].age);
+
+  const xs = function(a){ return padL + (a - r.age)/(end - r.age)*plotW; };
+  const ys = function(s){ return padT + (1 - s)*plotH; };
+
+  svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:H-padB,y2:H-padB,stroke:C.axis,"stroke-width":1}));
+
+  [[1,"100%"],[0.5,"50%"],[0,"0%"]].forEach(function(g){
+    const y = ys(g[0]);
+    if(g[0] === 0.5){
+      svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:y,y2:y,stroke:C.axis,"stroke-width":1,"stroke-dasharray":"3,4"}));
+      const lbl = svgEl("text",{x:padL,y:y-6,fill:C.label,"font-size":11});
+      lbl.textContent = "half still alive";
+      svg.appendChild(lbl);
+    }
+    const tick = svgEl("text",{x:padL-8,y:y+4,fill:C.label,"font-size":11,"text-anchor":"end"});
+    tick.textContent = g[1];
+    svg.appendChild(tick);
+  });
+
+  const mid = Math.round((r.age + end)/2);
+  const ticks = (end - r.age) >= 24 ? [r.age, mid, end] : [r.age, end];
+  ticks.forEach(function(a){
+    const t = svgEl("text",{x:xs(a),y:H-padB+18,fill:C.label,"font-size":11,
+      "text-anchor": a === r.age ? "start" : (a === end ? "end" : "middle")});
+    t.textContent = "age " + a;
+    svg.appendChild(t);
+  });
+
+  svg.appendChild(svgEl("path",{d:pathD(r.rowsBase,r.age,end,xs,ys),fill:"none",stroke:C.base,"stroke-width":1.6}));
+
+  const full = svgEl("path",{d:pathD(r.rowsFull,r.age,end,xs,ys),fill:"none",stroke:C.full,"stroke-width":2.2});
+  svg.appendChild(full);
+
+  svg.appendChild(svgEl("circle",{id:"medianDot",cx:xs(r.q50),cy:ys(0.5),r:3.5,fill:C.full}));
+  const dl = svgEl("text",{x:xs(r.q50)+8,y:ys(0.5)-8,fill:C.full,"font-size":11});
+  dl.textContent = "median " + fmt1(r.q50);
+  svg.appendChild(dl);
+
+  d2.textContent = "Two survival curves from age " + r.age + " to " + end +
+    ". The age-and-sex-only curve reaches 50% survival at age " + fmt1(r.q50base) +
+    "; the curve including your seven answers reaches 50% at age " + fmt1(r.q50) + ".";
+
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce || typeof full.getTotalLength !== "function"){ return; }
+  try{
+    const len = full.getTotalLength();
+    full.style.strokeDasharray = len;
+    full.style.strokeDashoffset = len;
+    full.getBoundingClientRect();
+    full.style.transition = "stroke-dashoffset 1.3s ease";
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ full.style.strokeDashoffset = "0"; });
+    });
+  }catch(e){ full.style.strokeDashoffset = "0"; }
+}
+
+function renderAll(r){
+  lastResult = r;
+  renderFreqSentence(r);
+  renderStatRow(r);
+  renderCurve(r);
+  renderCompareRow(r);
+  renderMcExplain(r);
+  renderLedger(r);
+  document.getElementById("results").style.display = "block";
+}
+
+document.getElementById("calcBtn").addEventListener("click", function(){
+  const r = computeAll();
+  renderAll(r);
+  persist();
+  const res = document.getElementById("results");
+  safeScroll(res);
+  try{ res.focus({preventScroll:true}); }catch(e){}
+});
+document.getElementById("recalcBtn").addEventListener("click", function(){
+  safeScroll(document.getElementById("formArea"));
+});
+
+const hideSwitch = document.getElementById("hideAgesSwitch");
+hideSwitch.addEventListener("click", function(){
+  agesHidden = !agesHidden;
+  hideSwitch.classList.toggle("on", agesHidden);
+  hideSwitch.setAttribute("aria-pressed", agesHidden ? "true" : "false");
+  document.getElementById("hideAgesLabel").textContent = agesHidden
+    ? "Ages hidden \u2014 tap to show them again"
+    : "Hide the specific ages \u2014 show only what moves the needle";
+  if(lastResult) renderAll(lastResult);
+});
+
+document.getElementById("exportBtn").addEventListener("click", function(){
+  const payload = {
+    exportedAt:new Date().toISOString(),
+    schema:"survival-mirror/2",
+    age:readAge(), sex:currentSex(), answers:selections,
+    note:"Exported from Survival Mirror. All computation happens locally in your browser; nothing was ever sent anywhere."
+  };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = "survival-mirror-answers.json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+});
+
+document.getElementById("wipeBtn").addEventListener("click", function(){
+  if(!confirm("Clear all saved answers on this device? This can't be undone.")) return;
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  selections = Object.assign({}, DEFAULTS);
+  document.getElementById("ageInput").value = 45;
+  document.getElementById("ageInput").setAttribute("aria-invalid","false");
+  document.getElementById("ageErr").style.display = "none";
+  document.querySelector('input[name="sex"][value="male"]').checked = true;
+  document.querySelector('input[name="gate"][value="no"]').checked = true;
+  document.getElementById("declineMsg").style.display = "none";
+  document.getElementById("cautionMsg").style.display = "none";
+  document.getElementById("formArea").style.display = "none";
+  document.getElementById("results").style.display = "none";
+  lastResult = null;
+  renderQuestions();
+  safeScroll(document.getElementById("gateSection"));
+});
+
+function persist(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({v:2, age:readAge(), sex:currentSex(), selections:selections}));
+  }catch(e){}
+}
+function restore(){
+  let data = null;
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("survivalMirror.v1");
+    if(raw) data = JSON.parse(raw);
+  }catch(e){ return false; }
+  if(!data) return false;
+  if(data.age) document.getElementById("ageInput").value = data.age;
+  if(data.sex){
+    const el2 = document.querySelector('input[name="sex"][value="'+data.sex+'"]');
+    if(el2) el2.checked = true;
+  }
+  if(data.selections){
+    selections = Object.assign({}, DEFAULTS, data.selections);
+  }
+  return true;
+}
+
+document.getElementById("ageInput").addEventListener("change", function(){ persist(); liveRecalc(); });
+document.getElementById("ageInput").addEventListener("input", function(){ readAge(); });
+document.querySelectorAll('input[name="sex"]').forEach(function(r){
+  r.addEventListener("change", function(){ persist(); liveRecalc(); });
+});
+
+onThemeChange(function(){ if(lastResult) renderCurve(lastResult); });
+
+renderLimits();
+renderChoices();
+const hadSaved = restore();
+renderQuestions();
+if(hadSaved) document.getElementById("formArea").style.display = "block";
+
+})();
+</script>
+</body>
+</html>
