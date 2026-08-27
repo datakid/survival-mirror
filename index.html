@@ -2303,13 +2303,16 @@ function buildCountriesAOA(){
   return rows;
 }
 function buildCodebookAOA(){
-  const rows = [["Column","Accepted values \u2014 type exactly, or leave blank to use the shared answer set"]];
+  const rows = [["Column","Accepted value"]];
   rows.push(["Name","Any label \u2014 optional, defaults to \u201cRow N\u201d"]);
   rows.push(["Age","Whole number " + AGE_MIN + "\u2013" + AGE_MAX]);
-  rows.push(["Sex","male or female"]);
+  rows.push(["Sex","male"]);
+  rows.push(["Sex","female"]);
   rows.push(["Country", COUNTRY_ORDER.length + " life tables \u2014 see the Countries sheet for the exact list to copy from (aliases like USA, UK, South Korea also work)"]);
   FACTORS.forEach(function(f){
-    rows.push([BULK_COLUMN_LABELS[f.id], f.options.map(function(o){ return o.label; }).join(" | ")]);
+    f.options.forEach(function(o){
+      rows.push([BULK_COLUMN_LABELS[f.id], o.label]);
+    });
   });
   return rows;
 }
