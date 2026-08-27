@@ -507,11 +507,12 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
 <div id="bulkArea" style="display:none;">
 <section class="block">
   <h2>1. Get the template</h2>
-  <p class="small">Every column matches the seven questions above exactly. Fill in age, sex and country for each row. For the seven lifestyle columns, either type the exact answer text for every row &mdash; the .xlsx template's Codebook sheet lists every accepted value &mdash; or leave a column blank and use the shared answer set below for it instead.</p>
+  <p class="small">Every column matches the seven questions above exactly. Fill in age, sex and country for each row. For the seven lifestyle columns, either type the exact answer text for every row &mdash; the .xlsx template's Codebook sheet lists every accepted value, and its Countries sheet lists every country name to copy from &mdash; or leave a column blank and use the shared answer set below for it instead.</p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;">
     <button class="secondary" id="downloadXlsxTemplateBtn" type="button">Download .xlsx template</button>
     <button class="secondary" id="downloadCsvTemplateBtn" type="button">Download .csv template</button>
   </div>
+  <p class="small" style="margin-top:8px;">The .csv template is data only \u2014 it can't carry the Codebook or Countries reference sheets. Use the .xlsx template if you want those to copy from while filling it in.</p>
 </section>
 
 <section class="block">
@@ -2294,12 +2295,19 @@ function buildTemplateAOA(){
   const blankRow = BULK_COLUMNS.map(function(){ return ""; });
   return [header, example, blankRow.slice(), blankRow.slice(), blankRow.slice()];
 }
+function buildCountriesAOA(){
+  const rows = [["Country name \u2014 type exactly", "ISO3 code"]];
+  COUNTRY_ORDER.forEach(function(iso3){
+    rows.push([COUNTRIES[iso3].name, iso3]);
+  });
+  return rows;
+}
 function buildCodebookAOA(){
   const rows = [["Column","Accepted values \u2014 type exactly, or leave blank to use the shared answer set"]];
   rows.push(["Name","Any label \u2014 optional, defaults to \u201cRow N\u201d"]);
   rows.push(["Age","Whole number " + AGE_MIN + "\u2013" + AGE_MAX]);
   rows.push(["Sex","male or female"]);
-  rows.push(["Country", COUNTRY_ORDER.length + " life tables \u2014 type the country name as shown in this tool (aliases like USA, UK, South Korea also work)"]);
+  rows.push(["Country", COUNTRY_ORDER.length + " life tables \u2014 see the Countries sheet for the exact list to copy from (aliases like USA, UK, South Korea also work)"]);
   FACTORS.forEach(function(f){
     rows.push([BULK_COLUMN_LABELS[f.id], f.options.map(function(o){ return o.label; }).join(" | ")]);
   });
@@ -2464,6 +2472,7 @@ document.getElementById("downloadXlsxTemplateBtn").addEventListener("click", fun
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildTemplateAOA()), "Template");
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildCodebookAOA()), "Codebook");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildCountriesAOA()), "Countries");
   const out = XLSX.write(wb, {bookType:"xlsx", type:"array"});
   downloadBlob(new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "survival-mirror-template.xlsx");
 });
