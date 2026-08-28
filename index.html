@@ -1101,7 +1101,7 @@ function lifeExpectancy(rows){
   return t;
 }
 
-function quantileAge(rows, q){
+function quantileAge(rows, q, strict){
   const target = 1-q;
   for(let i=0;i<rows.length-1;i++){
     const s0 = rows[i].survival, s1 = rows[i+1].survival;
@@ -1109,7 +1109,7 @@ function quantileAge(rows, q){
       return rows[i].age + (s0-target)/(s0-s1);
     }
   }
-  return rows[rows.length-1].age;
+  return strict ? null : rows[rows.length-1].age;
 }
 
 function mulberry32(a){
@@ -1249,7 +1249,7 @@ let selections = Object.assign({}, DEFAULTS);
 let lastResult = null;
 let agesHidden = false;
 let selectedCountry = "USA";
-const STORAGE_KEY = "survivalMirror.v2";
+const STORAGE_KEY = "survivalMirror.v3";
 
 let bulkSelections = Object.assign({}, DEFAULTS);
 let bulkUseShared = false;
@@ -1505,7 +1505,11 @@ function showFatalError(context){
     btn.textContent = "Reset saved answers";
     btn.style.cssText = "background:#fff;color:#b00020;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:600;";
     btn.addEventListener("click", function(){
-      try{ localStorage.removeItem(STORAGE_KEY); localStorage.removeItem("survivalMirror.v1"); }catch(e){}
+      try{
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem("survivalMirror.v2");
+        localStorage.removeItem("survivalMirror.v1");
+      }catch(e){}
       location.reload();
     });
     bar.appendChild(msg);
@@ -1526,6 +1530,7 @@ function el(tag, attrs, kids){
   return e;
 }
 function fmt1(n){ return n.toFixed(1); }
+function fmtQ(n){ return n === null ? "\u2014 beyond the table" : fmt1(n); }
 
 function renderQuestionsInto(hostId, selectionsObj){
   const host = document.getElementById(hostId);
@@ -1588,6 +1593,7 @@ function handleGate(){
     document.getElementById("formArea").style.display = "none";
     document.getElementById("bulkArea").style.display = "none";
     document.getElementById("results").style.display = "none";
+    lastResult = null;
   }
 }
 
@@ -1626,14 +1632,13 @@ function computeForPerson(age, sex, iso3, selectionsObj, opts){
   const rowsFull = buildSurvival(qx, age, function(a){ return lRel*ageAttenuation(a); });
   const rowsBase = buildSurvival(qx, age, function(){ return 0; });
   const seed = hashString(age + "|" + sex + "|" + iso3 + "|" + FACTORS.map(function(f){ return selectionsObj[f.id]; }).join(","));
-  const maxRowAge = rowsFull[rowsFull.length-1].age;
-  const q10 = quantileAge(rowsFull,0.1), q50 = quantileAge(rowsFull,0.5), q90 = quantileAge(rowsFull,0.9);
+  const q10 = quantileAge(rowsFull,0.1,true), q50 = quantileAge(rowsFull,0.5,true), q90 = quantileAge(rowsFull,0.9,true);
   return {
     age:age, sex:sex, iso3:iso3, qx:qx, lRelFull:lRel, rowsFull:rowsFull, rowsBase:rowsBase,
     selections:selectionsObj,
     q10:q10, q50:q50, q90:q90,
-    q10Uncertain:q10 === maxRowAge, q50Uncertain:q50 === maxRowAge, q90Uncertain:q90 === maxRowAge,
-    q50base:quantileAge(rowsBase,0.5),
+    q10Uncertain:q10 === null, q50Uncertain:q50 === null, q90Uncertain:q90 === null,
+    q50base:quantileAge(rowsBase,0.5,true),
     exFull:lifeExpectancy(rowsFull),
     mc:withMC ? monteCarloMedian(qx, age, selectionsObj, FACTORS, CORRELATION_GROUPS, 700, seed) : null
   };
@@ -1653,7 +1658,20 @@ function liveRecalc(){
 function renderFreqSentence(r){
   const t = document.getElementById("freqSentence");
   if(agesHidden){ t.textContent = "Ages are hidden. Flip the toggle below to see them."; return; }
-  t.innerHTML = "Of 1,000 people whose age, sex, and seven answers matched what you entered: about <b>900</b> are still alive at age <b>"+fmt1(r.q10)+"</b>, about <b>500</b> at age <b>"+fmt1(r.q50)+"</b>, and about <b>100</b> at age <b>"+fmt1(r.q90)+"</b>. These are population frequencies, not a forecast about one person.";
+  t.textContent = "";
+  t.appendChild(document.createTextNode("Of 1,000 people whose age, sex, and seven answers matched what you entered: about "));
+  t.appendChild(el("b",{text:"900"}));
+  t.appendChild(document.createTextNode(" are still alive at age "));
+  t.appendChild(el("b",{text:fmtQ(r.q10)}));
+  t.appendChild(document.createTextNode(", about "));
+  t.appendChild(el("b",{text:"500"}));
+  t.appendChild(document.createTextNode(" at age "));
+  t.appendChild(el("b",{text:fmtQ(r.q50)}));
+  t.appendChild(document.createTextNode(", and about "));
+  t.appendChild(el("b",{text:"100"}));
+  t.appendChild(document.createTextNode(" at age "));
+  t.appendChild(el("b",{text:fmtQ(r.q90)}));
+  t.appendChild(document.createTextNode(". These are population frequencies, not a forecast about one person."));
 }
 function renderStatRow(r){
   const host = document.getElementById("statRow");
@@ -1662,7 +1680,7 @@ function renderStatRow(r){
     ? [["Direction of your answers", (r.lRelFull < 0 ? "Below average risk" : r.lRelFull > 0 ? "Above average risk" : "About average")],
        ["Relative hazard vs. average", Math.exp(r.lRelFull).toFixed(2) + "\u00d7"],
        ["Ages", "hidden"]]
-    : [["Median age, this model", fmt1(r.q50)],
+    : [["Median age, this model", fmtQ(r.q50)],
        ["Remaining life expectancy", fmt1(r.exFull) + " yr"],
        ["90% uncertainty on the median", fmt1(r.mc.p05) + "\u2013" + fmt1(r.mc.p95)]];
   stats.forEach(function(s){
@@ -1676,10 +1694,10 @@ function renderCompareRow(r){
     host.appendChild(el("p",{class:"small",text:"Hidden while ages are hidden."}));
     return;
   }
-  const d = r.q50 - r.q50base;
-  [["Full model median", fmt1(r.q50)],
-   ["Age-and-sex-only median", fmt1(r.q50base)],
-   ["What your seven answers changed", (d>=0?"+":"") + fmt1(d) + " yr"]
+  const d = (r.q50 === null || r.q50base === null) ? null : r.q50 - r.q50base;
+  [["Full model median", fmtQ(r.q50)],
+   ["Age-and-sex-only median", fmtQ(r.q50base)],
+   ["What your seven answers changed", d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr"]
   ].forEach(function(c){
     host.appendChild(el("div",{class:"compare-item"},[el("div",{class:"label",text:c[0]}), el("div",{class:"val",text:c[1]})]));
   });
@@ -1714,12 +1732,12 @@ function renderGeo(r){
   const you = g.rows[g.index[r.iso3]];
   const best = g.rows[0], worst = g.rows[n-1];
   const spread = best.med - worst.med;
-  const lifestyle = r.q50 - r.q50base;
+  const lifestyle = (r.q50 === null || r.q50base === null) ? null : r.q50 - r.q50base;
 
   intro.textContent = "All " + n + " life tables in this file were just run against your exact age and sex, " +
     "with the seven answers switched off. This is where the one you picked sits.";
 
-  [["Your seven answers moved the median", (lifestyle >= 0 ? "+" : "") + fmt1(lifestyle) + " yr"],
+  [["Your seven answers moved the median", lifestyle === null ? "\u2014 beyond the table" : (lifestyle >= 0 ? "+" : "") + fmt1(lifestyle) + " yr"],
    [COUNTRIES[r.iso3].name + " baseline median", fmt1(you.med)],
    ["Rank among " + n + " tables", rank + " of " + n],
    ["Highest: " + COUNTRIES[best.iso3].name, fmt1(best.med)],
@@ -1731,8 +1749,9 @@ function renderGeo(r){
   });
 
   hon.textContent = "Read that plainly. Which entry you chose in a dropdown moves this number across a " +
-    fmt1(spread) + "-year range; your seven lifestyle answers moved it by " + fmt1(Math.abs(lifestyle)) +
-    " years. The dropdown is the dominant term in this model and the questionnaire is not. None of that " +
+    fmt1(spread) + "-year range; your seven lifestyle answers moved it " +
+    (lifestyle === null ? "beyond what this table can measure" : "by " + fmt1(Math.abs(lifestyle)) + " years") +
+    ". The dropdown is the dominant term in this model and the questionnaire is not. None of that " +
     "spread is a statement about you \u2014 it is a statement about which national mortality table the tool " +
     "was pointed at, and the tool has no way to know whether you resemble that country's population.";
 }
@@ -1767,7 +1786,7 @@ function renderLedger(r){
     override[factor.id] = populationMeanBeta(factor);
     const lRelWithout = computeLRel(r.selections, FACTORS, CORRELATION_GROUPS, override).total;
     const rowsWithout = buildSurvival(r.qx, r.age, function(a){ return lRelWithout*ageAttenuation(a); });
-    const marginal = r.q50 - quantileAge(rowsWithout, 0.5);
+    const marginal = r.q50 === null ? null : r.q50 - quantileAge(rowsWithout, 0.5);
 
     const tr = document.createElement("tr");
     if(weak) tr.className = "weak";
@@ -1796,7 +1815,9 @@ function renderLedger(r){
 
     const tdYears = el("td");
     if(agesHidden){
-      tdYears.appendChild(el("span",{class:"qualdelta", text:qualitative(marginal)}));
+      tdYears.appendChild(el("span",{class:"qualdelta", text:marginal === null ? "beyond the table" : qualitative(marginal)}));
+    } else if(marginal === null){
+      tdYears.appendChild(el("span",{class:"yearsdelta", text:"\u2014 beyond the table"}));
     } else {
       tdYears.appendChild(el("span",{
         class:"yearsdelta" + (marginal > 0 ? " pos" : ""),
@@ -1948,17 +1969,23 @@ function renderCurve(r){
   const full = svgEl("path",{d:pathD(r.rowsFull,r.age,end,xs,ys),fill:"none",stroke:C.full,"stroke-width":2.2});
   svg.appendChild(full);
 
-  svg.appendChild(svgEl("circle",{id:"medianDot",cx:xs(r.q50),cy:ys(0.5),r:3.5,fill:C.full}));
-  const dotX = xs(r.q50), dotY = ys(0.5);
-  const labelFitsRight = dotX + 90 <= W - padR;
-  const dl = svgEl("text",{x:dotX + (labelFitsRight ? 8 : -8),y:dotY-8,fill:C.full,"font-size":11,
-    "text-anchor": labelFitsRight ? "start" : "end"});
-  dl.textContent = "median " + fmt1(r.q50);
-  svg.appendChild(dl);
+  if(r.q50 !== null){
+    svg.appendChild(svgEl("circle",{id:"medianDot",cx:xs(r.q50),cy:ys(0.5),r:3.5,fill:C.full}));
+    const dotX = xs(r.q50), dotY = ys(0.5);
+    const labelFitsRight = dotX + 90 <= W - padR;
+    const dl = svgEl("text",{x:dotX + (labelFitsRight ? 8 : -8),y:dotY-8,fill:C.full,"font-size":11,
+      "text-anchor": labelFitsRight ? "start" : "end"});
+    dl.textContent = "median " + fmt1(r.q50);
+    svg.appendChild(dl);
+  } else {
+    const dl = svgEl("text",{x:padL+8,y:padT+16,fill:C.full,"font-size":11});
+    dl.textContent = "Median is \u2014 beyond the table";
+    svg.appendChild(dl);
+  }
 
   d2.textContent = "Two survival curves from age " + r.age + " to " + end +
-    ". The age-and-sex-only curve reaches 50% survival at age " + fmt1(r.q50base) +
-    "; the curve including your seven answers reaches 50% at age " + fmt1(r.q50) + ".";
+    ". The age-and-sex-only curve reaches 50% survival at age " + fmtQ(r.q50base) +
+    "; the curve including your seven answers reaches 50% at age " + fmtQ(r.q50) + ".";
 
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(reduce || typeof full.getTotalLength !== "function"){ return; }
@@ -1985,7 +2012,7 @@ function renderAll(r){
   renderLedger(r);
   document.getElementById("results").style.display = "block";
   const summary = document.getElementById("liveSummary");
-  summary.textContent = agesHidden ? "Results updated. Ages are hidden." : "Results updated. Median age: " + fmt1(r.q50) + ".";
+  summary.textContent = agesHidden ? "Results updated. Ages are hidden." : "Results updated. Median age: " + fmtQ(r.q50) + ".";
 }
 
 document.getElementById("calcBtn").addEventListener("click", function(){
@@ -2041,7 +2068,11 @@ document.getElementById("wipeBtn").addEventListener("click", function(){
   try{ confirmed = confirm("Clear all saved answers on this device? This can't be undone."); }
   catch(e){ confirmed = false; }
   if(!confirmed) return;
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  try{
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem("survivalMirror.v2");
+    localStorage.removeItem("survivalMirror.v1");
+  }catch(e){}
   selections = Object.assign({}, DEFAULTS);
   selectedCountry = "USA";
   if(typeof closeCombo === "function") closeCombo();
@@ -2062,6 +2093,10 @@ document.getElementById("wipeBtn").addEventListener("click", function(){
   document.getElementById("bulkArea").style.display = "none";
   document.getElementById("results").style.display = "none";
   lastResult = null;
+  agesHidden = false;
+  hideSwitch.classList.remove("on");
+  hideSwitch.setAttribute("aria-pressed","false");
+  document.getElementById("hideAgesLabel").textContent = "Hide the specific ages \u2014 show only what moves the needle";
   renderQuestions();
   resetBulkState();
   safeScroll(document.getElementById("gateSection"));
@@ -2074,6 +2109,7 @@ function persist(){
 }
 function validateState(data){
   if(!data || typeof data !== "object") return null;
+  if(data.v !== undefined && [1,2,3].indexOf(data.v) === -1) return null;
   const age = Number(data.age);
   if(!Number.isFinite(age) || age < AGE_MIN || age > AGE_MAX) return null;
   if(data.sex !== "male" && data.sex !== "female") return null;
@@ -2093,7 +2129,7 @@ function validateState(data){
 function restore(){
   let raw = null;
   try{
-    raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("survivalMirror.v1");
+    raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("survivalMirror.v2") || localStorage.getItem("survivalMirror.v1");
   }catch(e){ return false; }
   if(!raw) return false;
   let data;
@@ -2272,11 +2308,11 @@ function renderBulkResults(results){
   body.innerHTML = "";
   results.forEach(function(item, i){
     const r = item.row, res = item.res;
-    const d = res.q50 - res.q50base;
+    const d = (res.q50 === null || res.q50base === null) ? null : res.q50 - res.q50base;
     const tr = document.createElement("tr");
     [String(i+1), r.name, String(res.age), res.sex, COUNTRIES[res.iso3].name,
-     fmt1(res.q50), fmt1(res.q10) + "\u2013" + fmt1(res.q90), fmt1(res.exFull) + " yr",
-     (d>=0?"+":"") + fmt1(d) + " yr"
+     fmtQ(res.q50), fmtQ(res.q10) + "\u2013" + fmtQ(res.q90), fmt1(res.exFull) + " yr",
+     d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr"
     ].forEach(function(v){ tr.appendChild(el("td",{text:v})); });
     body.appendChild(tr);
   });
@@ -2331,24 +2367,21 @@ function resetBulkState(){
   document.getElementById("bulkFileErr").style.display = "none";
   document.getElementById("bulkPreviewSection").style.display = "none";
   document.getElementById("bulkResultsSection").style.display = "none";
+}
+
+function setEntryMode(mode){
   document.querySelectorAll("#entryModeSwitch [data-mode-choice]").forEach(function(b){
-    const isSingle = b.getAttribute("data-mode-choice") === "single";
-    b.setAttribute("aria-checked", isSingle ? "true" : "false");
-    b.setAttribute("tabindex", isSingle ? "0" : "-1");
+    const isMode = b.getAttribute("data-mode-choice") === mode;
+    b.setAttribute("aria-checked", isMode ? "true" : "false");
+    b.setAttribute("tabindex", isMode ? "0" : "-1");
   });
-  document.getElementById("formArea").style.display = "block";
-  document.getElementById("bulkArea").style.display = "none";
+  document.getElementById("formArea").style.display = mode === "single" ? "block" : "none";
+  document.getElementById("bulkArea").style.display = mode === "bulk" ? "block" : "none";
 }
 
 document.querySelectorAll("#entryModeSwitch [data-mode-choice]").forEach(function(btn){
   btn.addEventListener("click", function(){
-    document.querySelectorAll("#entryModeSwitch [data-mode-choice]").forEach(function(b){
-      b.setAttribute("aria-checked", b === btn ? "true" : "false");
-      b.setAttribute("tabindex", b === btn ? "0" : "-1");
-    });
-    const mode = btn.getAttribute("data-mode-choice");
-    document.getElementById("formArea").style.display = mode === "single" ? "block" : "none";
-    document.getElementById("bulkArea").style.display = mode === "bulk" ? "block" : "none";
+    setEntryMode(btn.getAttribute("data-mode-choice"));
   });
 });
 document.getElementById("entryModeSwitch").addEventListener("keydown", function(ev){
@@ -2453,16 +2486,18 @@ document.getElementById("bulkRunBtn").addEventListener("click", function(){
 
 function sanitizeCell(v){
   if(typeof v !== "string") return v;
-  return /^[=+\-@]/.test(v) ? "'" + v : v;
+  return /^[\s\u0000-\u001F]*[=+\-@]/.test(v) ? "'" + v : v;
 }
+function xlsxQ(v){ return v === null ? "\u2014 beyond the table" : Number(v.toFixed(1)); }
 document.getElementById("bulkDownloadResultsBtn").addEventListener("click", function(){
   if(!lastBulkResults || !lastBulkResults.length) return;
   const aoa = [["Name","Age","Sex","Country","Median age","10th percentile age","90th percentile age","Life expectancy (yr)","Change from age/sex only (yr)"]];
   lastBulkResults.forEach(function(item){
     const r = item.row, res = item.res;
+    const delta = (res.q50 === null || res.q50base === null) ? "\u2014 beyond the table" : Number((res.q50 - res.q50base).toFixed(1));
     aoa.push([sanitizeCell(r.name), res.age, res.sex, COUNTRIES[res.iso3].name,
-      Number(res.q50.toFixed(1)), Number(res.q10.toFixed(1)), Number(res.q90.toFixed(1)),
-      Number(res.exFull.toFixed(1)), Number((res.q50 - res.q50base).toFixed(1))]);
+      xlsxQ(res.q50), xlsxQ(res.q10), xlsxQ(res.q90),
+      Number(res.exFull.toFixed(1)), delta]);
   });
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   const wb = XLSX.utils.book_new();
@@ -2486,6 +2521,7 @@ document.getElementById("downloadCsvTemplateBtn").addEventListener("click", func
 });
 document.getElementById("bulkClearBtn").addEventListener("click", function(){
   resetBulkState();
+  setEntryMode("single");
 });
 
 renderChoices();
@@ -2595,6 +2631,15 @@ function runSelfTests(){
       if(!passed) bad.push("case " + i);
     });
     return bad.length === 0 ? true : bad.join("; ");
+  });
+
+  check("quantileAge honors strict: null when the curve never crosses, last age otherwise", function(){
+    const rows = [{age:50, survival:0.99}, {age:51, survival:0.98}, {age:52, survival:0.97}];
+    const strictVal = quantileAge(rows, 0.5, true);
+    const looseVal = quantileAge(rows, 0.5, false);
+    if(strictVal !== null) return "strict expected null, got " + strictVal;
+    if(looseVal !== 52) return "non-strict expected 52, got " + looseVal;
+    return true;
   });
 
   return results;
