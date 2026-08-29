@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="A statistical mortality calculator showing population-level survival curves from your age, sex, country, and seven lifestyle factors, with the modeling choices and limitations disclosed alongside the numbers.">
+<meta name="description" content="A statistical mortality calculator showing population-level survival curves from your age, sex, country, and ten lifestyle and health factors, with the modeling choices and limitations disclosed alongside the numbers.">
 <meta name="robots" content="noindex">
 <meta property="og:title" content="Survival Mirror">
 <meta property="og:description" content="A statistical mirror, not a prophecy.">
@@ -523,7 +523,7 @@ h1{font-variant-numeric:tabular-nums;}
   <h2>Before we start</h2>
   <div class="gate">
     <p style="margin-bottom:2px;">Do you have a diagnosis your doctor has described as terminal or significantly life-limiting?</p>
-    <p class="small">This model is built entirely from general-population lifestyle data. It has no way to account for a specific diagnosis, and answering honestly here matters more than anything else on this page.</p>
+    <p class="small">This model accounts for three specific diagnosis clusters further down (cardiometabolic history, kidney function, and COPD), but it has no way to account for a terminal or significantly life-limiting diagnosis, or for anything outside those three clusters. Answering honestly here matters more than anything else on this page.</p>
     <div class="radio-row">
       <label><input type="radio" name="gate" value="no" checked> No</label>
       <label><input type="radio" name="gate" value="yes"> Yes</label>
@@ -532,12 +532,12 @@ h1{font-variant-numeric:tabular-nums;}
   </div>
 
   <div id="declineMsg">
-    <p style="margin-top:20px;">Then this tool isn't going to give you anything useful, and I'd rather say so than pretend otherwise. A lifestyle-hazard model built from healthy-population cohort data cannot meaningfully estimate a prognosis once a specific diagnosis is involved &mdash; that number lives with your care team, using information this page will never have.</p>
+    <p style="margin-top:20px;">Then this tool isn't going to give you anything useful, and I'd rather say so than pretend otherwise. This model can weigh a handful of diagnosed chronic conditions, but it cannot meaningfully estimate a prognosis once a terminal or significantly life-limiting diagnosis is involved &mdash; that number lives with your care team, using information this page will never have.</p>
     <p class="small">If you'd like to see how the method works anyway &mdash; out of curiosity, or to understand what it's built from &mdash; you're welcome to keep reading below without entering your own information.</p>
   </div>
 
   <div id="cautionMsg">
-    <p style="margin-top:20px;" class="small">That's a fair thing to keep to yourself. Worth knowing before you go on: if a significant diagnosis does apply to you, everything this page produces will be optimistic by an amount it has no way to estimate. The seven questions can't detect it.</p>
+    <p style="margin-top:20px;" class="small">That's a fair thing to keep to yourself. Worth knowing before you go on: if a terminal or significantly life-limiting diagnosis applies to you, everything this page produces will be optimistic by an amount it has no way to estimate. The ten questions further down can't detect it.</p>
   </div>
 
   <div style="margin-top:18px;">
@@ -594,7 +594,7 @@ h1{font-variant-numeric:tabular-nums;}
 </section>
 
 <section class="tier-2">
-  <h2>Seven questions</h2>
+  <h2>Ten questions</h2>
   <div id="questionsHost"></div>
 </section>
 
@@ -609,7 +609,7 @@ h1{font-variant-numeric:tabular-nums;}
 <div id="bulkArea" style="display:none;">
 <section class="tier-2">
   <h2>1. Get the template</h2>
-  <p class="small">Every column matches the seven questions above exactly. Fill in age, sex and country for each row. For the seven lifestyle columns, either type the exact answer text for every row &mdash; the .xlsx template's Codebook sheet lists every accepted value, and its Countries sheet lists every country name to copy from &mdash; or leave a column blank and use the shared answer set below for it instead.</p>
+  <p class="small">Every column matches the ten questions above exactly. Fill in age, sex and country for each row. For the ten factor columns, either type the exact answer text for every row &mdash; the .xlsx template's Codebook sheet lists every accepted value, and its Countries sheet lists every country name to copy from &mdash; or leave a column blank and use the shared answer set below for it instead.</p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;">
     <button class="secondary" id="downloadXlsxTemplateBtn" type="button">Download .xlsx template</button>
     <button class="secondary" id="downloadCsvTemplateBtn" type="button">Download .csv template</button>
@@ -619,7 +619,7 @@ h1{font-variant-numeric:tabular-nums;}
 
 <section class="tier-2">
   <h2>2. Optional &mdash; one shared answer set</h2>
-  <p class="small">Answer the seven questions once here. Turn the switch on to apply these answers to any question a row leaves blank in the spreadsheet &mdash; a row that fills in its own answer for a question always uses that instead, switch on or off.</p>
+  <p class="small">Answer the ten questions once here. Turn the switch on to apply these answers to any question a row leaves blank in the spreadsheet &mdash; a row that fills in its own answer for a question always uses that instead, switch on or off.</p>
   <div class="togglebar">
     <button class="switch" id="bulkUseSharedSwitch" type="button" aria-pressed="false" aria-labelledby="bulkUseSharedLabel"><span class="knob"></span></button>
     <span id="bulkUseSharedLabel">Off &mdash; blank cells are flagged, not filled in</span>
@@ -687,7 +687,7 @@ h1{font-variant-numeric:tabular-nums;}
     <button class="switch" id="hideAgesSwitch" type="button" aria-pressed="false" aria-labelledby="hideAgesLabel"><span class="knob"></span></button>
     <span id="hideAgesLabel">Hide the specific ages &mdash; show only what moves the needle</span>
   </div>
-  <p class="small" style="margin:14px 0;">The muted line uses only your age and sex &mdash; the same starting point everyone in this model gets. The indigo line adds your seven answers. The gap between them is everything this questionnaire changed.</p>
+  <p class="small" style="margin:14px 0;">The muted line uses only your age and sex &mdash; the same starting point everyone in this model gets. The indigo line adds your ten answers. The gap between them is everything this questionnaire changed.</p>
   <div class="curve-wrap"><svg class="curve" id="curveSvg" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="curveTitle curveDesc"><title id="curveTitle">Survival curves</title><desc id="curveDesc"></desc></svg></div>
   <div class="compare-row" id="compareRow"></div>
   <p class="small" style="margin-top:14px;">A number like this can be hard to sit with. If anything here stays with you, it's worth talking it through with a doctor or someone you trust.</p>
@@ -1102,6 +1102,10 @@ const LI_2018      = "Li et al. 2018, Circulation 138(4):345\u2013355";
 const SHEN_2016    = "Shen, Wu & Zhang 2016, Scientific Reports 6:21480";
 const DESALVO_2006 = "DeSalvo et al. 2006, J Gen Intern Med 21(3):267\u2013275";
 const ALC_RECODE   = "Re-coded by this tool \u2014 see note. Basis: GBD 2020 Alcohol Collaborators (Lancet 2022) and burden-of-proof / Mendelian-randomization work (Carr et al. 2024, Nature Communications), which find no protective effect at low intake.";
+const ERFC_2015    = "Di Angelantonio E, et al. (Emerging Risk Factors Collaboration). Association of cardiometabolic multimorbidity with mortality. JAMA. 2015;314(1):52\u201360.";
+const MATSUSHITA_2010 = "Matsushita K, van der Velde M, Astor BC, et al. (Chronic Kidney Disease Prognosis Consortium). Association of estimated glomerular filtration rate and albuminuria with all-cause and cardiovascular mortality in general population cohorts. Lancet. 2010;375(9731):2073\u20132081.";
+const ZHAO_2025    = "Zhao G, Wang L, Lei S, Li Y, Li J, Feng Z. All-cause and cause-specific mortality in chronic obstructive pulmonary disease: a systematic review and meta-analysis. Int J Chron Obstruct Pulmon Dis. 2025;20:4173\u20134190.";
+const HAUGHNEY_2014 = "Haughney J, Gruffydd-Jones K, Roberts J, Lee AJ, Hardwell A, McGarvey L. The distribution of COPD in UK general practice using the new GOLD classification. European Respiratory Journal. 2014;43(4):993\u20131002.";
 
 const CITATIONS = [
   { label:"United States life table", body:"U.S. Social Security Administration, Office of the Chief Actuary. Period Life Table, 2023, as used in the 2026 OASDI Trustees Report.", url:"https://www.ssa.gov/oact/STATS/table4c6.html" },
@@ -1111,53 +1115,64 @@ const CITATIONS = [
   { label:"Sleep hazard ratios", body:"Shen X, Wu Y, Zhang D. Nighttime sleep duration, 24-hour sleep duration and risk of all-cause mortality among adults: a meta-analysis of prospective cohort studies. Scientific Reports. 2016;6:21480.", url:"https://doi.org/10.1038/srep21480" },
   { label:"Self-rated health hazard ratios", body:"DeSalvo KB, Bloser N, Reynolds K, He J, Muntner P. Mortality prediction with a single general self-rated health question: a meta-analysis. Journal of General Internal Medicine. 2006;21(3):267\u2013275.", url:"https://doi.org/10.1111/j.1525-1497.2005.00291.x" },
   { label:"Alcohol \u2014 population risk basis", body:"GBD 2020 Alcohol Collaborators. Population-level risks of alcohol consumption by amount, geography, age, sex, and year: a systematic analysis for the Global Burden of Disease Study 2020. The Lancet. 2022;400(10347):185\u2013235.", url:"https://doi.org/10.1016/S0140-6736(22)00847-9" },
-  { label:"Alcohol \u2014 why this tool doesn't use a J-curve", body:"Carr S, Bryazka D, McLaughlin SA, et al. A burden of proof study on alcohol consumption and ischemic heart disease. Nature Communications. 2024;15:4082.", url:"https://doi.org/10.1038/s41467-024-47632-7" }
+  { label:"Alcohol \u2014 why this tool doesn't use a J-curve", body:"Carr S, Bryazka D, McLaughlin SA, et al. A burden of proof study on alcohol consumption and ischemic heart disease. Nature Communications. 2024;15:4082.", url:"https://doi.org/10.1038/s41467-024-47632-7" },
+  { label:"Cardiometabolic history (diabetes, stroke, heart attack) hazard ratios", body:ERFC_2015 + " Verified against the paper's own Table 1 for this tool.", url:"https://jamanetwork.com/journals/jama/fullarticle/2382980" },
+  { label:"Chronic kidney disease (eGFR) hazard ratios", body:MATSUSHITA_2010, url:"https://doi.org/10.1016/S0140-6736(10)60674-5" },
+  { label:"COPD hazard ratios, flat and by GOLD severity", body:ZHAO_2025, url:"https://doi.org/10.2147/COPD.S563250" },
+  { label:"COPD prevalence and severity distribution (used for population weighting)", body:HAUGHNEY_2014 + " Diagnosed prevalence from UK primary-care records, not general-population screened prevalence \u2014 see note.", url:"https://doi.org/10.1183/09031936.00065013" }
 ];
 
 const BULK_COLUMN_LABELS = {
   smoking:"Smoking", bmi:"BMI category", activity:"Weekly activity", diet:"Diet quality",
-  alcohol:"Alcohol", sleep:"Sleep (hrs/night)", self_rated_health:"Self-rated health"
+  alcohol:"Alcohol", sleep:"Sleep (hrs/night)", self_rated_health:"Self-rated health",
+  cardio_history:"Cardiometabolic history", ckd:"Kidney function (eGFR)", copd:"COPD"
 };
 
 function hrEntry(id,label,hr,lo,hi,prev){ return {id:id,label:label,hr:hr,ci:[lo,hi],prevalence:prev}; }
 
 const FACTORS = [
-  { id:"smoking", question:"Smoking", group:"substance", source:LI_2018, options:[
+  { id:"smoking", question:"Smoking", group:"substance", source:LI_2018,
+    adjusted:"age, sex, ethnicity, current multivitamin use, current aspirin use, family history of diabetes, myocardial infarction, or cancer, and menopausal status and hormone use (women only)", options:[
       hrEntry("never","Never smoked",1.00,1.00,1.00,0.60),
       hrEntry("former","Former smoker",1.41,1.38,1.44,0.28),
       hrEntry("light","Current, 1\u201314 cigarettes/day",2.02,1.93,2.10,0.04),
       hrEntry("moderate","Current, 15\u201324 cigarettes/day",2.33,2.21,2.45,0.045),
       hrEntry("heavy","Current, 25+ cigarettes/day",2.87,2.70,3.06,0.035)
   ]},
-  { id:"bmi", question:"Body mass index", group:"metabolic", source:LI_2018, options:[
+  { id:"bmi", question:"Body mass index", group:"metabolic", source:LI_2018,
+    adjusted:"age, sex, ethnicity, current multivitamin use, current aspirin use, family history of diabetes, myocardial infarction, or cancer, and menopausal status and hormone use (women only)", options:[
       hrEntry("low_normal","18.5\u201322.9",1.06,1.02,1.09,0.14),
       hrEntry("high_normal","23\u201324.9",1.00,1.00,1.00,0.14),
       hrEntry("overweight","25\u201329.9",1.05,1.02,1.08,0.32),
       hrEntry("obese_1","30\u201334.9",1.25,1.21,1.29,0.21),
       hrEntry("obese_2plus","35 or higher",1.67,1.61,1.74,0.19)
   ]},
-  { id:"activity", question:"Moderate-to-vigorous physical activity", group:"metabolic", source:LI_2018, options:[
+  { id:"activity", question:"Moderate-to-vigorous physical activity", group:"metabolic", source:LI_2018,
+    adjusted:"age, sex, ethnicity, current multivitamin use, current aspirin use, family history of diabetes, myocardial infarction, or cancer, and menopausal status and hormone use (women only)", options:[
       hrEntry("a0","Under 30 min/week",1.00,1.00,1.00,0.30),
       hrEntry("a1","30 min \u2013 2 hr/week",0.65,0.63,0.66,0.25),
       hrEntry("a2","2 \u2013 3.5 hr/week",0.56,0.54,0.58,0.20),
       hrEntry("a3","3.5 \u2013 5.5 hr/week",0.50,0.48,0.52,0.15),
       hrEntry("a4","5.5+ hr/week",0.44,0.43,0.46,0.10)
   ]},
-  { id:"diet", question:"Diet quality (fruit, vegetables, whole grains, nuts vs. red/processed meat, sugary drinks, sodium)", group:"metabolic", source:LI_2018, options:[
+  { id:"diet", question:"Diet quality (fruit, vegetables, whole grains, nuts vs. red/processed meat, sugary drinks, sodium)", group:"metabolic", source:LI_2018,
+    adjusted:"age, sex, ethnicity, current multivitamin use, current aspirin use, family history of diabetes, myocardial infarction, or cancer, and menopausal status and hormone use (women only)", options:[
       hrEntry("d1","Bottom fifth",1.00,1.00,1.00,0.20),
       hrEntry("d2","Second fifth",0.86,0.83,0.88,0.20),
       hrEntry("d3","Middle fifth",0.77,0.75,0.79,0.20),
       hrEntry("d4","Fourth fifth",0.70,0.68,0.72,0.20),
       hrEntry("d5","Top fifth",0.63,0.61,0.65,0.20)
   ]},
-  { id:"alcohol", question:"Alcohol", group:"substance", source:ALC_RECODE, options:[
+  { id:"alcohol", question:"Alcohol", group:"substance", source:ALC_RECODE,
+    adjusted:"not a single cohort's adjusted HR \u2014 a burden-weighted composite of published dose-response relative-risk curves across 22 disease outcomes by age, sex, region and year, plus Mendelian-randomization evidence designed to remove reverse-causation (sick-quitter) bias", options:[
       hrEntry("none","None or almost none",1.00,1.00,1.00,0.35),
       hrEntry("low","Light (up to ~1 drink/day)",1.02,0.96,1.09,0.35),
       hrEntry("moderate","Moderate (~1\u20132 drinks/day)",1.10,1.02,1.20,0.20),
       hrEntry("high","Higher (~2\u20133 drinks/day)",1.25,1.14,1.38,0.07),
       hrEntry("very_high","Heavy (3+ drinks/day)",1.50,1.33,1.70,0.03)
   ]},
-  { id:"sleep", question:"Typical nightly sleep", group:"sleep", source:SHEN_2016, options:[
+  { id:"sleep", question:"Typical nightly sleep", group:"sleep", source:SHEN_2016,
+    adjusted:"pooled across many cohort studies, each with its own adjustment set (typically at least age and sex); the meta-analysis found results were not sensitive to which covariates the original studies used", options:[
       hrEntry("s4","4 hours",1.07,1.03,1.13,0.02),
       hrEntry("s5","5 hours",1.04,1.01,1.07,0.06),
       hrEntry("s6","6 hours",1.01,1.00,1.02,0.24),
@@ -1167,11 +1182,37 @@ const FACTORS = [
       hrEntry("s10","10 hours",1.37,1.32,1.42,0.03),
       hrEntry("s11","11+ hours",1.55,1.47,1.63,0.02)
   ]},
-  { id:"self_rated_health", question:"In general, how would you rate your overall health?", group:"self_rated", source:DESALVO_2006, options:[
+  { id:"self_rated_health", question:"In general, how would you rate your overall health?", group:"self_rated", source:DESALVO_2006,
+    adjusted:"pooled across 22 cohort studies, each already reporting an adjusted relative risk, commonly for functional status, depression, or comorbidity; covariate definitions varied across studies and were not harmonized", options:[
       hrEntry("excellent","Excellent",1.00,1.00,1.00,0.20),
       hrEntry("good","Good",1.23,1.09,1.39,0.55),
       hrEntry("fair","Fair",1.44,1.21,1.71,0.18),
       hrEntry("poor","Poor",1.92,1.64,2.25,0.07)
+  ]},
+  { id:"cardio_history", question:"History of diabetes, stroke, or heart attack", group:"cardio_kidney", source:ERFC_2015,
+    adjusted:"age and sex; the paper's own sensitivity analysis further adjusting for smoking, BMI, systolic blood pressure, lipids, diet, and socioeconomic status changed the estimates little", options:[
+      hrEntry("none","No history of diabetes, stroke, or heart attack",1.00,1.00,1.00,0.910),
+      hrEntry("diabetes","Diabetes only",1.9,1.8,2.0,0.036),
+      hrEntry("stroke","Stroke only",2.1,2.0,2.2,0.012),
+      hrEntry("mi","Heart attack only",2.0,1.9,2.2,0.031),
+      hrEntry("diabetes_mi","Diabetes and heart attack",3.7,3.3,4.1,0.005),
+      hrEntry("diabetes_stroke","Diabetes and stroke",3.8,3.5,4.2,0.002),
+      hrEntry("stroke_mi","Stroke and heart attack",3.5,3.1,4.0,0.003),
+      hrEntry("all_three","Diabetes, stroke, and heart attack",6.9,5.7,8.3,0.001)
+  ]},
+  { id:"ckd", question:"Chronic kidney disease (by eGFR, if known)", group:"cardio_kidney", source:MATSUSHITA_2010,
+    adjusted:"age, sex, ethnicity, history of cardiovascular disease, systolic blood pressure, diabetes, smoking, total cholesterol, and albuminuria category", options:[
+      hrEntry("egfr60","eGFR 60 or above (normal or mildly reduced)",1.00,1.00,1.00,0.919),
+      hrEntry("egfr3059","eGFR 30\u201359 (moderately reduced)",1.57,1.39,1.78,0.076),
+      hrEntry("egfr_lt30","eGFR below 30 (severely reduced or kidney failure)",3.14,2.39,4.13,0.005)
+  ]},
+  { id:"copd", question:"Chronic obstructive pulmonary disease (COPD), by diagnosed severity", group:"copd", source:ZHAO_2025,
+    adjusted:"pooled from 27 cohort studies, each already adjusted for its own covariate set (commonly age, sex, and smoking); adjustment sets were not harmonized across the pooled studies", options:[
+      hrEntry("none","No COPD diagnosis",1.00,1.00,1.00,0.9830),
+      hrEntry("mild","Mild (GOLD I)",1.32,1.19,1.47,0.0029),
+      hrEntry("moderate","Moderate (GOLD II)",1.62,1.45,1.81,0.0089),
+      hrEntry("severe","Severe (GOLD III)",2.18,1.59,2.99,0.0043),
+      hrEntry("very_severe","Very severe (GOLD IV)",2.94,1.78,4.85,0.0009)
   ]}
 ];
 
@@ -1183,7 +1224,9 @@ const CORRELATION_GROUPS = {
   metabolic:  { label:"Diet, weight and activity", lambda:0.75, rationale:"These three overlap heavily \u2014 diet drives weight, weight constrains activity capacity \u2014 so their combined contribution is shrunk by 25% to avoid triple-counting one underlying signal." },
   substance:  { label:"Smoking and alcohol",       lambda:0.85, rationale:"Correlated in the population and sharing some downstream pathways, so this pair's combined contribution is shrunk by 15%." },
   sleep:      { label:"Sleep",                      lambda:1.00, rationale:"Modeled independently, no shrinkage applied." },
-  self_rated: { label:"Self-rated health",          lambda:0.55, rationale:"A single self-rated-health answer statistically absorbs much of what the other six questions already measure \u2014 diagnosed and undiagnosed conditions, fitness, mental health \u2014 so it is shrunk by 45%." }
+  self_rated: { label:"Self-rated health",          lambda:0.55, rationale:"A single self-rated-health answer statistically absorbs much of what the other six questions already measure \u2014 diagnosed and undiagnosed conditions, fitness, mental health \u2014 so it is shrunk by 45%." },
+  cardio_kidney: { label:"Cardiometabolic history and kidney function", lambda:0.85, rationale:"Diabetes, stroke, heart attack, and reduced kidney function share overlapping pathways. The source study for the cardiometabolic factor found its own within-cluster combinations behaved multiplicatively rather than sub-additively; that finding is extended here to kidney function too, so this pair's combined contribution is shrunk by 15%. The 0.85 figure itself is this tool's judgment call, not a number fitted directly to data on all four conditions together." },
+  copd:       { label:"COPD",                       lambda:1.00, rationale:"Modeled independently, no shrinkage applied \u2014 even though most COPD is smoking-caused and that overlap with the smoking question isn't accounted for here. See \u2018Full source citations\u2019 and the limitations list for that gap." }
 };
 
 const EXTRA_CHOICES = [
@@ -1194,10 +1237,15 @@ const EXTRA_CHOICES = [
   { label:"The country picker's reliability tag is deliberately conservative", body:"Countries flagged \u2018higher confidence\u2019 are exactly the " + COUNTRY_ORDER.filter(function(iso3){ return COUNTRIES[iso3].hmd; }).length + " in the Human Mortality Database's own scope \u2014 the strictest standard available, requiring essentially complete death registration and census coverage. Every other country still uses a real U.N. estimate, not a placeholder; the tag only means that estimate leans more on demographic modeling because that country's own vital registration isn't judged complete enough to stand alone. A country outside HMD's scope is not fabricated data \u2014 it is data with a wider, harder-to-quantify error bar." },
   { label:"The \u2018population average\u2019 you're compared against carries no citation of its own", body:"Every factor's prevalence weights \u2014 how many people smoke, sleep seven hours, sit in the middle diet quintile \u2014 have no separate citation anywhere in this tool, unlike the hazard ratios they sit next to. Sitting beside a properly sourced number makes them look sourced too. They also don't vary by country: the same weights are used whether you pick Japan or Indonesia, where actual smoking prevalence looks nothing alike. Every \u2018marginal effect\u2019 in the ledger is measured against that same fixed, uncited average." },
   { label:"Reference categories get zero uncertainty by construction", body:"Any option with a hazard ratio of exactly 1.00 has a confidence interval of 1.00\u20131.00, so the 400-run simulation draws no variation from it at all. If you answered several questions with the reference option, the uncertainty band shown is narrower than it should be \u2014 not because your answer is more certain, but because the reference category has nowhere to record its own error." },
-  { label:"This model has never been validated", body:"There is no held-out dataset, no calibration plot, no concordance statistic. Nobody has checked whether people who score well here actually outlive people who score badly. It is a defensible way of combining published numbers, and that is the entire claim." }
+  { label:"This model has never been validated", body:"There is no held-out dataset, no calibration plot, no concordance statistic. Nobody has checked whether people who score well here actually outlive people who score badly. It is a defensible way of combining published numbers, and that is the entire claim." },
+  { label:"Diagnoses are self-reported and unverified", body:"The cardiometabolic history, kidney function, and COPD questions all depend on you knowing and accurately reporting your own diagnosis or eGFR number. Undiagnosed disease, a misremembered eGFR, or an unreported severity grade will place you in a lower-risk tier than you actually belong in \u2014 quietly, with no way for this tool to catch it." },
+  { label:"The kidney and COPD tiers don't capture control or treatment status", body:"A hazard ratio for \u2018eGFR 30\u201359\u2019 or \u2018moderate COPD\u2019 describes everyone diagnosed at that severity, regardless of how well the condition is treated or controlled. Two people in the same tier with very different disease management will get the same estimate here." },
+  { label:"COPD's overlap with smoking isn't modeled", body:"Most COPD is caused by smoking, but the COPD question sits in its own correlation group with no shrinkage, separate from the smoking and alcohol group. If you smoke and have COPD, part of the combined effect you see is likely counting the same underlying cause twice, in a way this tool doesn't correct for." },
+  { label:"The new disease factors' prevalence weights aren't globally representative", body:"The cardiometabolic and kidney-function population averages come from cohorts recruited mostly in Europe and North America between 1960 and 2007; a more recent UK Biobank sample gives a somewhat different mix and isn't the one used here. The COPD population average comes from a single country's primary-care diagnosis records (UK), not a global or screening-based estimate. None of the three vary by the country you pick, same as every other factor here." },
+  { label:"The cardio-kidney shrinkage figure is this tool's own extension, not a fitted number", body:"No published source directly measures how a combined diabetes/stroke/heart-attack history should discount against reduced kidney function when both are true at once. The 0.85 lambda used here extends the cardiometabolic study's own finding \u2014 that its within-cluster combinations were roughly multiplicative \u2014 to include kidney function too, on the reasoning that these conditions plausibly interact the same way. It has not been measured directly." }
 ];
 
-const DEFAULTS = { smoking:"never", bmi:"overweight", activity:"a0", diet:"d3", alcohol:"none", sleep:"s7", self_rated_health:"good" };
+const DEFAULTS = { smoking:"never", bmi:"overweight", activity:"a0", diet:"d3", alcohol:"none", sleep:"s7", self_rated_health:"good", cardio_history:"none", ckd:"egfr60", copd:"none" };
 
 function hazardFromQx(qx){ return -Math.log(1-qx); }
 function qxFromHazard(h){ return 1-Math.exp(-h); }
@@ -1694,7 +1742,7 @@ function renderQuestionsInto(hostId, selectionsObj){
     const fieldset = el("div", {class:"field q-field", role:"group", "aria-labelledby":labelId});
     const head = el("div", {class:"q-field-head"});
     head.appendChild(el("span", {class:"qlabel", id:labelId, text:factor.question}));
-    head.appendChild(el("span", {class:"qsource", text:"Source: " + factor.source}));
+    head.appendChild(el("span", {class:"qsource", text:"Source: " + factor.source + (factor.adjusted ? " \u2014 adjusted for: " + factor.adjusted : "")}));
     fieldset.appendChild(head);
     const wrap = el("div", {class:"options"});
     factor.options.forEach(function(opt){
@@ -1816,7 +1864,7 @@ function renderFreqSentence(r){
   const t = document.getElementById("freqSentence");
   if(agesHidden){ t.textContent = "Ages are hidden. Flip the toggle below to see them."; return; }
   t.textContent = "";
-  t.appendChild(document.createTextNode("Of 1,000 people whose age, sex, and seven answers matched what you entered: about "));
+  t.appendChild(document.createTextNode("Of 1,000 people whose age, sex, and ten answers matched what you entered: about "));
   t.appendChild(el("b",{text:"900"}));
   t.appendChild(document.createTextNode(" are still alive at age "));
   t.appendChild(el("b",{text:fmtQ(r.q10)}));
@@ -1854,7 +1902,7 @@ function renderCompareRow(r){
   const d = (r.q50 === null || r.q50base === null) ? null : r.q50 - r.q50base;
   [["Full model median", fmtQ(r.q50)],
    ["Age-and-sex-only median", fmtQ(r.q50base)],
-   ["What your seven answers changed", d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr"]
+   ["What your ten answers changed", d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr"]
   ].forEach(function(c){
     host.appendChild(el("div",{class:"compare-item"},[el("div",{class:"label",text:c[0]}), el("div",{class:"val",text:c[1]})]));
   });
@@ -1894,9 +1942,9 @@ function renderGeo(r){
   const lifestyle = (r.q50 === null || r.q50base === null) ? null : r.q50 - r.q50base;
 
   intro.textContent = "All " + n + " life tables in this file were just run against your exact age and sex, " +
-    "with the seven answers switched off. This is where the one you picked sits.";
+    "with the ten answers switched off. This is where the one you picked sits.";
 
-  [["Your seven answers moved the median", lifestyle === null ? "\u2014 beyond the table" : (lifestyle >= 0 ? "+" : "") + fmt1(lifestyle) + " yr"],
+  [["Your ten answers moved the median", lifestyle === null ? "\u2014 beyond the table" : (lifestyle >= 0 ? "+" : "") + fmt1(lifestyle) + " yr"],
    [COUNTRIES[r.iso3].name + " baseline median", fmt1(you.med)],
    ["Rank among " + n + " tables", rank + " of " + n],
    ["Highest: " + COUNTRIES[best.iso3].name, fmt1(best.med)],
@@ -1908,18 +1956,18 @@ function renderGeo(r){
   });
 
   hon.textContent = "Read that plainly. Which entry you chose in a dropdown moves this number across a " +
-    fmt1(spread) + "-year range; your seven lifestyle answers moved it " +
+    fmt1(spread) + "-year range; your ten answers moved it " +
     (lifestyle === null ? "beyond what this table can measure" : "by " + fmt1(Math.abs(lifestyle)) + " years") +
     ". The dropdown is the dominant term in this model and the questionnaire is not. None of that " +
     "spread is a statement about you \u2014 it is a statement about which national mortality table the tool " +
     "was pointed at, and the tool has no way to know whether you resemble that country's population.";
-  if(teaser) teaser.textContent = "Country choice can swing this ~" + fmt1(spread) + " yr; your seven answers moved it " +
+  if(teaser) teaser.textContent = "Country choice can swing this ~" + fmt1(spread) + " yr; your ten answers moved it " +
     (lifestyle === null ? "beyond what this table can measure" : fmt1(Math.abs(lifestyle)) + " yr") + ".";
 }
 function renderMcExplain(r){
   const p = document.getElementById("mcExplain");
   if(agesHidden){ p.textContent = "Hidden while ages are hidden."; return; }
-  p.textContent = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing all seven from their own uncertainty and rebuilding the curve 400 times, the median age landed between "+fmt1(r.mc.p05)+" and "+fmt1(r.mc.p95)+" in 90% of those runs. The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in seven published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
+  p.textContent = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing all ten from their own uncertainty and rebuilding the curve 400 times, the median age landed between "+fmt1(r.mc.p05)+" and "+fmt1(r.mc.p95)+" in 90% of those runs. The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in ten published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
 }
 
 const LOG_MIN = Math.log(0.3), LOG_MAX = Math.log(3.3);
@@ -1959,7 +2007,7 @@ function renderLedger(r){
 
     const tdName = el("td");
     tdName.appendChild(el("span",{class:"factor-name", text:factor.question}));
-    tdName.appendChild(el("span",{class:"cite", text:factor.source}));
+    tdName.appendChild(el("span",{class:"cite", text:factor.source + (factor.adjusted ? " \u2014 adjusted for: " + factor.adjusted : "")}));
     tr.appendChild(tdName);
 
     tr.appendChild(el("td",{"data-label":"Your answer", text:opt.label}));
@@ -2040,18 +2088,18 @@ function hazardCountryNote(){
   const iso3 = selectedCountry;
   const name = COUNTRIES[iso3] ? COUNTRIES[iso3].name : "your country";
   if(iso3 === "USA"){
-    return "The seven questions' hazard ratios don't change with country selection \u2014 they're fixed regardless of which of the " + COUNTRY_ORDER.length + " countries you pick, since comparable country-specific studies mostly don't exist. Picking a different country only changes the baseline life table above, never the ledger below it.";
+    return "The ten questions' hazard ratios don't change with country selection \u2014 they're fixed regardless of which of the " + COUNTRY_ORDER.length + " countries you pick, since comparable country-specific studies mostly don't exist. Picking a different country only changes the baseline life table above, never the ledger below it.";
   }
-  return "Switching the country to " + name + " changed the baseline life table you saw above. It changed nothing about the seven questions or their hazard ratios below \u2014 those are still the same Anglophone cohort studies, fixed no matter which of the " + COUNTRY_ORDER.length + " countries is selected, because comparable " + name + "-specific studies mostly don't exist.";
+  return "Switching the country to " + name + " changed the baseline life table you saw above. It changed nothing about the ten questions or their hazard ratios below \u2014 those are still the same Anglophone cohort studies, fixed no matter which of the " + COUNTRY_ORDER.length + " countries is selected, because comparable " + name + "-specific studies mostly don't exist.";
 }
 function countryLimitText(){
   const iso3 = selectedCountry;
   const name = COUNTRIES[iso3] ? COUNTRIES[iso3].name : "your country";
   const info = countrySourceInfo(iso3);
   if(iso3 === "USA"){
-    return "The life table underneath everything is a single U.S. Social Security Administration national table (2023, as used in the 2026 Trustees Report). If your background, region, or healthcare access differs a lot from the general U.S. population, the baseline is off before any of your seven answers are applied.";
+    return "The life table underneath everything is a single U.S. Social Security Administration national table (2023, as used in the 2026 Trustees Report). If your background, region, or healthcare access differs a lot from the general U.S. population, the baseline is off before any of your ten answers are applied.";
   }
-  return "The life table underneath everything is the U.N.'s 2023 estimate for " + name + " (World Population Prospects, 2024 revision), not a table published directly by " + name + "'s own statistical office. " + info.note + " Either way, if your background or healthcare access differs a lot from " + name + "'s general population, the baseline is off before any of your seven answers are applied.";
+  return "The life table underneath everything is the U.N.'s 2023 estimate for " + name + " (World Population Prospects, 2024 revision), not a table published directly by " + name + "'s own statistical office. " + info.note + " Either way, if your background or healthcare access differs a lot from " + name + "'s general population, the baseline is off before any of your ten answers are applied.";
 }
 function renderLimits(){
   const items = [
@@ -2060,9 +2108,9 @@ function renderLimits(){
     "Healthcare access, income, and where you live shift real mortality risk substantially and aren't asked about here.",
     "The hazard ratios come from a small number of cohort studies \u2014 mainly the Nurses' Health Study and Health Professionals Follow-up Study, whose participants skew white, health-literate, and higher-income than the general population \u2014 plus separate meta-analyses for sleep and self-rated health. How well they transfer to you personally isn't fully known.",
     hazardCountryNote(),
-    "For " + COUNTRY_ORDER.filter(function(iso3){ return iso3 !== "USA" && hasClampArtifact(iso3); }).length + " of the " + (COUNTRY_ORDER.length - 1) + " non-U.S. countries, the modeled ages beyond 100 \u2014 extrapolated past where the UN's real single-year data stops \u2014 reach a flat 0.999 ceiling, which flattens the true shape of the curve at very old age and makes the long-tail (10th-percentile) estimate partly insensitive to your seven answers, rather than merely affecting it more than the median. Ages 0\u201399 come directly from the UN's own published probability-of-dying figures and are not affected. See \u201cFull source citations\u201d for detail.",
+    "For " + COUNTRY_ORDER.filter(function(iso3){ return iso3 !== "USA" && hasClampArtifact(iso3); }).length + " of the " + (COUNTRY_ORDER.length - 1) + " non-U.S. countries, the modeled ages beyond 100 \u2014 extrapolated past where the UN's real single-year data stops \u2014 reach a flat 0.999 ceiling, which flattens the true shape of the curve at very old age and makes the long-tail (10th-percentile) estimate partly insensitive to your ten answers, rather than merely affecting it more than the median. Ages 0\u201399 come directly from the UN's own published probability-of-dying figures and are not affected. See \u201cFull source citations\u201d for detail.",
     "These are observational associations, not randomized trials. \u201cPeople who exercise more live longer\u201d and \u201cexercising more makes you live longer\u201d are related claims but not the same claim.",
-    "The seven factors are not the seven most important determinants of how long you'll live. They're seven things that are cheap to ask about and have published hazard ratios attached. That is a different list.",
+    "The ten factors are not the ten most important determinants of how long you'll live. They're ten things this tool could find a published hazard ratio for \u2014 lifestyle habits that are cheap to ask about, plus a handful of diagnosed conditions with well-studied risk. That is a different list.",
     countryLimitText(),
     "The table publishes only two sex categories and has no way to reflect hormonal, surgical, or other individual variation beyond that binary.",
     "The confidence interval shown covers sampling error in the published coefficients only. It does not cover the shrinkage factors, the age-attenuation curve, or the possibility that a coefficient is simply wrong for you \u2014 all of which are probably larger sources of error."
@@ -2165,7 +2213,7 @@ function renderCurve(r){
 
   d2.textContent = "Two survival curves from age " + r.age + " to " + end +
     ". The age-and-sex-only curve reaches 50% survival at age " + fmtQ(r.q50base) +
-    "; the curve including your seven answers reaches 50% at age " + fmtQ(r.q50) + ".";
+    "; the curve including your ten answers reaches 50% at age " + fmtQ(r.q50) + ".";
 
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(reduce || typeof full.getTotalLength !== "function"){ return; }
