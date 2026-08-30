@@ -435,6 +435,46 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
 .q-field .opt{padding:7px 14px;min-height:44px;box-sizing:border-box;}
 .q-field .opt span{font-size:14px;}
 
+.qlabel-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px;}
+.qlabel-row .qlabel{margin-bottom:0;min-width:0;}
+.answer-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.answer-card-head .eyebrow{margin-bottom:0;}
+.ledger-actions{display:flex;justify-content:flex-end;margin:2px 0 12px;}
+
+.copy-btn{
+  display:inline-flex;align-items:center;gap:7px;flex:none;
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  background:var(--field-quiet);color:var(--ink-soft);
+  border:1px solid var(--glass-border);padding:8px 15px;border-radius:999px;cursor:pointer;
+  transition:border-color .15s ease,color .15s ease,background .15s ease;
+}
+.copy-btn:hover{border-color:var(--ink-soft);color:var(--ink);}
+.copy-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.copy-btn svg{width:14px;height:14px;flex:none;display:block;}
+.copy-btn.copied{border-color:var(--accent);color:var(--accent);background:var(--accent-wash);}
+.copy-btn.copy-fail{border-color:#B4544E;color:#B4544E;}
+[data-resolved="dark"] .copy-btn.copy-fail{border-color:#E08C86;color:#E08C86;}
+@media (prefers-reduced-motion:reduce){ .copy-btn{transition:none;} }
+
+.copy-btn.icon-only{
+  position:relative;width:30px;height:30px;padding:0;border-radius:50%;justify-content:center;flex:none;
+  background:none;border:1px solid transparent;color:var(--ink-faint);
+}
+.copy-btn.icon-only:hover{color:var(--ink);border-color:var(--glass-border);background:var(--field-quiet);}
+.copy-btn.icon-only.copied{color:var(--accent);}
+.copy-btn.icon-only.copy-fail{color:#B4544E;}
+[data-resolved="dark"] .copy-btn.icon-only.copy-fail{color:#E08C86;}
+.copy-btn.icon-only::after{
+  content:"Copied";position:absolute;bottom:calc(100% + 7px);left:50%;
+  transform:translateX(-50%) translateY(4px);
+  background:var(--ink);color:var(--bg);font-family:var(--sans);
+  font-size:11px;font-weight:600;white-space:nowrap;padding:4px 9px;border-radius:7px;
+  opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;
+  box-shadow:var(--shadow-tier2);
+}
+.copy-btn.icon-only.copied::after{opacity:1;transform:translateX(-50%) translateY(0);}
+@media (prefers-reduced-motion:reduce){ .copy-btn.icon-only::after{transition:none;} }
+
 .formarea-actionbar{position:sticky;bottom:0;padding:16px 0 calc(14px + env(safe-area-inset-bottom));margin-top:8px;
   background:linear-gradient(to top, var(--bg) 55%, transparent);z-index:20;}
 .formarea-actionbar-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
@@ -510,6 +550,7 @@ h1{font-variant-numeric:tabular-nums;}
 
 <a class="skip-link" href="#mainContent">Skip to main content</a>
 <div class="grain" aria-hidden="true"></div>
+<div id="copyAnnounce" class="visually-hidden" aria-live="polite"></div>
 
 <div class="wrap" id="mainContent">
 
@@ -577,7 +618,10 @@ h1{font-variant-numeric:tabular-nums;}
 <section class="tier-2">
   <h2>About you</h2>
   <div class="field">
-    <label class="qlabel" for="countryInput">Country</label>
+    <div class="qlabel-row">
+      <label class="qlabel" for="countryInput">Country</label>
+      <button type="button" class="copy-btn icon-only" id="countryCopyBtn" aria-label="Copy your country answer" title="Copy your country answer"><span class="copy-btn-icon"></span></button>
+    </div>
     <span class="qsource" id="countryHelp">Click to see every table in the file, or type to filter. The badge is the data-quality tier, shown before you pick, not after.</span>
     <div class="combo" id="countryCombo">
       <input type="text" id="countryInput" value="United States"
@@ -600,7 +644,10 @@ h1{font-variant-numeric:tabular-nums;}
       <span class="inline-err" id="ageErr" role="alert">Enter a whole age between 18 and 99. A blank field is treated as 45; anything outside the range is clamped to the nearest end and the result below uses the clamped value.</span>
     </div>
     <div class="field">
-      <span class="qlabel" id="sexLabel">Sex</span>
+      <div class="qlabel-row">
+        <span class="qlabel" id="sexLabel">Sex</span>
+        <button type="button" class="copy-btn icon-only" id="sexCopyBtn" aria-label="Copy your sex answer" title="Copy your sex answer"><span class="copy-btn-icon"></span></button>
+      </div>
       <div class="radio-row" style="margin-top:10px;" role="group" aria-labelledby="sexLabel">
         <label><input type="radio" name="sex" value="male" checked> Male</label>
         <label><input type="radio" name="sex" value="female"> Female</label>
@@ -695,7 +742,10 @@ h1{font-variant-numeric:tabular-nums;}
 
 <div id="results" tabindex="-1">
 <section class="tier-1 answer-card">
-  <p class="eyebrow" style="margin-bottom:10px;">What the model says</p>
+  <div class="answer-card-head">
+    <p class="eyebrow">What the model says</p>
+    <button type="button" class="copy-btn" id="resultsCopyBtn" aria-label="Copy the results summary"><span class="copy-btn-icon"></span><span class="copy-btn-label">Copy</span></button>
+  </div>
   <p class="small" style="margin-bottom:14px;" id="resultsCaption"></p>
   <div id="liveSummary" class="visually-hidden" aria-live="polite"></div>
   <div class="stat-row" id="statRow"></div>
@@ -751,6 +801,9 @@ h1{font-variant-numeric:tabular-nums;}
     </summary>
     <div class="method-body">
       <p class="small">Every factor, its published hazard ratio, and its own marginal effect on the median age &mdash; holding everything else at what you entered, and replacing just that one answer with the population average. Rows in gray have a confidence interval that crosses &ldquo;no effect&rdquo; for the category you picked.</p>
+      <div class="ledger-actions">
+        <button type="button" class="copy-btn" id="ledgerCopyBtn" aria-label="Copy the ledger table"><span class="copy-btn-icon"></span><span class="copy-btn-label">Copy table</span></button>
+      </div>
       <div class="effect-summary" id="effectSummary"></div>
       <div class="tablescroll">
         <table class="ledger" id="ledgerTable">
@@ -1751,6 +1804,118 @@ function el(tag, attrs, kids){
 function fmt1(n){ return n.toFixed(1); }
 function fmtQ(n){ return n === null ? "\u2014 beyond the table" : fmt1(n); }
 
+const COPY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
+const COPY_ICON_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+
+function legacyCopyText(text){
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly","");
+  ta.style.position = "fixed";
+  ta.style.top = "-1000px";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  const prevFocus = document.activeElement;
+  ta.focus(); ta.select();
+  try{ ta.setSelectionRange(0, text.length); }catch(e){}
+  let ok = false;
+  try{ ok = document.execCommand("copy"); }catch(e){ ok = false; }
+  document.body.removeChild(ta);
+  if(prevFocus && typeof prevFocus.focus === "function") prevFocus.focus();
+  return ok;
+}
+function copyTextToClipboard(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(text).catch(function(){
+      if(!legacyCopyText(text)) throw new Error("copy failed");
+    });
+  }
+  return legacyCopyText(text) ? Promise.resolve() : Promise.reject(new Error("copy failed"));
+}
+function announceCopy(label){
+  const live = document.getElementById("copyAnnounce");
+  if(live) live.textContent = "Copied " + label + ".";
+}
+function bindCopyButton(btn, getText, label){
+  if(!btn) return;
+  const icon = btn.querySelector(".copy-btn-icon");
+  const textEl = btn.querySelector(".copy-btn-label");
+  if(icon) icon.innerHTML = COPY_ICON_SVG;
+  const originalLabel = textEl ? textEl.textContent : "";
+  let resetTimer = null;
+  function reset(){
+    btn.classList.remove("copied","copy-fail");
+    if(icon) icon.innerHTML = COPY_ICON_SVG;
+    if(textEl) textEl.textContent = originalLabel;
+  }
+  btn.addEventListener("click", function(){
+    const text = typeof getText === "function" ? getText() : getText;
+    if(!text) return;
+    if(resetTimer) clearTimeout(resetTimer);
+    copyTextToClipboard(text).then(function(){
+      btn.classList.remove("copy-fail");
+      btn.classList.add("copied");
+      if(icon) icon.innerHTML = COPY_ICON_CHECK_SVG;
+      if(textEl) textEl.textContent = "Copied";
+      announceCopy(label);
+      resetTimer = setTimeout(reset, 1700);
+    }).catch(function(){
+      btn.classList.remove("copied");
+      btn.classList.add("copy-fail");
+      if(textEl) textEl.textContent = "Couldn\u2019t copy";
+      resetTimer = setTimeout(reset, 1700);
+    });
+  });
+}
+function makeCopyButton(getText, label, iconOnly){
+  const attrs = {type:"button", class:"copy-btn" + (iconOnly ? " icon-only" : ""), "aria-label":"Copy " + label};
+  if(iconOnly) attrs.title = "Copy " + label;
+  const btn = el("button", attrs);
+  btn.appendChild(el("span", {class:"copy-btn-icon"}));
+  if(!iconOnly) btn.appendChild(el("span", {class:"copy-btn-label", text:"Copy"}));
+  bindCopyButton(btn, getText, label);
+  return btn;
+}
+function getResultsSummaryText(){
+  const lines = ["Survival Mirror \u2014 results"];
+  const caption = document.getElementById("resultsCaption");
+  if(caption && caption.textContent.trim()){ lines.push(""); lines.push(caption.textContent.trim()); }
+  const stats = [];
+  document.querySelectorAll("#statRow .stat").forEach(function(s){
+    const l = s.querySelector(".label"), v = s.querySelector(".val");
+    if(l && v) stats.push(l.textContent.trim() + ": " + v.textContent.trim());
+  });
+  if(stats.length){ lines.push(""); stats.forEach(function(s){ lines.push(s); }); }
+  const freq = document.getElementById("freqSentence");
+  if(freq && freq.textContent.trim()){ lines.push(""); lines.push(freq.textContent.trim()); }
+  const compares = [];
+  document.querySelectorAll("#compareRow .compare-item").forEach(function(c){
+    const l = c.querySelector(".label"), v = c.querySelector(".val");
+    if(l && v) compares.push(l.textContent.trim() + ": " + v.textContent.trim());
+  });
+  if(compares.length){ lines.push(""); compares.forEach(function(c){ lines.push(c); }); }
+  return lines.join("\n");
+}
+function getLedgerTsv(){
+  const table = document.getElementById("ledgerTable");
+  if(!table) return "";
+  const rows = [];
+  const heads = table.querySelectorAll("thead th");
+  if(heads.length) rows.push(Array.prototype.map.call(heads, function(th){ return th.textContent.trim(); }).join("\t"));
+  table.querySelectorAll("tbody tr").forEach(function(tr){
+    const cells = tr.querySelectorAll("td");
+    const nameEl = tr.querySelector(".factor-name");
+    const vals = [
+      nameEl ? nameEl.textContent.trim() : (cells[0] ? cells[0].textContent.trim() : ""),
+      cells[1] ? cells[1].textContent.trim() : "",
+      cells[2] ? cells[2].textContent.replace(/\s+/g," ").trim() : "",
+      cells[3] ? cells[3].textContent.trim() : ""
+    ];
+    rows.push(vals.join("\t"));
+  });
+  return rows.join("\n");
+}
+
 function renderQuestionsInto(hostId, selectionsObj){
   const host = document.getElementById(hostId);
   host.innerHTML = "";
@@ -1758,10 +1923,17 @@ function renderQuestionsInto(hostId, selectionsObj){
     const labelId = hostId + "__" + factor.id + "__label";
     const fieldset = el("div", {class:"field q-field", role:"group", "aria-labelledby":labelId});
     const head = el("div", {class:"q-field-head"});
-    head.appendChild(el("span", {class:"qlabel", id:labelId, text:factor.question}));
+    const wrap = el("div", {class:"options"});
+    const labelRow = el("div", {class:"qlabel-row"});
+    labelRow.appendChild(el("span", {class:"qlabel", id:labelId, text:factor.question}));
+    labelRow.appendChild(makeCopyButton(function(){
+      const checked = wrap.querySelector("input:checked");
+      const opt = checked ? factor.options.find(function(o){ return o.id === checked.value; }) : null;
+      return opt ? opt.label : "";
+    }, "your answer for " + factor.question, true));
+    head.appendChild(labelRow);
     head.appendChild(el("span", {class:"qsource", text:"Source: " + factor.source + (factor.adjusted ? " \u2014 adjusted for: " + factor.adjusted : "")}));
     fieldset.appendChild(head);
-    const wrap = el("div", {class:"options"});
     factor.options.forEach(function(opt){
       const label = el("label", {class:"opt"});
       const input = el("input", {type:"radio", name:hostId + "__" + factor.id, value:opt.id});
@@ -2299,6 +2471,15 @@ function downloadBlob(blob, filename){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   window.setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
 }
+
+bindCopyButton(document.getElementById("countryCopyBtn"), function(){
+  return COUNTRIES[selectedCountry].name;
+}, "your country answer");
+bindCopyButton(document.getElementById("sexCopyBtn"), function(){
+  return currentSex() === "female" ? "Female" : "Male";
+}, "your sex answer");
+bindCopyButton(document.getElementById("resultsCopyBtn"), getResultsSummaryText, "the results summary");
+bindCopyButton(document.getElementById("ledgerCopyBtn"), getLedgerTsv, "the ledger table");
 
 document.getElementById("exportBtn").addEventListener("click", function(){
   const payload = {
