@@ -474,6 +474,23 @@ table.ledger{font-variant-numeric:tabular-nums;}
 @media (max-width:600px){ .scrollhint{display:block;} }
 #bulkPreviewTable[data-filter="ready"] tbody tr[data-status="error"]{display:none;}
 #bulkPreviewTable[data-filter="error"] tbody tr[data-status="ready"]{display:none;}
+#bulkPreviewTable[data-filter="ready"] tbody tr[data-status="error"] + tr.bulk-detail-row{display:none;}
+#bulkPreviewTable[data-filter="error"] tbody tr[data-status="ready"] + tr.bulk-detail-row{display:none;}
+
+.bulk-detail-toggle{
+  display:none;margin-left:6px;padding:2px 7px;font-size:11px;line-height:1;
+  border:1px solid var(--glass-border);border-radius:6px;background:var(--field-quiet);
+  color:var(--ink-faint);cursor:pointer;vertical-align:middle;
+}
+.bulk-detail-row td{background:var(--field-quiet);}
+.bulk-detail-list{margin:8px 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;}
+.bulk-detail-list dt{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
+.bulk-detail-list dd{margin:0;font-size:13px;}
+@media (max-width:780px){
+  #bulkPreviewTable thead th:nth-child(n+6):nth-child(-n+15){display:none;}
+  #bulkPreviewTable tbody tr:not(.bulk-detail-row) td:nth-child(n+6):nth-child(-n+15){display:none;}
+  .bulk-detail-toggle{display:inline-block;}
+}
 
 h1{font-variant-numeric:tabular-nums;}
 .stat .val,.compare-item .val{font-variant-numeric:tabular-nums;}
@@ -738,7 +755,7 @@ h1{font-variant-numeric:tabular-nums;}
       <div class="tablescroll">
         <table class="ledger" id="ledgerTable">
           <thead><tr><th scope="col">Factor</th><th scope="col">Your answer</th><th scope="col">Hazard ratio</th><th scope="col">Marginal effect</th></tr></thead>
-          <tbody id="ledgerBody"></tbody>
+          <tbody id="ledgerBody" role="rowgroup"></tbody>
         </table>
       </div>
     </div>
@@ -791,7 +808,7 @@ h1{font-variant-numeric:tabular-nums;}
   <button class="secondary" id="wipeBtn" type="button">Wipe everything</button>
   <button class="secondary" id="recalcBtn" type="button">Change my answers</button>
 </footer>
-<p class="csp-note">Nothing on this page is sent anywhere. There's no server to send it to, and the page's own Content-Security-Policy sets <code>connect-src 'none'</code>, which blocks scripted network requests outright rather than just promising not to make them. Open DevTools &rarr; Network and reload; you'll see one HTML file and nothing else. It works with your wifi off. Two honest caveats: a meta-tag CSP governs scripted requests, not a link you click yourself, and your answers <em>are</em> written to this browser's <code>localStorage</code> so they survive a reload &mdash; &ldquo;Wipe everything&rdquo; deletes them. Bulk mode's spreadsheet upload works the same way: it's read locally through the browser's File API and never leaves your device, and the Network tab stays just as empty. Bulk mode's spreadsheet reading and writing runs on the SheetJS Community Edition library (Apache License 2.0, version 0.20.3), loaded from <code>xlsx.full.min.js</code> sitting next to this file rather than a CDN, so it still loads with no network request &mdash; see <a href="https://sheetjs.com" target="_blank" rel="noopener noreferrer">sheetjs.com</a>. Keep that file alongside this one; without it, bulk mode's spreadsheet reading and writing won't work. Nothing you upload in bulk mode is written to <code>localStorage</code>; it lives only in this tab and is gone on reload.</p>
+<p class="csp-note">Nothing on this page is sent anywhere. There's no server to send it to, and the page's own Content-Security-Policy sets <code>connect-src 'none'</code>, which blocks scripted network requests outright rather than just promising not to make them. Open DevTools &rarr; Network and reload; you'll see two files &mdash; this page and the SheetJS library it loads alongside it &mdash; both served from the same origin, and nothing else. It works with your wifi off once both are cached. Two honest caveats: a meta-tag CSP governs scripted requests, not a link you click yourself, and your answers <em>are</em> written to this browser's <code>localStorage</code> so they survive a reload &mdash; &ldquo;Wipe everything&rdquo; deletes them. Bulk mode's spreadsheet upload works the same way: it's read locally through the browser's File API and never leaves your device, and the Network tab stays just as quiet. Bulk mode's spreadsheet reading and writing runs on the SheetJS Community Edition library (Apache License 2.0, version 0.20.3), served as a same-origin file (<code>xlsx.full.min.js</code>) rather than fetched from a third-party CDN, so it still works under the same <code>connect-src 'none'</code> policy &mdash; see <a href="https://sheetjs.com" target="_blank" rel="noopener noreferrer">sheetjs.com</a>. Keep that file alongside this one; without it, bulk mode's spreadsheet reading and writing won't work. Nothing you upload in bulk mode is written to <code>localStorage</code>; it lives only in this tab and is gone on reload.</p>
 </div>
 
 </div>
@@ -1845,7 +1862,7 @@ function computeForPerson(age, sex, iso3, selectionsObj, opts){
     q10Uncertain:q10 === null, q50Uncertain:q50 === null, q90Uncertain:q90 === null,
     q50base:quantileAge(rowsBase,0.5,true),
     exFull:lifeExpectancy(rowsFull),
-    mc:withMC ? monteCarloMedian(qx, age, selectionsObj, FACTORS, CORRELATION_GROUPS, 400, seed) : null
+    mc:withMC ? monteCarloMedian(qx, age, selectionsObj, FACTORS, CORRELATION_GROUPS, 700, seed) : null
   };
 }
 function computeAll(){
@@ -1962,7 +1979,7 @@ function renderGeo(r){
     "spread is a statement about you \u2014 it is a statement about which national mortality table the tool " +
     "was pointed at, and the tool has no way to know whether you resemble that country's population.";
   if(teaser) teaser.textContent = "Country choice can swing this ~" + fmt1(spread) + " yr; your ten answers moved it " +
-    (lifestyle === null ? "beyond what this table can measure" : fmt1(Math.abs(lifestyle)) + " yr") + ".";
+    (lifestyle === null ? "beyond what this table can measure" : (lifestyle >= 0 ? "+" : "") + fmt1(lifestyle) + " yr") + ".";
 }
 function renderMcExplain(r){
   const p = document.getElementById("mcExplain");
@@ -2496,20 +2513,31 @@ function renderBulkPreview(rows, truncated){
     if(!r.valid) tr.className = "weak";
     tr.setAttribute("data-status", r.valid ? "ready" : "error");
     tr.appendChild(el("td",{text:String(r.index+1)}));
-    tr.appendChild(el("td",{text:r.name}));
+    const nameTd = el("td");
+    const detailToggle = el("button",{type:"button", class:"bulk-detail-toggle",
+      "aria-expanded":"false", "aria-label":"Show the ten answers for " + (r.name || "row " + (r.index+1))});
+    detailToggle.textContent = "\u25be";
+    nameTd.appendChild(document.createTextNode(r.name));
+    nameTd.appendChild(detailToggle);
+    tr.appendChild(nameTd);
     tr.appendChild(el("td",{text: r.age===null ? "\u2014" : String(r.age)}));
     tr.appendChild(el("td",{text: r.sex || "\u2014"}));
     tr.appendChild(el("td",{text: r.countryIso3 ? COUNTRIES[r.countryIso3].name : (r.countryTyped || "\u2014")}));
+    const detailDl = el("dl",{class:"bulk-detail-list"});
     FACTORS.forEach(function(f){
       const src = r.answerSource[f.id];
       const td = el("td");
+      let valueText;
       if(src === "row" || src === "bulk"){
         const opt = f.options.find(function(o){ return o.id === r.answers[f.id]; });
-        td.appendChild(document.createTextNode(opt ? opt.label : r.answers[f.id]));
-        if(src === "bulk") td.appendChild(el("span",{class:"bulk-shared-tag", text:" (shared)"}));
-      } else if(src === "invalid"){ td.textContent = "\u2717 not recognized"; }
-      else { td.textContent = "\u2717 missing"; }
+        valueText = opt ? opt.label : r.answers[f.id];
+        td.appendChild(document.createTextNode(valueText));
+        if(src === "bulk"){ td.appendChild(el("span",{class:"bulk-shared-tag", text:" (shared)"})); valueText += " (shared)"; }
+      } else if(src === "invalid"){ valueText = "\u2717 not recognized"; td.textContent = valueText; }
+      else { valueText = "\u2717 missing"; td.textContent = valueText; }
       tr.appendChild(td);
+      detailDl.appendChild(el("dt",{text:BULK_COLUMN_LABELS[f.id]}));
+      detailDl.appendChild(el("dd",{text:valueText}));
     });
     const statusTd = el("td");
     if(r.valid){
@@ -2526,6 +2554,20 @@ function renderBulkPreview(rows, truncated){
     }
     tr.appendChild(statusTd);
     body.appendChild(tr);
+
+    const detailTr = document.createElement("tr");
+    detailTr.className = "bulk-detail-row";
+    detailTr.hidden = true;
+    const detailTd = el("td",{colspan:"16"});
+    detailTd.appendChild(detailDl);
+    detailTr.appendChild(detailTd);
+    body.appendChild(detailTr);
+    detailToggle.addEventListener("click", function(){
+      const willOpen = detailTr.hidden;
+      detailTr.hidden = !willOpen;
+      detailToggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      detailToggle.textContent = willOpen ? "\u25b4" : "\u25be";
+    });
   });
   document.getElementById("bulkPreviewSection").style.display = "block";
   document.getElementById("bulkResultsSection").style.display = "none";
@@ -2840,15 +2882,21 @@ function runSelfTests(){
     return bad.length === 0 ? true : bad.map(function(k){ return k+"\u2192"+COUNTRY_ALIASES[k]; }).join("; ");
   });
 
-  check("CITATIONS and EXTRA_CHOICES country counts match the live data, not a stale literal", function(){
-    const hmdCount = COUNTRY_ORDER.filter(function(iso3){ return COUNTRIES[iso3].hmd; }).length;
+  check("CITATIONS/EXTRA_CHOICES/limits show live counts, not stale hardcoded ones", function(){
+    renderCitations(); renderChoices(); renderLimits();
+    const hmdCount = COUNTRY_ORDER.filter(function(iso){ return COUNTRIES[iso].hmd; }).length;
     const nonUsCount = COUNTRY_ORDER.length - 1;
-    const extraText = EXTRA_CHOICES.map(function(c){ return c.body; }).join(" \u2022 ");
-    const citeText = CITATIONS.map(function(c){ return c.body; }).join(" \u2022 ");
+    const clampCount = COUNTRY_ORDER.filter(function(iso3){ return iso3 !== "USA" && hasClampArtifact(iso3); }).length;
+    const citationsText = document.getElementById("citationsList").textContent;
+    const choicesText = document.getElementById("choicesList").textContent;
+    const limitsText = document.getElementById("limitsList").textContent;
     const bad = [];
-    if(extraText.indexOf("exactly the " + hmdCount + " in the Human Mortality Database") === -1) bad.push("EXTRA_CHOICES HMD count missing or stale");
-    if(citeText.indexOf(nonUsCount + " non-U.S. locations") === -1) bad.push("CITATIONS UN non-U.S. count missing or stale");
-    if(citeText.indexOf("which " + hmdCount + " of the " + COUNTRY_ORDER.length + " countries") === -1) bad.push("CITATIONS HMD-of-total count missing or stale");
+    if(choicesText.indexOf("exactly the " + hmdCount + " in the Human Mortality Database") === -1)
+      bad.push("EXTRA_CHOICES missing live HMD count " + hmdCount);
+    if(citationsText.indexOf(nonUsCount + " non-U.S. locations") === -1)
+      bad.push("CITATIONS missing live non-US count " + nonUsCount);
+    if(limitsText.indexOf("For " + clampCount + " of the " + nonUsCount + " non-U.S. countries") === -1)
+      bad.push("limits missing live clamp/non-US counts " + clampCount + "/" + nonUsCount);
     return bad.length === 0 ? true : bad.join("; ");
   });
 
@@ -2871,8 +2919,8 @@ function runSelfTests(){
   });
 
   check("monteCarloMedian is deterministic for identical inputs", function(){
-    const a = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, 400, 12345);
-    const b = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, 400, 12345);
+    const a = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, 700, 12345);
+    const b = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, 700, 12345);
     return (a.p05===b.p05 && a.p50===b.p50 && a.p95===b.p95) ? true : "mismatch";
   });
 
