@@ -2380,6 +2380,17 @@ function renderCurve(r, animate){
   svg.appendChild(t1);
   const d2 = document.createElementNS(SVGNS,"desc"); d2.id = "curveDesc"; svg.appendChild(d2);
 
+  const defs = document.createElementNS(SVGNS,"defs");
+  const fadeGrad = svgEl("linearGradient",{id:"curveFade","x1":"0%","y1":"0%","x2":"100%","y2":"0%"});
+  fadeGrad.appendChild(svgEl("stop",{offset:"0%","stop-color":"white"}));
+  fadeGrad.appendChild(svgEl("stop",{offset:"78%","stop-color":"white"}));
+  fadeGrad.appendChild(svgEl("stop",{offset:"100%","stop-color":"black"}));
+  defs.appendChild(fadeGrad);
+  const fadeMask = svgEl("mask",{id:"curveFadeMask"});
+  fadeMask.appendChild(svgEl("rect",{x:0,y:0,width:680,height:320,fill:"url(#curveFade)"}));
+  defs.appendChild(fadeMask);
+  svg.appendChild(defs);
+
   const C = chartColors;
 
   if(agesHidden){
@@ -2431,7 +2442,7 @@ function renderCurve(r, animate){
 
   svg.appendChild(svgEl("path",{d:pathD(r.rowsBase,r.age,end,xs,ys),fill:"none",stroke:C.base,"stroke-width":1.6}));
 
-  const full = svgEl("path",{d:pathD(r.rowsFull,r.age,end,xs,ys),fill:"none",stroke:C.full,"stroke-width":2.2});
+  const full = svgEl("path",{d:pathD(r.rowsFull,r.age,end,xs,ys),fill:"none",stroke:C.full,"stroke-width":2.2,mask:"url(#curveFadeMask)"});
   svg.appendChild(full);
 
   if(r.q50 !== null){
