@@ -205,6 +205,7 @@ header.hero, .tier-1{
   transition:background .18s ease,color .18s ease;
 }
 .themeswitch button:hover{color:var(--ink);}
+.themeswitch button:disabled{opacity:.4;cursor:not-allowed;}
 .themeswitch button[aria-checked="true"]{
   background:var(--accent-wash);color:var(--accent);
   box-shadow:inset 0 0 0 1px var(--accent-soft);
@@ -532,10 +533,6 @@ table.ledger{font-variant-numeric:tabular-nums;}
   .bulk-detail-toggle{display:inline-block;}
 }
 
-h1{font-variant-numeric:tabular-nums;}
-.stat .val,.compare-item .val{font-variant-numeric:tabular-nums;}
-.yearsdelta,table.ledger .hrnum{font-variant-numeric:tabular-nums;}
-
 @media print{
   .grain,.themeswitch,footer.appfoot,.togglebar,button{display:none !important;}
   body{background:#fff;color:#000;}
@@ -569,7 +566,7 @@ h1{font-variant-numeric:tabular-nums;}
 
   <h1>Survival Mirror</h1>
   <p class="lede">This isn't a death clock. It doesn't know your death date &mdash; nobody's software does. What it can show you is a survival curve: how a population that looks like you, on paper, tends to age. Every number below comes with its source, its uncertainty, and an honest list of everything it can't see.</p>
-  <p class="small">Population data: national life tables for <span id="heroCount">236</span> countries &mdash; the <a href="https://www.ssa.gov/oact/STATS/table4c6.html" target="_blank" rel="noopener noreferrer">U.S. Social Security Administration's own 2023 table</a> for the United States, and the <a href="https://population.un.org/dataportal/" target="_blank" rel="noopener noreferrer">UN Population Division Data Portal's</a> 2023 estimate (World Population Prospects, 2024 Revision) everywhere else. Pick your country below; the source and its reliability are shown with your result. Full citations, including how ages beyond 100 are modeled, are under &ldquo;Full source citations&rdquo; further down.</p>
+  <p class="small">Population data: national life tables for <span id="heroCount">236</span> locations &mdash; the <a href="https://www.ssa.gov/oact/STATS/table4c6.html" target="_blank" rel="noopener noreferrer">U.S. Social Security Administration's own 2023 table</a> for the United States, and the <a href="https://population.un.org/dataportal/" target="_blank" rel="noopener noreferrer">UN Population Division Data Portal's</a> 2023 estimate (World Population Prospects, 2024 Revision) everywhere else. Pick your country below; the source and its reliability are shown with your result. Full citations, including how ages beyond 100 are modeled, are under &ldquo;Full source citations&rdquo; further down.</p>
   <svg class="hero-svg" viewBox="0 0 720 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <line x1="0" y1="120" x2="720" y2="120" stroke="var(--chart-axis)" stroke-width="1"></line>
     <path d="M0,20 C 200,22 380,45 480,80 C 560,105 640,116 720,119" fill="none" stroke="var(--chart-base)" stroke-width="1.6"></path>
@@ -861,7 +858,7 @@ h1{font-variant-numeric:tabular-nums;}
   <button class="secondary" id="wipeBtn" type="button">Wipe everything</button>
   <button class="secondary" id="recalcBtn" type="button">Change my answers</button>
 </footer>
-<p class="csp-note">Nothing on this page is sent anywhere. There's no server to send it to, and the page's own Content-Security-Policy sets <code>connect-src 'none'</code>, which blocks scripted network requests outright rather than just promising not to make them. Open DevTools &rarr; Network and reload; you'll see two files &mdash; this page and the SheetJS library it loads alongside it &mdash; both served from the same origin, and nothing else. It works with your wifi off once both are cached. Two honest caveats: a meta-tag CSP governs scripted requests, not a link you click yourself, and your answers <em>are</em> written to this browser's <code>localStorage</code> so they survive a reload &mdash; &ldquo;Wipe everything&rdquo; deletes them. Bulk mode's spreadsheet upload works the same way: it's read locally through the browser's File API and never leaves your device, and the Network tab stays just as quiet. Bulk mode's spreadsheet reading and writing runs on the SheetJS Community Edition library (Apache License 2.0, version 0.20.3), served as a same-origin file (<code>xlsx.full.min.js</code>) rather than fetched from a third-party CDN, so it still works under the same <code>connect-src 'none'</code> policy &mdash; see <a href="https://sheetjs.com" target="_blank" rel="noopener noreferrer">sheetjs.com</a>. Keep that file alongside this one; without it, bulk mode's spreadsheet reading and writing won't work. Nothing you upload in bulk mode is written to <code>localStorage</code>; it lives only in this tab and is gone on reload.</p>
+<p class="csp-note">Nothing on this page is sent anywhere. There's no server to send it to, and the page's own Content-Security-Policy sets <code>connect-src 'none'</code>, which blocks scripted network requests outright rather than just promising not to make them. Open DevTools &rarr; Network and reload; you'll see this page and, if the SheetJS library alongside it loaded too, that file as well &mdash; one or two files depending on whether that library is present, both served from the same origin, and nothing else. It works with your wifi off once both are cached. Two honest caveats: a meta-tag CSP governs scripted requests, not a link you click yourself, and your answers <em>are</em> written to this browser's <code>localStorage</code> so they survive a reload &mdash; &ldquo;Wipe everything&rdquo; deletes them. Bulk mode's spreadsheet upload works the same way: it's read locally through the browser's File API and never leaves your device, and the Network tab stays just as quiet. Bulk mode's spreadsheet reading and writing runs on the SheetJS Community Edition library (Apache License 2.0, version 0.20.3), served as a same-origin file (<code>xlsx.full.min.js</code>) rather than fetched from a third-party CDN, so it still works under the same <code>connect-src 'none'</code> policy &mdash; see <a href="https://sheetjs.com" target="_blank" rel="noopener noreferrer">sheetjs.com</a>. Keep that file alongside this one; without it, bulk mode is disabled automatically rather than left to fail silently. Nothing you upload in bulk mode is written to <code>localStorage</code>; it lives only in this tab and is gone on reload.</p>
 </div>
 
 </div>
@@ -1143,7 +1140,6 @@ const COUNTRY_ALIASES = {
 "UK":"United Kingdom",
 "Britain":"United Kingdom",
 "Great Britain":"United Kingdom",
-"South Korea":"South Korea",
 "Korea":"South Korea",
 "Holland":"Netherlands",
 "UAE":"United Arab Emirates",
@@ -1152,7 +1148,6 @@ const COUNTRY_ALIASES = {
 "Congo-Brazzaville":"Congo",
 "Swaziland":"Eswatini",
 "Burma":"Myanmar",
-"Cape Verde":"Cape Verde",
 "East Timor":"Timor-Leste",
 "Macedonia":"North Macedonia",
 };
@@ -1299,6 +1294,7 @@ const CORRELATION_GROUPS = {
   copd:       { label:"COPD",                       lambda:1.00, rationale:"Modeled independently, no shrinkage applied \u2014 even though most COPD is smoking-caused and that overlap with the smoking question isn't accounted for here. See \u2018Full source citations\u2019 and the limitations list for that gap." }
 };
 
+const MC_RUNS = 700;
 const EXTRA_CHOICES = [
   { label:"Hazard ratios fade with age", body:"Lifestyle hazard ratios are estimated mostly in midlife cohorts and are known to compress at older ages. This model linearly decays every factor's effect from full strength at age 50 down to 40% at age 90, and holds it there. The 40% floor is a judgment call with no single citation behind it \u2014 a different floor would shift your median age by a year or more." },
   { label:"Everything is centered on the population, not on a reference category", body:"Each answer is scored as the gap between your hazard and the prevalence-weighted population average for that question, so the muted \u2018age and sex only\u2019 curve really is the raw national life table for your chosen country rather than an idealized reference person." },
@@ -1306,7 +1302,7 @@ const EXTRA_CHOICES = [
   { label:"Ages 100\u2013119 are extrapolated for every country except the U.S.", body:"The U.N. data this tool uses publishes single-year mortality rates only through age 100. SSA's own U.S. table already runs to age 119, so for every other country this tool extends the curve from 100 to 119 by applying SSA's own late-life shape \u2014 the ratio by which SSA's rate climbs from age 100 to each later age \u2014 scaled to that country's actual age-100 rate. It is a disclosed approximation, not a published figure, and it only affects the small sliver of the curve describing survival past 100." },
   { label:"The country picker's reliability tag is deliberately conservative", body:"Countries flagged \u2018higher confidence\u2019 are exactly the " + COUNTRY_ORDER.filter(function(iso3){ return COUNTRIES[iso3].hmd; }).length + " in the Human Mortality Database's own scope \u2014 the strictest standard available, requiring essentially complete death registration and census coverage. Every other country still uses a real U.N. estimate, not a placeholder; the tag only means that estimate leans more on demographic modeling because that country's own vital registration isn't judged complete enough to stand alone. A country outside HMD's scope is not fabricated data \u2014 it is data with a wider, harder-to-quantify error bar." },
   { label:"The \u2018population average\u2019 you're compared against carries no citation of its own", body:"Every factor's prevalence weights \u2014 how many people smoke, sleep seven hours, sit in the middle diet quintile \u2014 have no separate citation anywhere in this tool, unlike the hazard ratios they sit next to. Sitting beside a properly sourced number makes them look sourced too. They also don't vary by country: the same weights are used whether you pick Japan or Indonesia, where actual smoking prevalence looks nothing alike. Every \u2018marginal effect\u2019 in the ledger is measured against that same fixed, uncited average." },
-  { label:"Reference categories get zero uncertainty by construction", body:"Any option with a hazard ratio of exactly 1.00 has a confidence interval of 1.00\u20131.00, so the 400-run simulation draws no variation from it at all. If you answered several questions with the reference option, the uncertainty band shown is narrower than it should be \u2014 not because your answer is more certain, but because the reference category has nowhere to record its own error." },
+  { label:"Reference categories get zero uncertainty by construction", body:"Any option with a hazard ratio of exactly 1.00 has a confidence interval of 1.00\u20131.00, so the "+MC_RUNS+"-run simulation draws no variation from it at all. If you answered several questions with the reference option, the uncertainty band shown is narrower than it should be \u2014 not because your answer is more certain, but because the reference category has nowhere to record its own error." },
   { label:"This model has never been validated", body:"There is no held-out dataset, no calibration plot, no concordance statistic. Nobody has checked whether people who score well here actually outlive people who score badly. It is a defensible way of combining published numbers, and that is the entire claim." },
   { label:"Diagnoses are self-reported and unverified", body:"The cardiometabolic history, kidney function, and COPD questions all depend on you knowing and accurately reporting your own diagnosis or eGFR number. Undiagnosed disease, a misremembered eGFR, or an unreported severity grade will place you in a lower-risk tier than you actually belong in \u2014 quietly, with no way for this tool to catch it." },
   { label:"The kidney and COPD tiers don't capture control or treatment status", body:"A hazard ratio for \u2018eGFR 30\u201359\u2019 or \u2018moderate COPD\u2019 describes everyone diagnosed at that severity, regardless of how well the condition is treated or controlled. Two people in the same tier with very different disease management will get the same estimate here." },
@@ -1333,10 +1329,16 @@ function populationMeanBeta(factor){
 }
 
 const ATTEN_START = 50, ATTEN_END = 90, ATTEN_FLOOR = 0.40;
+const _attenCache = [];
 function ageAttenuation(age){
-  if(age <= ATTEN_START) return 1;
-  if(age >= ATTEN_END) return ATTEN_FLOOR;
-  return 1 - ((age-ATTEN_START)/(ATTEN_END-ATTEN_START))*(1-ATTEN_FLOOR);
+  const cached = _attenCache[age];
+  if(cached !== undefined) return cached;
+  let v;
+  if(age <= ATTEN_START) v = 1;
+  else if(age >= ATTEN_END) v = ATTEN_FLOOR;
+  else v = 1 - ((age-ATTEN_START)/(ATTEN_END-ATTEN_START))*(1-ATTEN_FLOOR);
+  _attenCache[age] = v;
+  return v;
 }
 
 function computeLRel(selections, factors, groups, betaOverride){
@@ -1357,12 +1359,24 @@ function computeLRel(selections, factors, groups, betaOverride){
   return { total:total, contributions:contributions };
 }
 
+const _hazardCache = new WeakMap();
+function hazardArrayFor(qxArray){
+  let hz = _hazardCache.get(qxArray);
+  if(!hz){
+    hz = new Float64Array(qxArray.length);
+    for(let i=0;i<qxArray.length;i++) hz[i] = hazardFromQx(qxArray[i]);
+    _hazardCache.set(qxArray, hz);
+  }
+  return hz;
+}
 function buildSurvival(qxArray, startAge, lRelOfAge){
   const n = qxArray.length;
+  const hz = hazardArrayFor(qxArray);
   const rows = [{age:startAge, survival:1}];
   let survival = 1;
   for(let age=startAge; age<n; age++){
-    const adjH = hazardFromQx(qxArray[age]) * Math.exp(lRelOfAge(age));
+    const baseHazard = (age === n-1) ? Infinity : hz[age];
+    const adjH = baseHazard * Math.exp(lRelOfAge(age));
     survival *= (1 - qxFromHazard(adjH));
     rows.push({age:age+1, survival:survival});
   }
@@ -1412,25 +1426,53 @@ function makeNormal(rand){
   };
 }
 
+function medianAgeFast(qxArray, startAge, lRel){
+  const hz = hazardArrayFor(qxArray);
+  const n = qxArray.length;
+  let survival = 1;
+  for(let age=startAge; age<n; age++){
+    const h = (age === n-1) ? Infinity : hz[age];
+    const adjH = h * Math.exp(lRel*ageAttenuation(age));
+    const next = survival * (1 - qxFromHazard(adjH));
+    if(survival >= 0.5 && next < 0.5){
+      return age + (survival-0.5)/(survival-next);
+    }
+    survival = next;
+  }
+  return null;
+}
 function monteCarloMedian(qxArray, startAge, selections, factors, groups, runs, seed){
   const rand = mulberry32(seed);
   const normal = makeNormal(rand);
   const results = [];
   const meta = factors.map(function(f){
     const opt = f.options.find(function(o){ return o.id === selections[f.id]; });
-    return opt ? {id:f.id, mean:betaOfOption(opt), se:seOfOption(opt)} : null;
+    return opt ? {group:f.group, mean:betaOfOption(opt), se:seOfOption(opt), popMean:populationMeanBeta(f)} : null;
   }).filter(Boolean);
+  const groupKeys = [];
+  const groupLambda = Object.create(null);
+  meta.forEach(function(m){
+    if(!(m.group in groupLambda)){
+      groupLambda[m.group] = (groups[m.group] && groups[m.group].lambda !== undefined) ? groups[m.group].lambda : 1;
+      groupKeys.push(m.group);
+    }
+  });
 
+  let dropped = 0;
   for(let r=0;r<runs;r++){
-    const override = Object.create(null);
-    for(const m of meta) override[m.id] = m.se > 0 ? m.mean + normal()*m.se : m.mean;
-    const lRel = computeLRel(selections, factors, groups, override).total;
-    const rows = buildSurvival(qxArray, startAge, function(age){ return lRel*ageAttenuation(age); });
-    results.push(quantileAge(rows, 0.5));
+    const groupSums = Object.create(null);
+    for(const m of meta){
+      const beta = m.se > 0 ? m.mean + normal()*m.se : m.mean;
+      groupSums[m.group] = (groupSums[m.group] || 0) + (beta - m.popMean);
+    }
+    let lRel = 0;
+    for(const g of groupKeys) lRel += (groupSums[g] || 0) * groupLambda[g];
+    const med = medianAgeFast(qxArray, startAge, lRel);
+    if(med === null) dropped++; else results.push(med);
   }
   results.sort(function(a,b){ return a-b; });
-  const pick = function(p){ return results[Math.min(results.length-1, Math.floor(p*results.length))]; };
-  return { p05:pick(0.05), p50:pick(0.50), p95:pick(0.95) };
+  const pick = function(p){ return results.length ? results[Math.min(results.length-1, Math.floor(p*results.length))] : null; };
+  return { p05:pick(0.05), p50:pick(0.50), p95:pick(0.95), dropped:dropped, runs:runs };
 }
 </script>
 
@@ -1522,6 +1564,7 @@ let lastResult = null;
 let agesHidden = false;
 let selectedCountry = "USA";
 const STORAGE_KEY = "survivalMirror.v3";
+const STATE_SCHEMA_VERSION = 3;
 
 let bulkSelections = Object.assign({}, DEFAULTS);
 let bulkUseShared = false;
@@ -1556,7 +1599,7 @@ function validateLifeTables(){
       const sex = pair[0], arr = pair[1];
       if(arr.length !== expectedLen){ problems.push(iso3 + " " + sex + ": length " + arr.length + ", expected " + expectedLen); return; }
       for(let a = 0; a < arr.length; a++){
-        if(!(arr[a] > 0 && arr[a] < 1)){ problems.push(iso3 + " " + sex + ": q(" + a + ") out of (0,1): " + arr[a]); }
+        if(!(Number.isFinite(arr[a]) && arr[a] > 0 && arr[a] <= 1)){ problems.push(iso3 + " " + sex + ": q(" + a + ") out of (0,1]: " + arr[a]); }
       }
     });
   });
@@ -1781,6 +1824,7 @@ function showFatalError(context){
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem("survivalMirror.v2");
         localStorage.removeItem("survivalMirror.v1");
+        localStorage.removeItem(THEME_KEY);
       }catch(e){}
       location.reload();
     });
@@ -2034,7 +2078,7 @@ function computeForPerson(age, sex, iso3, selectionsObj, opts){
     q10Uncertain:q10 === null, q50Uncertain:q50 === null, q90Uncertain:q90 === null,
     q50base:quantileAge(rowsBase,0.5,true),
     exFull:lifeExpectancy(rowsFull),
-    mc:withMC ? monteCarloMedian(qx, age, selectionsObj, FACTORS, CORRELATION_GROUPS, 700, seed) : null
+    mc:withMC ? monteCarloMedian(qx, age, selectionsObj, FACTORS, CORRELATION_GROUPS, MC_RUNS, seed) : null
   };
 }
 function computeAll(){
@@ -2076,7 +2120,7 @@ function renderStatRow(r){
        ["Ages", "hidden"]]
     : [["Median age, this model", fmtQ(r.q50)],
        ["Remaining life expectancy", fmt1(r.exFull) + " yr"],
-       ["90% uncertainty on the median", fmt1(r.mc.p05) + "\u2013" + fmt1(r.mc.p95)]];
+       ["90% uncertainty on the median", fmtQ(r.mc.p05) + "\u2013" + fmtQ(r.mc.p95)]];
   stats.forEach(function(s, i){
     host.appendChild(el("div",{class:"stat" + (i === 0 ? " median" : "")},[el("div",{class:"label",text:s[0]}), el("div",{class:"val",text:s[1]})]));
   });
@@ -2156,7 +2200,11 @@ function renderGeo(r){
 function renderMcExplain(r){
   const p = document.getElementById("mcExplain");
   if(agesHidden){ p.textContent = "Hidden while ages are hidden."; return; }
-  p.textContent = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing all ten from their own uncertainty and rebuilding the curve 400 times, the median age landed between "+fmt1(r.mc.p05)+" and "+fmt1(r.mc.p95)+" in 90% of those runs. The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in ten published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
+  let text = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing all ten from their own uncertainty and rebuilding the curve "+MC_RUNS+" times, the median age landed between "+fmt1(r.mc.p05)+" and "+fmt1(r.mc.p95)+" in 90% of those runs. The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in ten published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
+  if(r.mc.dropped > 0){
+    text += " In "+r.mc.dropped+" of "+r.mc.runs+" runs, that simulated curve never crossed 50% survival within this table, so those runs were left out of the range above rather than counted as age 120.";
+  }
+  p.textContent = text;
 }
 
 const LOG_MIN = Math.log(0.3), LOG_MAX = Math.log(3.3);
@@ -2324,7 +2372,7 @@ function pathD(rows, a0, a1, xs, ys){
   }
   return d.trim();
 }
-function renderCurve(r){
+function renderCurve(r, animate){
   const svg = document.getElementById("curveSvg");
   while(svg.firstChild) svg.removeChild(svg.firstChild);
   const t1 = svgEl("title",{id:"curveTitle"});
@@ -2405,7 +2453,7 @@ function renderCurve(r){
     "; the curve including your ten answers reaches 50% at age " + fmtQ(r.q50) + ".";
 
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if(reduce || typeof full.getTotalLength !== "function"){ return; }
+  if(!animate || reduce || typeof full.getTotalLength !== "function"){ return; }
   try{
     const len = full.getTotalLength();
     full.style.strokeDasharray = len;
@@ -2418,11 +2466,11 @@ function renderCurve(r){
   }catch(e){ full.style.strokeDashoffset = "0"; }
 }
 
-function renderAll(r){
+function renderAll(r, animateCurve){
   lastResult = r;
   renderFreqSentence(r);
   renderStatRow(r);
-  renderCurve(r);
+  renderCurve(r, !!animateCurve);
   renderGeo(r);
   renderCompareRow(r);
   renderMcExplain(r);
@@ -2437,7 +2485,7 @@ function renderAll(r){
 document.getElementById("calcBtn").addEventListener("click", function(){
   try{
     const r = computeAll();
-    renderAll(r);
+    renderAll(r, true);
     persist();
     const res = document.getElementById("results");
     safeScroll(res);
@@ -2459,7 +2507,7 @@ hideSwitch.addEventListener("click", function(){
     ? "Ages hidden \u2014 tap to show them again"
     : "Hide the specific ages \u2014 show only what moves the needle";
   if(lastResult){
-    try{ renderAll(lastResult); }
+    try{ renderAll(lastResult, true); }
     catch(err){ showFatalError("while updating the results"); }
   }
 });
@@ -2484,9 +2532,10 @@ bindCopyButton(document.getElementById("ledgerCopyBtn"), getLedgerTsv, "the ledg
 document.getElementById("exportBtn").addEventListener("click", function(){
   const payload = {
     exportedAt:new Date().toISOString(),
-    schema:"survival-mirror/2",
-    age:parseAge(), sex:currentSex(), answers:selections,
-    note:"Exported from Survival Mirror. All computation happens locally in your browser; nothing was ever sent anywhere."
+    schema:"survival-mirror/"+STATE_SCHEMA_VERSION,
+    v:STATE_SCHEMA_VERSION,
+    age:parseAge(), sex:currentSex(), country:selectedCountry, selections:selections,
+    note:"Exported from Survival Mirror. All computation happens locally in your browser; nothing was ever sent anywhere. This file can be pasted into this browser's localStorage under the key \""+STORAGE_KEY+"\" to restore these answers."
   };
   downloadBlob(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}), "survival-mirror-answers.json");
 });
@@ -2500,7 +2549,9 @@ document.getElementById("wipeBtn").addEventListener("click", function(){
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem("survivalMirror.v2");
     localStorage.removeItem("survivalMirror.v1");
+    localStorage.removeItem(THEME_KEY);
   }catch(e){}
+  applyTheme("system", false);
   selections = Object.assign({}, DEFAULTS);
   selectedCountry = "USA";
   if(typeof closeCombo === "function") closeCombo();
@@ -2532,7 +2583,7 @@ document.getElementById("wipeBtn").addEventListener("click", function(){
 
 function persist(){
   try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({v:3, age:parseAge(), sex:currentSex(), country:selectedCountry, selections:selections}));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({v:STATE_SCHEMA_VERSION, age:parseAge(), sex:currentSex(), country:selectedCountry, selections:selections}));
   }catch(e){}
 }
 function validateState(data){
@@ -2655,6 +2706,8 @@ function parseBulkSheet(aoa){
   const header = aoa[0];
   const colIndex = Object.create(null);
   header.forEach(function(h,i){ colIndex[normalizeMatch(h)] = i; });
+  const colIndexByKey = Object.create(null);
+  BULK_COLUMNS.forEach(function(c){ colIndexByKey[c.key] = colIndex[normalizeMatch(c.label)]; });
   let dataRows = aoa.slice(1).filter(function(r){
     return r.some(function(cell){ return String(cell === undefined || cell === null ? "" : cell).trim() !== ""; });
   });
@@ -2662,8 +2715,7 @@ function parseBulkSheet(aoa){
   if(truncated) dataRows = dataRows.slice(0, BULK_ROW_CAP);
   const rows = dataRows.map(function(row, i){
     function get(key){
-      const col = BULK_COLUMNS.find(function(c){ return c.key === key; });
-      const idx = col ? colIndex[normalizeMatch(col.label)] : undefined;
+      const idx = colIndexByKey[key];
       return idx === undefined ? "" : row[idx];
     }
     return parseBulkRow(get, i);
@@ -2839,6 +2891,16 @@ function setEntryMode(mode){
   document.getElementById("bulkArea").style.display = mode === "bulk" ? "block" : "none";
 }
 
+function xlsxAvailable(){ return typeof XLSX !== "undefined"; }
+function applyBulkAvailability(available){
+  const btn = document.querySelector('#entryModeSwitch [data-mode-choice="bulk"]');
+  if(!btn) return;
+  btn.disabled = !available;
+  btn.setAttribute("aria-disabled", available ? "false" : "true");
+  btn.title = available ? "" : "Bulk mode needs xlsx.full.min.js, which didn't load \u2014 keep that file alongside this one.";
+  if(!available && btn.getAttribute("aria-checked") === "true") setEntryMode("single");
+}
+
 document.querySelectorAll("#entryModeSwitch [data-mode-choice]").forEach(function(btn){
   btn.addEventListener("click", function(){
     setEntryMode(btn.getAttribute("data-mode-choice"));
@@ -2975,33 +3037,45 @@ function sanitizeCell(v){
 function xlsxQ(v){ return v === null ? "\u2014 beyond the table" : Number(v.toFixed(1)); }
 document.getElementById("bulkDownloadResultsBtn").addEventListener("click", function(){
   if(!lastBulkResults || !lastBulkResults.length) return;
-  const aoa = [["Name","Age","Sex","Country","Median age","10th percentile age","90th percentile age","Life expectancy (yr)","Change from age/sex only (yr)"]];
-  lastBulkResults.forEach(function(item){
-    const r = item.row, res = item.res;
-    const delta = (res.q50 === null || res.q50base === null) ? "\u2014 beyond the table" : Number((res.q50 - res.q50base).toFixed(1));
-    aoa.push([sanitizeCell(r.name), res.age, res.sex, COUNTRIES[res.iso3].name,
-      xlsxQ(res.q50), xlsxQ(res.q10), xlsxQ(res.q90),
-      Number(res.exFull.toFixed(1)), delta]);
-  });
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Results");
-  const out = XLSX.write(wb, {bookType:"xlsx", type:"array"});
-  downloadBlob(new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "survival-mirror-bulk-results.xlsx");
+  try{
+    const aoa = [["Name","Age","Sex","Country","Median age","10th percentile age","90th percentile age","Life expectancy (yr)","Change from age/sex only (yr)"]];
+    lastBulkResults.forEach(function(item){
+      const r = item.row, res = item.res;
+      const delta = (res.q50 === null || res.q50base === null) ? "\u2014 beyond the table" : Number((res.q50 - res.q50base).toFixed(1));
+      aoa.push([sanitizeCell(r.name), res.age, res.sex, COUNTRIES[res.iso3].name,
+        xlsxQ(res.q50), xlsxQ(res.q10), xlsxQ(res.q90),
+        Number(res.exFull.toFixed(1)), delta]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Results");
+    const out = XLSX.write(wb, {bookType:"xlsx", type:"array"});
+    downloadBlob(new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "survival-mirror-bulk-results.xlsx");
+  }catch(err){
+    showFatalError("while building the results spreadsheet \u2014 the xlsx.full.min.js library may be missing");
+  }
 });
 
 document.getElementById("downloadXlsxTemplateBtn").addEventListener("click", function(){
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildTemplateAOA()), "Template");
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildCodebookAOA()), "Codebook");
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildCountriesAOA()), "Countries");
-  const out = XLSX.write(wb, {bookType:"xlsx", type:"array"});
-  downloadBlob(new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "survival-mirror-template.xlsx");
+  try{
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildTemplateAOA()), "Template");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildCodebookAOA()), "Codebook");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildCountriesAOA()), "Countries");
+    const out = XLSX.write(wb, {bookType:"xlsx", type:"array"});
+    downloadBlob(new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "survival-mirror-template.xlsx");
+  }catch(err){
+    showFatalError("while building the .xlsx template \u2014 the xlsx.full.min.js library may be missing");
+  }
 });
 document.getElementById("downloadCsvTemplateBtn").addEventListener("click", function(){
-  const ws = XLSX.utils.aoa_to_sheet(buildTemplateAOA());
-  const csv = XLSX.utils.sheet_to_csv(ws);
-  downloadBlob(new Blob([csv],{type:"text/csv"}), "survival-mirror-template.csv");
+  try{
+    const ws = XLSX.utils.aoa_to_sheet(buildTemplateAOA());
+    const csv = XLSX.utils.sheet_to_csv(ws);
+    downloadBlob(new Blob([csv],{type:"text/csv"}), "survival-mirror-template.csv");
+  }catch(err){
+    showFatalError("while building the .csv template \u2014 the xlsx.full.min.js library may be missing");
+  }
 });
 document.getElementById("bulkClearBtn").addEventListener("click", function(){
   resetBulkState();
@@ -3017,6 +3091,7 @@ renderCountryQuality();
 renderLimits();
 renderQuestions();
 renderQuestionsInto("bulkQuestionsHost", bulkSelections);
+applyBulkAvailability(xlsxAvailable());
 const hc = document.getElementById("heroCount");
 if(hc) hc.textContent = String(COUNTRY_ORDER.length);
 
@@ -3031,20 +3106,9 @@ function runSelfTests(){
     }
   }
 
-  check("every COUNTRIES[iso].male/.female is 120 finite numbers in (0,1]", function(){
-    const bad = [];
-    COUNTRY_ORDER.forEach(function(iso3){
-      const c = COUNTRIES[iso3];
-      ["male","female"].forEach(function(sexk){
-        const arr = c[sexk];
-        if(arr.length !== 120){ bad.push(iso3+" "+sexk+": length "+arr.length); return; }
-        for(let i=0;i<arr.length;i++){
-          const v = arr[i];
-          if(!(Number.isFinite(v) && v > 0 && v <= 1)) bad.push(iso3+" "+sexk+" idx"+i+"="+v);
-        }
-      });
-    });
-    return bad.length === 0 ? true : (bad.length + " problems, e.g. " + bad.slice(0,5).join("; "));
+  check("every COUNTRIES[iso].male/.female passes validateLifeTables() (120 finite numbers in (0,1], consistent length)", function(){
+    const problems = validateLifeTables();
+    return problems.length === 0 ? true : (problems.length + " problems, e.g. " + problems.slice(0,5).join("; "));
   });
 
   check("every factor's option prevalence sums to 1.000 \u00b1 1e-9", function(){
@@ -3100,9 +3164,40 @@ function runSelfTests(){
   });
 
   check("monteCarloMedian is deterministic for identical inputs", function(){
-    const a = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, 700, 12345);
-    const b = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, 700, 12345);
+    const a = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, MC_RUNS, 12345);
+    const b = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, MC_RUNS, 12345);
     return (a.p05===b.p05 && a.p50===b.p50 && a.p95===b.p95) ? true : "mismatch";
+  });
+
+  check("monteCarloMedian: p05 \u2264 p50 \u2264 p95 (or all null together), across a spread of ages/countries/seeds", function(){
+    const ages = [18,45,75,99];
+    const sample = COUNTRY_ORDER.filter(function(_,i){ return i % Math.ceil(COUNTRY_ORDER.length/8) === 0; }).slice(0,8);
+    const bad = [];
+    ages.forEach(function(age){
+      sample.forEach(function(iso3){
+        const mc = monteCarloMedian(COUNTRIES[iso3].male, age, DEFAULTS, FACTORS, CORRELATION_GROUPS, MC_RUNS, age*1000+iso3.charCodeAt(0));
+        const allNull = mc.p05===null && mc.p50===null && mc.p95===null;
+        const ordered = mc.p05 !== null && mc.p50 !== null && mc.p95 !== null && mc.p05 <= mc.p50 && mc.p50 <= mc.p95;
+        if(!allNull && !ordered) bad.push(age+"/"+iso3+": "+mc.p05+","+mc.p50+","+mc.p95);
+        if(mc.dropped < 0 || mc.dropped > mc.runs) bad.push(age+"/"+iso3+": dropped count out of range ("+mc.dropped+"/"+mc.runs+")");
+      });
+    });
+    return bad.length === 0 ? true : bad.slice(0,5).join("; ");
+  });
+
+  check("buildSurvival always reaches exactly 0 survival by the table's last row (life table closes out)", function(){
+    const bad = [];
+    [18,45,75,99].forEach(function(age){
+      ["USA","JPN","SOM"].forEach(function(iso3){
+        ["male","female"].forEach(function(sex){
+          const qx = sex==="female" ? COUNTRIES[iso3].female : COUNTRIES[iso3].male;
+          const rows = buildSurvival(qx, age, function(){ return 0; });
+          const last = rows[rows.length-1].survival;
+          if(last !== 0) bad.push(iso3+"/"+sex+"/"+age+": last survival="+last);
+        });
+      });
+    });
+    return bad.length === 0 ? true : bad.join("; ");
   });
 
   check("parseBulkSheet(buildTemplateAOA()) yields exactly one data row", function(){
@@ -3137,12 +3232,49 @@ function runSelfTests(){
     return bad.length === 0 ? true : bad.join("; ");
   });
 
+  check("the exported JSON payload round-trips through validateState with every field intact", function(){
+    const sampleSelections = Object.assign({}, DEFAULTS, {smoking:"current"});
+    const payload = {
+      exportedAt:new Date().toISOString(),
+      schema:"survival-mirror/"+STATE_SCHEMA_VERSION,
+      v:STATE_SCHEMA_VERSION,
+      age:52, sex:"female", country:"JPN", selections:sampleSelections,
+      note:"test payload"
+    };
+    const restored = validateState(payload);
+    if(!restored) return "validateState rejected a well-formed export payload";
+    if(restored.age !== 52) return "age did not round-trip";
+    if(restored.sex !== "female") return "sex did not round-trip";
+    if(restored.country !== "JPN") return "country did not round-trip";
+    if(restored.selections.smoking !== "current") return "selections did not round-trip";
+    return true;
+  });
+
   check("quantileAge honors strict: null when the curve never crosses, last age otherwise", function(){
     const rows = [{age:50, survival:0.99}, {age:51, survival:0.98}, {age:52, survival:0.97}];
     const strictVal = quantileAge(rows, 0.5, true);
     const looseVal = quantileAge(rows, 0.5, false);
     if(strictVal !== null) return "strict expected null, got " + strictVal;
     if(looseVal !== 52) return "non-strict expected 52, got " + looseVal;
+    return true;
+  });
+
+  check("applyBulkAvailability(false) disables bulk mode without breaking single-person mode; restoring true re-enables it", function(){
+    const btn = document.querySelector('#entryModeSwitch [data-mode-choice="bulk"]');
+    if(!btn) return "bulk mode button not found";
+    const wasDisabled = btn.disabled;
+    const wasChecked = btn.getAttribute("aria-checked");
+    let problem = null;
+    try{
+      applyBulkAvailability(false);
+      if(!btn.disabled) problem = "button did not become disabled";
+      else if(btn.getAttribute("aria-checked") === "true") problem = "bulk mode stayed selected after being disabled";
+    } finally {
+      applyBulkAvailability(xlsxAvailable());
+      if(wasChecked === "true" && xlsxAvailable()) setEntryMode("bulk");
+    }
+    if(problem) return problem;
+    if(btn.disabled !== !xlsxAvailable()) return "restored disabled state does not match xlsxAvailable()";
     return true;
   });
 
