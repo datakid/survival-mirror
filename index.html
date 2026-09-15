@@ -3941,7 +3941,7 @@ function runSelfTests(){
   });
 
   check("the exported JSON payload round-trips through validateState with every field intact", function(){
-    const sampleSelections = Object.assign({}, DEFAULTS, {smoking:"current"});
+    const sampleSelections = Object.assign({}, DEFAULTS, {smoking:"moderate"});
     const payload = {
       exportedAt:new Date().toISOString(),
       schema:"survival-mirror/"+STATE_SCHEMA_VERSION,
@@ -3954,7 +3954,7 @@ function runSelfTests(){
     if(restored.age !== 52) return "age did not round-trip";
     if(restored.sex !== "female") return "sex did not round-trip";
     if(restored.country !== "JPN") return "country did not round-trip";
-    if(restored.selections.smoking !== "current") return "selections did not round-trip";
+    if(restored.selections.smoking !== "moderate") return "selections did not round-trip";
     return true;
   });
 
