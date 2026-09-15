@@ -352,7 +352,7 @@ button.secondary{
 button.secondary:hover{border-color:var(--ink-soft);color:var(--ink);}
 @media (prefers-reduced-motion: reduce){ button.primary:hover{transform:none;} }
 
-#declineMsg,#cautionMsg,#formArea,#results{display:none;}
+#formArea,#results{display:none;}
 
 .freq-sentence{font-size:17px;margin-bottom:8px;}
 .freq-sentence b{font-weight:600;color:var(--accent);}
@@ -475,7 +475,7 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
 .q-field:last-child{padding-bottom:0;}
 .q-field-head{margin-bottom:10px;}
 @media (min-width:720px){
-  .q-field{display:grid;grid-template-columns:34% 1fr;gap:24px;align-items:start;}
+  .q-field{display:grid;grid-template-columns:34% minmax(0,1fr);gap:24px;align-items:start;}
   .q-field-head{margin-bottom:0;}
 }
 .q-field .opt{padding:7px 14px;min-height:44px;box-sizing:border-box;}
@@ -519,6 +519,7 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
   box-shadow:var(--shadow-tier2);
 }
 .copy-btn.icon-only.copied::after{opacity:1;transform:translateX(-50%) translateY(0);}
+.copy-btn.icon-only.copy-fail::after{content:"Couldn\2019t copy";opacity:1;transform:translateX(-50%) translateY(0);}
 @media (prefers-reduced-motion:reduce){ .copy-btn.icon-only::after{transition:none;} }
 
 .formarea-actionbar{position:sticky;bottom:0;padding:16px 0 calc(14px + env(safe-area-inset-bottom));margin-top:8px;
@@ -617,9 +618,9 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
 .line-node:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:50%; }
 .line-rail-mobile{ position:relative; width:100%; height:34px; }
 @media (max-width:899px){
-  .line-rail{ top:0; left:0; right:0; width:100%; height:34px; }
+  .line-rail{ top:0; left:0; right:0; width:100%; height:calc(34px + env(safe-area-inset-top)); padding-top:env(safe-area-inset-top); box-sizing:border-box; background:var(--bg); }
   .line-rail-mobile{ display:block; }
-  body{ padding-top:34px; }
+  body{ padding-top:calc(34px + env(safe-area-inset-top)); }
   [data-mode="bulk"] body{ padding-top:0; }
 }
 .line-rail-mobile-track{ position:absolute; top:16px; left:14px; right:14px; height:2px; background:var(--rule); }
@@ -702,7 +703,7 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
   [data-firstpaint="1"] h1{ animation-name:fpRiseOnly; animation-delay:60ms; }
   [data-firstpaint="1"] .lede{ animation-name:fpRiseOnly; animation-delay:120ms; }
 }
-@keyframes fpRiseOnly{ from{ transform:translateY(var(--lift)); } to{ transform:translateY(0); } }
+@keyframes fpRiseOnly{ from{ opacity:0; transform:translateY(var(--lift)); } to{ opacity:1; transform:translateY(0); } }
 
 @media print{
   .line-rail,.q-field[data-enter="pending"]{ display:none !important; }
@@ -827,7 +828,7 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
         <span class="qlabel" id="sexLabel">Sex</span>
         <button type="button" class="copy-btn icon-only" id="sexCopyBtn" aria-label="Copy your sex answer" title="Copy your sex answer"><span class="copy-btn-icon"></span></button>
       </div>
-      <div class="radio-row" style="margin-top:10px;" role="group" aria-labelledby="sexLabel">
+      <div class="radio-row" role="group" aria-labelledby="sexLabel">
         <label><input type="radio" name="sex" value="male" checked> Male</label>
         <label><input type="radio" name="sex" value="female"> Female</label>
       </div>
@@ -1669,6 +1670,7 @@ const THEME_KEY = "survivalMirror.theme";
 const root = document.documentElement;
 const mql = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 let themeListeners = [];
+const qFieldEntranceState = new WeakMap();
 
 function currentPref(){ return root.getAttribute("data-theme") || "system"; }
 function resolveTheme(pref){
@@ -2058,9 +2060,9 @@ function copyTextToClipboard(text){
   }
   return legacyCopyText(text) ? Promise.resolve() : Promise.reject(new Error("copy failed"));
 }
-function announceCopy(label){
+function announceCopy(label, failed){
   const live = document.getElementById("copyAnnounce");
-  if(live) live.textContent = "Copied " + label + ".";
+  if(live) live.textContent = failed ? "Couldn\u2019t copy " + label + "." : "Copied " + label + ".";
 }
 function bindCopyButton(btn, getText, label){
   if(!btn) return;
@@ -2089,6 +2091,7 @@ function bindCopyButton(btn, getText, label){
       btn.classList.remove("copied");
       btn.classList.add("copy-fail");
       if(textEl) textEl.textContent = "Couldn\u2019t copy";
+      announceCopy(label, true);
       resetTimer = setTimeout(reset, 1700);
     });
   });
@@ -2710,8 +2713,12 @@ document.getElementById("calcBtn").addEventListener("click", function(){
     renderAll(r, true);
     persist();
     const res = document.getElementById("results");
-    safeScroll(res);
-    try{ res.focus({preventScroll:true}); }catch(e){}
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        safeScroll(res);
+        try{ res.focus({preventScroll:true}); }catch(e){}
+      });
+    });
   }catch(err){
     showFatalError("while calculating your results");
   }
@@ -2787,8 +2794,6 @@ document.getElementById("wipeBtn").addEventListener("click", function(){
   document.getElementById("ageErr").style.display = "none";
   document.querySelector('input[name="sex"][value="male"]').checked = true;
   document.querySelector('input[name="gate"][value="no"]').checked = true;
-  document.getElementById("declineMsg").style.display = "none";
-  document.getElementById("cautionMsg").style.display = "none";
   setMsgShown("declineMsg", false);
   setMsgShown("cautionMsg", false);
   document.getElementById("modeSwitchSection").style.display = "none";
@@ -3338,7 +3343,7 @@ let railBuilt = false;
 let railSegEls = [];
 let railMobileFill = null;
 let touchedFactors = Object.create(null);
-let stickyCrossFlag = false;
+const stickyCrossState = new WeakMap();
 
 function cssNum(name, fallback){
   try{
@@ -3545,23 +3550,35 @@ function triggerFirstPaint(){
   setTimeout(function(){ root.removeAttribute("data-firstpaint"); }, 700);
 }
 
+function clearQFieldEntrances(host){
+  const state = qFieldEntranceState.get(host);
+  if(!state) return;
+  state.timers.forEach(function(id){ clearTimeout(id); });
+  state.observers.forEach(function(obs){ obs.disconnect(); });
+  qFieldEntranceState.delete(host);
+}
 function observeQFieldEntrances(host){
+  clearQFieldEntrances(host);
   const groups = Array.prototype.slice.call(host.querySelectorAll(".q-group"));
   if(!("IntersectionObserver" in window)){
     host.querySelectorAll(".q-field[data-enter]").forEach(function(f){ f.removeAttribute("data-enter"); });
     return;
   }
   const stagger = cssNum("--stagger", 45);
+  const state = {timers:[], observers:[]};
+  qFieldEntranceState.set(host, state);
   groups.forEach(function(group){
     const fields = Array.prototype.slice.call(group.querySelectorAll(".q-field[data-enter]"));
     const obs = new IntersectionObserver(function(entries, self){
       entries.forEach(function(entry){
         if(!entry.isIntersecting) return;
         const idx = fields.indexOf(entry.target);
-        setTimeout(function(){ entry.target.removeAttribute("data-enter"); }, Math.max(0, idx) * stagger);
+        const timerId = setTimeout(function(){ entry.target.removeAttribute("data-enter"); }, Math.max(0, idx) * stagger);
+        state.timers.push(timerId);
         self.unobserve(entry.target);
       });
     }, { rootMargin:"0px 0px -10% 0px", threshold:0.15 });
+    state.observers.push(obs);
     fields.forEach(function(f){ obs.observe(f); });
   });
 }
@@ -3575,11 +3592,11 @@ function ensureStickyStructure(node){
 }
 function crossFadeText(node, text){
   ensureStickyStructure(node);
-  const showingB = stickyCrossFlag;
+  const showingB = !!stickyCrossState.get(node);
   const back = showingB ? node.querySelector(".sticky-preview-a") : node.querySelector(".sticky-preview-b");
   back.textContent = text;
   node.setAttribute("data-cross", showingB ? "false" : "true");
-  stickyCrossFlag = !showingB;
+  stickyCrossState.set(node, !showingB);
 }
 function updateStickyPreviewLive(){
   if(document.getElementById("results").style.display === "block") return;
@@ -3600,15 +3617,21 @@ function attachThemeIndicator(group){
   function place(){
     const active = group.querySelector('[aria-checked="true"]');
     if(!active){ ind.style.width = "0"; return; }
+    const cs = getComputedStyle(group);
+    const inset = (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.paddingLeft) || 0);
     const gr = group.getBoundingClientRect(), ar = active.getBoundingClientRect();
     ind.style.width = ar.width + "px";
-    ind.style.transform = "translateX(" + (ar.left - gr.left - 3) + "px)";
+    ind.style.transform = "translateX(" + (ar.left - gr.left - inset) + "px)";
   }
   place();
   try{
     new MutationObserver(place).observe(group, {attributes:true, subtree:true, attributeFilter:["aria-checked"]});
   }catch(e){}
-  window.addEventListener("resize", place);
+  if("ResizeObserver" in window){
+    try{ new ResizeObserver(place).observe(group); }catch(e){ window.addEventListener("resize", place); }
+  } else {
+    window.addEventListener("resize", place);
+  }
 }
 
 function gapWashD(rowsA, rowsB, a0, a1, xs, ys){
@@ -3737,7 +3760,9 @@ function runReckoningSequence(r){
   });
 }
 
+let cibarObserver = null;
 function observeCibars(container){
+  if(cibarObserver){ cibarObserver.disconnect(); cibarObserver = null; }
   const bars = Array.prototype.slice.call((container || document).querySelectorAll('.cibar[data-drawn="false"]'));
   if(!bars.length) return;
   if(!("IntersectionObserver" in window)){
@@ -3745,7 +3770,7 @@ function observeCibars(container){
     return;
   }
   const stagger = cssNum("--stagger", 45);
-  const obs = new IntersectionObserver(function(entries, self){
+  cibarObserver = new IntersectionObserver(function(entries, self){
     entries.forEach(function(entry){
       if(!entry.isIntersecting) return;
       const idx = bars.indexOf(entry.target);
@@ -3753,7 +3778,7 @@ function observeCibars(container){
       self.unobserve(entry.target);
     });
   }, { threshold:0.4 });
-  bars.forEach(function(b){ obs.observe(b); });
+  bars.forEach(function(b){ cibarObserver.observe(b); });
 }
 
 function initMotionSystem(){
@@ -3765,10 +3790,12 @@ function initMotionSystem(){
   initPhaseScrollObserver();
   document.querySelectorAll(".themeswitch").forEach(attachThemeIndicator);
   if(!applyRepeatVisitScale()) triggerFirstPaint();
-  ["wheel","touchstart","keydown","click"].forEach(function(evt){
-    document.addEventListener(evt, function(){
+  ["click","keydown"].forEach(function(evt){
+    document.addEventListener(evt, function(e){
       if(!reckoningFinisher) return;
       if(performance.now() - reckoningStartedAt < 80) return;
+      const resultsEl = document.getElementById("results");
+      if(resultsEl && e.target && resultsEl.contains(e.target)) return;
       finishReckoning();
     }, {passive:true});
   });
