@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><body style="margin:0"><iframe id="f" src="index.html?selftest=1" style="width:1280px;height:1600px;border:0"></iframe>
+<script>
+const f=document.getElementById('f');
+f.onload=function(){
+  const d=f.contentDocument, w=f.contentWindow;
+  const h=d.getElementById('selftestHost');
+  console.log(h?h.querySelector('h2').textContent:'no selftest host');
+  if(h) h.querySelectorAll('tr').forEach(tr=>{ if(tr.textContent.indexOf('FAIL')===0) console.log(tr.textContent); });
+  d.getElementById('proceedBtn').click();
+  setTimeout(()=>{ d.getElementById('calcBtn').click();
+    setTimeout(()=>{
+      const g=d.querySelector('.gap-wash'), dot=d.getElementById('medianDot');
+      console.log('gap shown:',g&&g.getAttribute('data-shown'),'gap opacity:',g&&w.getComputedStyle(g).opacity);
+      console.log('dot exists:',!!dot,'dot transform:',dot&&w.getComputedStyle(dot).transform,'r:',dot&&dot.getAttribute('r'));
+      const full=d.querySelector('path[data-role="full"]');
+      console.log('full dashoffset:',full&&full.style.strokeDashoffset);
+    },3600);
+  },500);
+};
+</script></body></html>

@@ -12,8 +12,8 @@
 <meta name="theme-color" content="#F4F1E9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#131317" media="(prefers-color-scheme: dark)">
 <title>Survival Mirror</title>
-<link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cstyle%3E.c{stroke:%23585A87}.x{stroke:%23C9C3B4}@media(prefers-color-scheme:dark){.c{stroke:%23ADABDA}.x{stroke:%233A3945}}%3C/style%3E%3Cpath class='x' d='M6 56h52' fill='none' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath class='c' d='M8 11C21.3 11.8 33.3 21 40 35c5.3 10 10.7 14.4 16 15.6' fill='none' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="mask-icon" color="#585A87" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M8 11C21.3 11.8 33.3 21 40 35c5.3 10 10.7 14.4 16 15.6' fill='none' stroke='black' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cstyle%3E.t{fill:%23585A87}.c{stroke:%23F4F1E9}@media(prefers-color-scheme:dark){.t{fill:%23ADABDA}.c{stroke:%23131317}}%3C/style%3E%3Crect class='t' x='2' y='2' width='60' height='60' rx='15'/%3E%3Cpath class='c' d='M13 18C25 18 32 20 37 29S45 46 51 46' fill='none' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="mask-icon" color="#585A87" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M13 18C25 18 32 20 37 29S45 46 51 46' fill='none' stroke='black' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
 <script>
 (function(){
@@ -27,6 +27,11 @@
     try { dark = window.matchMedia("(prefers-color-scheme: dark)").matches; } catch(e){ dark = false; }
   }
   root.setAttribute("data-resolved", dark ? "dark" : "light");
+  try {
+    var seen = sessionStorage.getItem("survivalMirror.visited") === "1";
+    sessionStorage.setItem("survivalMirror.visited", "1");
+    if(!seen && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) root.setAttribute("data-firstpaint", "1");
+  } catch(e){}
 })();
 </script>
 
@@ -79,7 +84,6 @@
   --d-quick:180ms;
   --d-base:320ms;
   --d-slow:640ms;
-  --d-grand:1100ms;
   --d-cinema:2400ms;
   --d-message:520ms;
   --d-reduced:120ms;
@@ -93,20 +97,13 @@
   --lift:14px;
   --lift-sm:10px;
 
-  --motion-scale:1;
-
-  --atm-y1:-8%;
-  --atm-a1:1;
+  --atm-y:0vh;
+  --atm-a:1;
   --gap-wash-color:rgba(88,90,135,.06);
 
   color-scheme:light;
 }
 @media (max-width:600px){ :root{ --lift:var(--lift-sm); } }
-@media (prefers-reduced-motion:reduce){ :root{ --motion-scale:0; } }
-@supports (transition-property: --atm-y1){
-  @property --atm-y1{ syntax:'<percentage>'; inherits:true; initial-value:-8%; }
-  @property --atm-a1{ syntax:'<number>'; inherits:true; initial-value:1; }
-}
 
 [data-resolved="dark"]{
   --bg:#131317;
@@ -161,20 +158,26 @@ body{
   position:relative;
   background-color:var(--bg);
   background-image:
-    radial-gradient(ellipse 900px 500px at 12% var(--atm-y1), color-mix(in srgb, var(--atm-1) calc(var(--atm-a1) * 100%), transparent), transparent 60%),
     radial-gradient(ellipse 700px 500px at 95% 10%, var(--atm-2), transparent 55%),
     radial-gradient(ellipse 900px 700px at 50% 115%, var(--atm-3), transparent 60%);
-  transition:background-color var(--d-slow) var(--e-glide), color var(--d-slow) var(--e-glide),
-             --atm-y1 var(--d-cinema) var(--e-glide), --atm-a1 var(--d-cinema) var(--e-glide);
+  transition:background-color var(--d-slow) var(--e-glide), color var(--d-slow) var(--e-glide);
 }
-@media (prefers-reduced-motion: reduce){ body{transition:none;} }
+body::before{
+  content:"";position:fixed;left:0;right:0;top:-40vh;height:110vh;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse 900px 500px at 12% 30%, var(--atm-1), transparent 60%);
+  opacity:var(--atm-a);
+  transform:translate3d(0,var(--atm-y),0);
+  transition:transform var(--d-cinema) var(--e-glide), opacity var(--d-cinema) var(--e-glide);
+  will-change:transform,opacity;
+}
+@media (prefers-reduced-motion: reduce){ body,body::before{transition:none;} }
 
-[data-phase="threshold"]{ --atm-y1:-8%;  --atm-a1:1;    }
-[data-phase="bearings"] { --atm-y1:-2%;  --atm-a1:.92;  }
-[data-phase="factors"]  { --atm-y1:6%;   --atm-a1:.80;  }
-[data-phase="reckoning"]{ --atm-y1:14%;  --atm-a1:1.05; }
-[data-phase="ledger"]   { --atm-y1:20%;  --atm-a1:.62;  }
-[data-mode="bulk"]{ --atm-y1:-8% !important; --atm-a1:1 !important; }
+[data-phase="threshold"]{ --atm-y:0vh;  --atm-a:1;   }
+[data-phase="bearings"] { --atm-y:4vh;  --atm-a:.92; }
+[data-phase="factors"]  { --atm-y:10vh; --atm-a:.8;  }
+[data-phase="reckoning"]{ --atm-y:18vh; --atm-a:1;   }
+[data-phase="ledger"]   { --atm-y:24vh; --atm-a:.62; }
+[data-mode="bulk"]{ --atm-y:0vh !important; --atm-a:1 !important; }
 
 .grain{
   position:fixed;inset:0;
@@ -345,12 +348,14 @@ button.primary{
   box-shadow:var(--shadow-btn);transition:box-shadow var(--d-quick) var(--e-quiet),transform var(--d-quick) var(--e-quiet);
 }
 button.primary:hover{transform:translateY(-1px);box-shadow:0 12px 34px -8px var(--accent-ring),var(--shadow-btn);}
+button.primary:active{transform:translateY(0) scale(.985);transition-duration:var(--d-echo);}
+button.primary:disabled{opacity:.55;cursor:default;transform:none;}
 button.secondary{
   font-family:var(--sans);font-size:14px;background:var(--field-quiet);color:var(--ink-soft);
   border:1px solid var(--glass-border);padding:10px 18px;border-radius:999px;cursor:pointer;
 }
 button.secondary:hover{border-color:var(--ink-soft);color:var(--ink);}
-@media (prefers-reduced-motion: reduce){ button.primary:hover{transform:none;} }
+@media (prefers-reduced-motion: reduce){ button.primary:hover,button.primary:active{transform:none;} }
 
 #formArea,#results{display:none;}
 
@@ -397,8 +402,8 @@ table.ledger .hrnum{font-variant-numeric:tabular-nums;}
   transition:background var(--d-quick) var(--e-glide);
 }
 .switch.on{background:var(--accent);}
-.switch .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left var(--d-quick) var(--e-glide);box-shadow:0 1px 3px rgba(0,0,0,.3);}
-.switch.on .knob{left:19px;}
+.switch .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform var(--d-base) var(--e-settle);box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.switch.on .knob{transform:translateX(16px);}
 @media (prefers-reduced-motion: reduce){ .switch{transition:none;} .switch .knob{transition:none;} }
 
 .curve-wrap{margin:20px 0 8px;}
@@ -427,7 +432,10 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
 .bulk-ok{color:var(--accent);font-weight:600;font-size:13px;}
 .bulk-shared-tag{color:var(--ink-faint);font-style:italic;}
 
-@media (prefers-reduced-motion: no-preference){ #medianDot{animation:mirrorpulse 3.4s ease-in-out infinite;} }
+#medianDot{transform-box:fill-box;transform-origin:center;}
+#medianDot[data-pop="pending"]{transform:scale(0);}
+#medianDot[data-pop="in"]{transform:scale(1);transition:transform 460ms var(--e-settle);}
+@media (prefers-reduced-motion: no-preference){ #medianDot:not([data-pop="pending"]){animation:mirrorpulse 3.4s ease-in-out infinite;} }
 @keyframes mirrorpulse{0%,100%{opacity:1;}50%{opacity:.45;}}
 
 @media (max-width:600px){
@@ -596,15 +604,16 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
   display:flex; align-items:center; justify-content:center;
 }
 .line-node-dot{
-  width:5px; height:5px; border-radius:50%; background:var(--rule);
-  transition:background var(--d-quick) var(--e-quiet), width var(--d-quick) var(--e-quiet),
-             height var(--d-quick) var(--e-quiet), box-shadow var(--d-quick) var(--e-quiet);
+  width:8px; height:8px; border-radius:50%; background:var(--rule);
+  transform:scale(.625);
+  transition:background var(--d-quick) var(--e-quiet), transform var(--d-base) var(--e-settle),
+             box-shadow var(--d-quick) var(--e-quiet);
 }
 .line-node[data-node-state="active"] .line-node-dot{
-  width:8px; height:8px; background:var(--bg); box-shadow:0 0 0 1.6px var(--accent);
+  transform:scale(1); background:var(--bg); box-shadow:0 0 0 1.6px var(--accent);
   animation:mirrorpulse 3.4s var(--e-breath) infinite;
 }
-.line-node[data-node-state="done"] .line-node-dot{ width:7px; height:7px; background:var(--accent); }
+.line-node[data-node-state="done"] .line-node-dot{ transform:scale(.875); background:var(--accent); }
 @media (prefers-reduced-motion:reduce){ .line-node[data-node-state="active"] .line-node-dot{ animation:none; } }
 .line-node-label{
   position:absolute; left:calc(100% + 8px); top:50%; transform:translateY(-50%) translateX(-4px);
@@ -625,8 +634,9 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
 }
 .line-rail-mobile-track{ position:absolute; top:16px; left:14px; right:14px; height:2px; background:var(--rule); }
 .line-rail-mobile-fill{
-  position:absolute; top:16px; left:14px; height:2px; width:0%; background:var(--accent);
-  transition:width var(--d-slow) var(--e-quiet);
+  position:absolute; top:16px; left:14px; right:14px; height:2px; background:var(--accent);
+  transform:scaleX(0); transform-origin:left center;
+  transition:transform var(--d-slow) var(--e-quiet);
 }
 .line-rail-mobile .line-node{ top:16px; }
 .line-rail-mobile .line-node-label{ display:none; }
@@ -691,6 +701,27 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
 .cibar[data-drawn="false"] .fill{ transform:scaleX(0); }
 @media (prefers-reduced-motion:reduce){ .cibar .fill{ transition:none; } }
 
+.answer-card .stat.median .val{ transition:opacity 800ms var(--e-quiet), transform 800ms var(--e-settle); }
+.answer-card .stat.median .val[data-settling="true"]{ opacity:0; transform:translateY(8px); }
+
+@keyframes sceneIn{ from{ opacity:0; transform:translateY(var(--lift)); } to{ opacity:1; transform:none; } }
+@keyframes softIn{ from{ opacity:0; transform:translateY(-4px); } to{ opacity:1; transform:none; } }
+@keyframes popIn{ from{ opacity:0; transform:translateY(-6px) scale(.985); } to{ opacity:1; transform:none; } }
+@keyframes heroDraw{ from{ stroke-dashoffset:1; } to{ stroke-dashoffset:0; } }
+@media (prefers-reduced-motion:no-preference){
+  #modeSwitchSection,#formArea,#bulkArea,#results,#bulkPreviewSection,#bulkResultsSection{
+    animation:sceneIn var(--d-slow) var(--e-settle) backwards;
+  }
+  .method-item[open] > .method-body{ animation:softIn var(--d-base) var(--e-settle) backwards; }
+  .combo-list:not([hidden]){ animation:popIn var(--d-quick) var(--e-settle); transform-origin:top center; }
+  .inline-err,.bulk-detail-row:not([hidden]) td{ animation:softIn var(--d-quick) var(--e-quiet); }
+  [data-firstpaint="1"] .hero-svg path{
+    stroke-dasharray:1; animation:heroDraw 1600ms var(--e-glide) 260ms backwards;
+  }
+  [data-firstpaint="1"] .hero-svg path + path{ animation-delay:520ms; animation-duration:1800ms; }
+  [data-firstpaint="1"] .hero-top + h1 + .lede + .small{ animation:fpRiseOnly 360ms var(--e-settle) 180ms both; }
+}
+
 @media (prefers-reduced-motion:no-preference){
   [data-firstpaint="1"] .eyebrow,[data-firstpaint="1"] .hero-top .themeswitch,
   [data-firstpaint="1"] h1,[data-firstpaint="1"] .lede{
@@ -703,7 +734,7 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
   [data-firstpaint="1"] h1{ animation-name:fpRiseOnly; animation-delay:60ms; }
   [data-firstpaint="1"] .lede{ animation-name:fpRiseOnly; animation-delay:120ms; }
 }
-@keyframes fpRiseOnly{ from{ opacity:0; transform:translateY(var(--lift)); } to{ opacity:1; transform:translateY(0); } }
+@keyframes fpRiseOnly{ from{ opacity:0; transform:translateY(var(--lift)); } to{ opacity:1; transform:none; } }
 
 @media print{
   .line-rail,.q-field[data-enter="pending"]{ display:none !important; }
@@ -714,7 +745,8 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
   body{background:#fff;color:#000;}
   header.hero,.tier-1,.tier-2{background:#fff;border:1px solid #ccc;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;break-inside:avoid;}
   svg.curve path{stroke-dasharray:none !important;stroke-dashoffset:0 !important;transition:none !important;}
-  .gap-wash{opacity:1 !important;}
+  .gap-wash,.answer-card .stat.median .val{opacity:1 !important;transform:none !important;}
+  #medianDot{transform:none !important;}
   .cibar .fill{transform:none !important;}
   .method-item:not([open]) .method-body{display:block !important;}
   .method-item .chev{display:none !important;}
@@ -747,8 +779,8 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
   <p class="small">Population data: national life tables for <span id="heroCount">236</span> locations &mdash; the <a href="https://www.ssa.gov/oact/STATS/table4c6.html" target="_blank" rel="noopener noreferrer">U.S. Social Security Administration's own 2023 table</a> for the United States, and the <a href="https://population.un.org/dataportal/" target="_blank" rel="noopener noreferrer">UN Population Division Data Portal's</a> 2023 estimate (World Population Prospects, 2024 Revision) everywhere else. Pick your country below; the source and its reliability are shown with your result. Full citations, including how ages beyond 100 are modeled, are under &ldquo;Full source citations&rdquo; further down.</p>
   <svg class="hero-svg" viewBox="0 0 720 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <line x1="0" y1="120" x2="720" y2="120" stroke="var(--chart-axis)" stroke-width="1"></line>
-    <path d="M0,20 C 200,22 380,45 480,80 C 560,105 640,116 720,119" fill="none" stroke="var(--chart-base)" stroke-width="1.6"></path>
-    <path d="M0,20 C 220,24 400,60 520,100 C 600,116 660,119 720,120" fill="none" stroke="var(--chart-full)" stroke-width="1.6"></path>
+    <path d="M0,20 C 200,22 380,45 480,80 C 560,105 640,116 720,119" fill="none" stroke="var(--chart-base)" stroke-width="1.6" pathLength="1"></path>
+    <path d="M0,20 C 220,24 400,60 520,100 C 600,116 660,119 720,120" fill="none" stroke="var(--chart-full)" stroke-width="1.6" pathLength="1"></path>
   </svg>
 </header>
 
@@ -858,7 +890,7 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
     <button class="secondary" id="downloadXlsxTemplateBtn" type="button">Download .xlsx template</button>
     <button class="secondary" id="downloadCsvTemplateBtn" type="button">Download .csv template</button>
   </div>
-  <p class="small" style="margin-top:8px;">The .csv template is data only \u2014 it can't carry the Codebook or Countries reference sheets. Use the .xlsx template if you want those to copy from while filling it in.</p>
+  <p class="small" style="margin-top:8px;">The .csv template is data only &mdash; it can't carry the Codebook or Countries reference sheets. Use the .xlsx template if you want those to copy from while filling it in.</p>
 </section>
 
 <section class="tier-2">
@@ -1041,7 +1073,7 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
   <button class="secondary" id="wipeBtn" type="button">Wipe everything</button>
   <button class="secondary" id="recalcBtn" type="button">Change my answers</button>
 </footer>
-<p class="csp-note">Nothing on this page is sent anywhere. There's no server to send it to, and the page's own Content-Security-Policy sets <code>connect-src 'none'</code>, which blocks scripted network requests outright rather than just promising not to make them. Open DevTools &rarr; Network and reload; you'll see this page and, if the SheetJS library alongside it loaded too, that file as well &mdash; one or two files depending on whether that library is present, both served from the same origin, and nothing else. It works with your wifi off once both are cached. Two honest caveats: a meta-tag CSP governs scripted requests, not a link you click yourself, and your answers <em>are</em> written to this browser's <code>localStorage</code> so they survive a reload &mdash; &ldquo;Wipe everything&rdquo; deletes them. Bulk mode's spreadsheet upload works the same way: it's read locally through the browser's File API and never leaves your device, and the Network tab stays just as quiet. Bulk mode's spreadsheet reading and writing runs on the SheetJS Community Edition library (Apache License 2.0, version 0.20.3), served as a same-origin file (<code>xlsx.full.min.js</code>) rather than fetched from a third-party CDN, so it still works under the same <code>connect-src 'none'</code> policy &mdash; see <a href="https://sheetjs.com" target="_blank" rel="noopener noreferrer">sheetjs.com</a>. Keep that file alongside this one; without it, bulk mode is disabled automatically rather than left to fail silently. Nothing you upload in bulk mode is written to <code>localStorage</code>; it lives only in this tab and is gone on reload.</p>
+<p class="csp-note">Nothing on this page is sent anywhere. There's no server to send it to, and the page's own Content-Security-Policy sets <code>connect-src 'none'</code>, which blocks scripted network requests outright rather than just promising not to make them. Open DevTools &rarr; Network and reload; you'll see this page and, if the SheetJS library alongside it loaded too, that file as well &mdash; one or two files depending on whether that library is present, both served from the same origin, and nothing else &mdash; if the site's host injects a script of its own, it shows up there as a request the policy blocked. Once the page is open, it keeps working with your wifi off; this page doesn't install anything to make a later cold reload work offline. Two honest caveats: a meta-tag CSP governs scripted requests, not a link you click yourself, and your answers <em>are</em> written to this browser's <code>localStorage</code> so they survive a reload &mdash; &ldquo;Wipe everything&rdquo; deletes them. Bulk mode's spreadsheet upload works the same way: it's read locally through the browser's File API and never leaves your device, and the Network tab stays just as quiet. Bulk mode's spreadsheet reading and writing runs on the SheetJS Community Edition library (Apache License 2.0, version 0.20.3), served as a same-origin file (<code>xlsx.full.min.js</code>) rather than fetched from a third-party CDN, so it still works under the same <code>connect-src 'none'</code> policy &mdash; see <a href="https://sheetjs.com" target="_blank" rel="noopener noreferrer">sheetjs.com</a>. Keep that file alongside this one; without it, bulk mode is disabled automatically rather than left to fail silently. Nothing you upload in bulk mode is written to <code>localStorage</code>; it lives only in this tab and is gone on reload.</p>
 </div>
 
 </div>
@@ -1349,7 +1381,7 @@ const COUNTRY_ORDER = Object.keys(COUNTRIES).sort(function(a,b){ return COUNTRIE
 const LI_2018      = "Li et al. 2018, Circulation 138(4):345\u2013355";
 const SHEN_2016    = "Shen, Wu & Zhang 2016, Scientific Reports 6:21480";
 const DESALVO_2006 = "DeSalvo et al. 2006, J Gen Intern Med 21(3):267\u2013275";
-const ALC_RECODE   = "Re-coded by this tool \u2014 see note. Basis: GBD 2020 Alcohol Collaborators (Lancet 2022) and burden-of-proof / Mendelian-randomization work (Carr et al. 2024, Nature Communications), which find no protective effect at low intake.";
+const ALC_RECODE   = "Re-coded by this tool \u2014 see \u201cModeling choices I made up\u201d. Basis: GBD 2020 Alcohol Collaborators (Lancet 2022) and burden-of-proof / Mendelian-randomization work (Carr et al. 2024, Nature Communications), which find no protective effect at low intake.";
 const ERFC_2015    = "Di Angelantonio E, et al. (Emerging Risk Factors Collaboration). Association of cardiometabolic multimorbidity with mortality. JAMA. 2015;314(1):52\u201360.";
 const MATSUSHITA_2010 = "Matsushita K, van der Velde M, Astor BC, et al. (Chronic Kidney Disease Prognosis Consortium). Association of estimated glomerular filtration rate and albuminuria with all-cause and cardiovascular mortality in general population cohorts. Lancet. 2010;375(9731):2073\u20132081.";
 const ZHAO_2025    = "Zhao G, Wang L, Lei S, Li Y, Li J, Feng Z. All-cause and cause-specific mortality in chronic obstructive pulmonary disease: a systematic review and meta-analysis. Int J Chron Obstruct Pulmon Dis. 2025;20:4173\u20134190.";
@@ -1367,7 +1399,7 @@ const CITATIONS = [
   { label:"Cardiometabolic history (diabetes, stroke, heart attack) hazard ratios", body:ERFC_2015 + " Verified against the paper's own Table 1 for this tool.", url:"https://jamanetwork.com/journals/jama/fullarticle/2382980" },
   { label:"Chronic kidney disease (eGFR) hazard ratios", body:MATSUSHITA_2010, url:"https://doi.org/10.1016/S0140-6736(10)60674-5" },
   { label:"COPD hazard ratios, flat and by GOLD severity", body:ZHAO_2025, url:"https://doi.org/10.2147/COPD.S563250" },
-  { label:"COPD prevalence and severity distribution (used for population weighting)", body:HAUGHNEY_2014 + " Diagnosed prevalence from UK primary-care records, not general-population screened prevalence \u2014 see note.", url:"https://doi.org/10.1183/09031936.00065013" }
+  { label:"COPD prevalence and severity distribution (used for population weighting)", body:HAUGHNEY_2014 + " Diagnosed prevalence from UK primary-care records, not general-population screened prevalence \u2014 see \u201cModeling choices I made up\u201d.", url:"https://doi.org/10.1183/09031936.00065013" }
 ];
 
 const BULK_COLUMN_LABELS = {
@@ -1472,7 +1504,7 @@ const CORRELATION_GROUPS = {
   metabolic:  { label:"Diet, weight and activity", lambda:0.75, rationale:"These three overlap heavily \u2014 diet drives weight, weight constrains activity capacity \u2014 so their combined contribution is shrunk by 25% to avoid triple-counting one underlying signal." },
   substance:  { label:"Smoking and alcohol",       lambda:0.85, rationale:"Correlated in the population and sharing some downstream pathways, so this pair's combined contribution is shrunk by 15%." },
   sleep:      { label:"Sleep",                      lambda:1.00, rationale:"Modeled independently, no shrinkage applied." },
-  self_rated: { label:"Self-rated health",          lambda:0.55, rationale:"A single self-rated-health answer statistically absorbs much of what the other six questions already measure \u2014 diagnosed and undiagnosed conditions, fitness, mental health \u2014 so it is shrunk by 45%." },
+  self_rated: { label:"Self-rated health",          lambda:0.55, rationale:"A single self-rated-health answer statistically absorbs much of what the other nine questions already measure \u2014 diagnosed and undiagnosed conditions, fitness, mental health \u2014 so it is shrunk by 45%." },
   cardio_kidney: { label:"Cardiometabolic history and kidney function", lambda:0.85, rationale:"Diabetes, stroke, heart attack, and reduced kidney function share overlapping pathways. The source study for the cardiometabolic factor found its own within-cluster combinations behaved multiplicatively rather than sub-additively; that finding is extended here to kidney function too, so this pair's combined contribution is shrunk by 15%. The 0.85 figure itself is this tool's judgment call, not a number fitted directly to data on all four conditions together." },
   copd:       { label:"COPD",                       lambda:1.00, rationale:"Modeled independently, no shrinkage applied \u2014 even though most COPD is smoking-caused and that overlap with the smoking question isn't accounted for here. See \u2018Full source citations\u2019 and the limitations list for that gap." }
 };
@@ -1490,7 +1522,7 @@ const EXTRA_CHOICES = [
   { label:"Diagnoses are self-reported and unverified", body:"The cardiometabolic history, kidney function, and COPD questions all depend on you knowing and accurately reporting your own diagnosis or eGFR number. Undiagnosed disease, a misremembered eGFR, or an unreported severity grade will place you in a lower-risk tier than you actually belong in \u2014 quietly, with no way for this tool to catch it." },
   { label:"The kidney and COPD tiers don't capture control or treatment status", body:"A hazard ratio for \u2018eGFR 30\u201359\u2019 or \u2018moderate COPD\u2019 describes everyone diagnosed at that severity, regardless of how well the condition is treated or controlled. Two people in the same tier with very different disease management will get the same estimate here." },
   { label:"COPD's overlap with smoking isn't modeled", body:"Most COPD is caused by smoking, but the COPD question sits in its own correlation group with no shrinkage, separate from the smoking and alcohol group. If you smoke and have COPD, part of the combined effect you see is likely counting the same underlying cause twice, in a way this tool doesn't correct for." },
-  { label:"The new disease factors' prevalence weights aren't globally representative", body:"The cardiometabolic and kidney-function population averages come from cohorts recruited mostly in Europe and North America between 1960 and 2007; a more recent UK Biobank sample gives a somewhat different mix and isn't the one used here. The COPD population average comes from a single country's primary-care diagnosis records (UK), not a global or screening-based estimate. None of the three vary by the country you pick, same as every other factor here." },
+  { label:"The disease questions' prevalence weights aren't globally representative", body:"The cardiometabolic and kidney-function population averages come from cohorts recruited mostly in Europe and North America between 1960 and 2007; a more recent UK Biobank sample gives a somewhat different mix and isn't the one used here. The COPD population average comes from a single country's primary-care diagnosis records (UK), not a global or screening-based estimate. None of the three vary by the country you pick, same as every other factor here." },
   { label:"The cardio-kidney shrinkage figure is this tool's own extension, not a fitted number", body:"No published source directly measures how a combined diabetes/stroke/heart-attack history should discount against reduced kidney function when both are true at once. The 0.85 lambda used here extends the cardiometabolic study's own finding \u2014 that its within-cluster combinations were roughly multiplicative \u2014 to include kidney function too, on the reasoning that these conditions plausibly interact the same way. It has not been measured directly." }
 ];
 
@@ -1713,12 +1745,12 @@ applyTheme(currentPref(), false);
 
 let faviconLink = document.getElementById("favicon");
 function faviconHref(mode){
-  const ink  = mode === "dark" ? "%23ADABDA" : "%23585A87";
-  const axis = mode === "dark" ? "%233A3945" : "%23C9C3B4";
+  const tile  = mode === "dark" ? "%23ADABDA" : "%23585A87";
+  const curve = mode === "dark" ? "%23131317" : "%23F4F1E9";
   return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E" +
-    "%3Cpath d='M6 56h52' fill='none' stroke='" + axis + "' stroke-width='2.5' stroke-linecap='round'/%3E" +
-    "%3Cpath d='M8 11C21.3 11.8 33.3 21 40 35c5.3 10 10.7 14.4 16 15.6' fill='none' stroke='" + ink +
-    "' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
+    "%3Crect x='2' y='2' width='60' height='60' rx='15' fill='" + tile + "'/%3E" +
+    "%3Cpath d='M13 18C25 18 32 20 37 29S45 46 51 46' fill='none' stroke='" + curve +
+    "' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
 }
 function syncFavicon(){
   if(!faviconLink || !faviconLink.parentNode) return;
@@ -2308,9 +2340,9 @@ function renderFreqSentence(r){
   const t = document.getElementById("freqSentence");
   if(agesHidden){ t.textContent = "Ages are hidden. Flip the toggle below to see them."; return; }
   t.textContent = "";
-  t.appendChild(document.createTextNode("Of 1,000 people whose age, sex, and ten answers matched what you entered: about "));
+  t.appendChild(document.createTextNode("Of 1,000 people in this country's table whose age, sex, and ten answers matched what you entered, the model expects about "));
   t.appendChild(el("b",{text:"900"}));
-  t.appendChild(document.createTextNode(" are still alive at age "));
+  t.appendChild(document.createTextNode(" to still be alive at age "));
   t.appendChild(el("b",{text:fmtQ(r.q10)}));
   t.appendChild(document.createTextNode(", about "));
   t.appendChild(el("b",{text:"500"}));
@@ -2411,7 +2443,7 @@ function renderGeo(r){
 function renderMcExplain(r){
   const p = document.getElementById("mcExplain");
   if(agesHidden){ p.textContent = "Hidden while ages are hidden."; return; }
-  let text = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing all ten from their own uncertainty and rebuilding the curve "+MC_RUNS+" times, the median age landed between "+fmt1(r.mc.p05)+" and "+fmt1(r.mc.p95)+" in 90% of those runs. The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in ten published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
+  let text = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing each of your ten answers' hazard ratios from its own interval and rebuilding the curve "+MC_RUNS+" times, the median age landed between "+fmt1(r.mc.p05)+" and "+fmt1(r.mc.p95)+" in 90% of those runs. The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in ten published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
   if(r.mc.dropped > 0){
     text += " In "+r.mc.dropped+" of "+r.mc.runs+" runs, that simulated curve never crossed 50% survival within this table, so those runs were left out of the range above rather than counted as age 120.";
   }
@@ -2501,7 +2533,7 @@ function renderLedger(r){
     } else {
       [["later","Moved the curve later (protective)"],
        ["earlier","Moved the curve earlier (increased hazard)"],
-       ["flat","Little measurable change (CI crosses 1.0)"]
+       ["flat","Little or no measurable change (reference answer, CI crosses 1.0, or under 0.25 yr)"]
       ].forEach(function(b){
         const span = el("span");
         span.appendChild(el("span",{class:"dot " + b[0]}));
@@ -2542,7 +2574,7 @@ function hazardCountryNote(){
   if(iso3 === "USA"){
     return "The ten questions' hazard ratios don't change with country selection \u2014 they're fixed regardless of which of the " + COUNTRY_ORDER.length + " countries you pick, since comparable country-specific studies mostly don't exist. Picking a different country only changes the baseline life table above, never the ledger below it.";
   }
-  return "Switching the country to " + name + " changed the baseline life table you saw above. It changed nothing about the ten questions or their hazard ratios below \u2014 those are still the same Anglophone cohort studies, fixed no matter which of the " + COUNTRY_ORDER.length + " countries is selected, because comparable " + name + "-specific studies mostly don't exist.";
+  return "Switching the country to " + name + " changed the baseline life table you saw above. It changed nothing about the ten questions or their hazard ratios below \u2014 those are still the same cohort studies and meta-analyses, drawn mostly from North America, Europe and East Asia, fixed no matter which of the " + COUNTRY_ORDER.length + " countries is selected, because comparable " + name + "-specific studies mostly don't exist.";
 }
 function countryLimitText(){
   const iso3 = selectedCountry;
@@ -2558,7 +2590,7 @@ function renderLimits(){
     "Genetics, family history, and undiagnosed conditions aren't in this model at all.",
     "Accidents and other external causes are folded into the population baseline but aren't personalized to you.",
     "Healthcare access, income, and where you live shift real mortality risk substantially and aren't asked about here.",
-    "The hazard ratios come from a small number of cohort studies \u2014 mainly the Nurses' Health Study and Health Professionals Follow-up Study, whose participants skew white, health-literate, and higher-income than the general population \u2014 plus separate meta-analyses for sleep and self-rated health. How well they transfer to you personally isn't fully known.",
+    "The hazard ratios come from a small number of sources. Smoking, weight, activity and diet come from the Nurses' Health Study and Health Professionals Follow-up Study, whose participants skew white, health-literate, and higher-income than the general population. Sleep, self-rated health, cardiometabolic history, kidney function and COPD come from separate pooled analyses, mostly of cohorts in North America, Europe and East Asia. How well any of them transfer to you personally isn't fully known.",
     hazardCountryNote(),
     "For " + COUNTRY_ORDER.filter(function(iso3){ return iso3 !== "USA" && hasClampArtifact(iso3); }).length + " of the " + (COUNTRY_ORDER.length - 1) + " non-U.S. countries, the modeled ages beyond 100 \u2014 extrapolated past where the UN's real single-year data stops \u2014 reach a flat 0.999 ceiling, which flattens the true shape of the curve at very old age and makes the long-tail (10th-percentile) estimate partly insensitive to your ten answers, rather than merely affecting it more than the median. Ages 0\u201399 come directly from the UN's own published probability-of-dying figures and are not affected. See \u201cFull source citations\u201d for detail.",
     "These are observational associations, not randomized trials. \u201cPeople who exercise more live longer\u201d and \u201cexercising more makes you live longer\u201d are related claims but not the same claim.",
@@ -3409,7 +3441,7 @@ function updateRailState(){
       if(i < curIdx) doneFrac += 1;
       else if(i === 2 && currentPhase === "factors") doneFrac += factorsFrac;
     }
-    railMobileFill.style.width = (doneFrac / totalSegs * 100) + "%";
+    railMobileFill.style.transform = "scaleX(" + (doneFrac / totalSegs) + ")";
   }
 }
 function setPhase(name){
@@ -3537,17 +3569,9 @@ function initPhaseScrollObserver(){
   }
 }
 
-function applyRepeatVisitScale(){
-  try{
-    if(sessionStorage.getItem("survivalMirror.visited") === "1") return true;
-    sessionStorage.setItem("survivalMirror.visited", "1");
-  }catch(e){}
-  return false;
-}
-function triggerFirstPaint(){
-  if(prefersReduce()) return;
-  root.setAttribute("data-firstpaint", "1");
-  setTimeout(function(){ root.removeAttribute("data-firstpaint"); }, 700);
+function settleFirstPaint(){
+  if(!root.hasAttribute("data-firstpaint")) return;
+  setTimeout(function(){ root.removeAttribute("data-firstpaint"); }, 2600);
 }
 
 function clearQFieldEntrances(host){
@@ -3665,22 +3689,19 @@ function afterMs(ms, fn){
 function finishReckoning(){
   if(reckoningFinisher) reckoningFinisher();
 }
-function animateCountUp(node, target){
-  const start = target - Math.min(6, Math.abs(target) * 0.08);
-  const overshoot = target + Math.abs(target) * 0.015;
-  const dur = 800;
-  const t0 = performance.now();
-  const myToken = reckoningToken;
-  function frame(now){
-    if(myToken !== reckoningToken) return;
-    const p = Math.min(1, (now - t0) / dur);
-    let val;
-    if(p < 0.8){ val = start + (overshoot - start) * (1 - Math.pow(1 - (p/0.8), 2)); }
-    else { const e2 = (p - 0.8) / 0.2; val = overshoot + (target - overshoot) * e2; }
-    node.textContent = fmt1(val);
-    if(p < 1) requestAnimationFrame(frame); else node.textContent = fmt1(target);
-  }
-  requestAnimationFrame(frame);
+function revealMedian(node, target){
+  node.textContent = fmt1(target);
+  node.setAttribute("data-settling", "false");
+}
+function popDot(dot, token){
+  if(!dot) return;
+  dot.setAttribute("data-pop", "pending");
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if(token !== reckoningToken) return;
+      dot.setAttribute("data-pop", "in");
+    });
+  });
 }
 function drawPathAnimated(path, delayMs, durMs, token){
   if(!path) return;
@@ -3723,13 +3744,16 @@ function runReckoningSequence(r){
     clearReckoningTimers();
     [basePath, fullPath].forEach(function(p){ if(p){ p.style.transition = "none"; p.style.strokeDashoffset = "0"; } });
     if(gapPath) gapPath.setAttribute("data-shown", "true");
-    if(dot){ dot.style.transition = "none"; dot.setAttribute("r", "3.5"); }
-    if(canCount) medianVal.textContent = fmt1(r.q50);
+    if(dot) dot.removeAttribute("data-pop");
+    if(canCount){ medianVal.textContent = fmt1(r.q50); medianVal.removeAttribute("data-settling"); }
+    reckoningFinisher = null;
   }
   reckoningFinisher = finishNow;
 
   if(prefersReduce()){ finishNow(); return; }
   const scale = reckoningRunCount > 1 ? 0.4 : 1;
+  if(dot) dot.setAttribute("data-pop", "pending");
+  if(canCount){ medianVal.textContent = fmt1(r.q50); medianVal.setAttribute("data-settling", "true"); }
 
   drawPathAnimated(basePath, 0, 900 * scale, myToken);
   drawPathAnimated(fullPath, 560 * scale, 1100 * scale, myToken);
@@ -3739,24 +3763,16 @@ function runReckoningSequence(r){
     gapPath.setAttribute("data-shown", "true");
   });
 
-  afterMs(2000 * scale, function(){
+  afterMs(1900 * scale, function(){
     if(myToken !== reckoningToken) return;
-    if(dot){
-      dot.setAttribute("r", "0");
-      requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          if(myToken !== reckoningToken) return;
-          dot.style.transition = "r 280ms var(--e-settle)";
-          dot.setAttribute("r", "3.55");
-          afterMs(280, function(){
-            if(myToken !== reckoningToken) return;
-            dot.style.transition = "r 160ms var(--e-quiet)";
-            dot.setAttribute("r", "3.5");
-          });
-        });
-      });
-    }
-    if(canCount) animateCountUp(medianVal, r.q50);
+    popDot(dot, myToken);
+    if(canCount) revealMedian(medianVal, r.q50);
+  });
+  afterMs(1900 * scale + 820, function(){
+    if(myToken !== reckoningToken) return;
+    if(dot) dot.removeAttribute("data-pop");
+    if(canCount) medianVal.removeAttribute("data-settling");
+    reckoningFinisher = null;
   });
 }
 
@@ -3789,7 +3805,7 @@ function initMotionSystem(){
   updateRailState();
   initPhaseScrollObserver();
   document.querySelectorAll(".themeswitch").forEach(attachThemeIndicator);
-  if(!applyRepeatVisitScale()) triggerFirstPaint();
+  settleFirstPaint();
   ["click","keydown"].forEach(function(evt){
     document.addEventListener(evt, function(e){
       if(!reckoningFinisher) return;
