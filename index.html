@@ -265,6 +265,10 @@ h3{font-family:var(--serif);font-weight:400;font-size:24px;margin:0 0 12px;}
 p{margin:0 0 16px;}
 .small{font-size:13.5px;color:var(--ink-soft);}
 .hero-svg{width:100%;height:auto;display:block;margin:26px 0 4px;}
+.hero-facts{list-style:none;margin:4px 0 18px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.hero-facts li{font-size:13px;line-height:1.5;color:var(--ink-soft);padding:12px 14px;border-radius:var(--r-sm);background:var(--field-quiet);border:1px solid var(--glass-border);}
+.hero-facts b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px;}
+@media (max-width:600px){ .hero-facts{grid-template-columns:1fr;} }
 
 .field{margin-bottom:26px;}
 .field:last-child{margin-bottom:0;}
@@ -719,7 +723,7 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
     stroke-dasharray:1; animation:heroDraw 1600ms var(--e-glide) 260ms backwards;
   }
   [data-firstpaint="1"] .hero-svg path + path{ animation-delay:520ms; animation-duration:1800ms; }
-  [data-firstpaint="1"] .hero-top + h1 + .lede + .small{ animation:fpRiseOnly 360ms var(--e-settle) 180ms both; }
+  [data-firstpaint="1"] .lede + .hero-facts, [data-firstpaint="1"] .hero-facts + .small{ animation:fpRiseOnly 360ms var(--e-settle) 180ms both; }
 }
 
 @media (prefers-reduced-motion:no-preference){
@@ -736,8 +740,57 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
 }
 @keyframes fpRiseOnly{ from{ opacity:0; transform:translateY(var(--lift)); } to{ opacity:1; transform:none; } }
 
+.factors-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.factors-head h2{margin:0;}
+.answered-pill{font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink-soft);background:var(--field-quiet);border:1px solid var(--glass-border);padding:5px 12px;border-radius:999px;font-variant-numeric:tabular-nums;transition:color var(--d-quick) var(--e-quiet),border-color var(--d-quick) var(--e-quiet),background var(--d-quick) var(--e-quiet);}
+.answered-pill[data-complete="true"]{color:var(--accent);border-color:var(--accent-soft);background:var(--accent-wash);}
+.factors-intro{margin:0 0 22px;max-width:64ch;}
+.factors-intro b{color:var(--ink);font-weight:600;}
+.opt.opt-unknown{border-style:dashed;background:transparent;}
+.opt.opt-unknown span{color:var(--ink-soft);font-style:italic;}
+.opt.opt-unknown.selected{border-style:dashed;background:var(--field-quiet);border-color:var(--ink-faint);box-shadow:0 0 0 3px rgba(139,133,120,.14);}
+.opt.opt-unknown.selected::before{opacity:0;}
+.opt.opt-unknown.selected span{color:var(--ink);}
+
+.honesty-callout{margin:22px 0 6px;padding:18px 20px 16px;border-radius:var(--r-md);background:var(--accent-wash);border:1px solid var(--accent-soft);border-left-width:3px;}
+.honesty-title{margin:0 0 10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--accent);}
+.honesty-list{margin:0;padding-left:18px;}
+.honesty-list li{font-size:14px;line-height:1.55;color:var(--ink-soft);margin-bottom:8px;}
+.honesty-list li:last-child{margin-bottom:0;}
+
+.curve-legend{display:flex;gap:18px;flex-wrap:wrap;margin:18px 0 0;font-size:12.5px;color:var(--ink-soft);}
+.curve-legend span{display:inline-flex;align-items:center;gap:7px;}
+.curve-legend .lg{display:inline-block;width:18px;height:0;border-top:2px solid;}
+.curve-legend .lg-base{border-color:var(--chart-base);border-top-width:1.6px;}
+.curve-legend .lg-full{border-color:var(--chart-full);border-top-width:2.4px;}
+.curve-legend .lg-gap{height:10px;border:none;border-radius:3px;background:var(--gap-wash-color);box-shadow:inset 0 0 0 1px var(--accent-soft);}
+
+.linklike{font:inherit;color:var(--accent);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--accent-soft);text-underline-offset:2px;}
+.linklike:hover{text-decoration-color:var(--accent);}
+.import-row{margin-top:-4px;}
+.import-status{font-size:13px;color:var(--ink-soft);}
+.import-status[data-tone="ok"]{color:var(--accent);font-weight:600;}
+.import-status[data-tone="error"]{color:#B4544E;}
+[data-resolved="dark"] .import-status[data-tone="error"]{color:#E08C86;}
+#sensTable tr.sens-current td{font-weight:600;}
+#sensTable .sens-group td{padding-top:16px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);border-bottom:none;}
+.ledger-additivity{margin:0 0 14px;padding:10px 14px;border-radius:var(--r-sm);background:var(--field-quiet);border:1px solid var(--glass-border);}
+table.ledger tr.unknown-row td{font-style:italic;}
+table.ledger tr.unknown-row .factor-name{font-style:normal;}
+.effect-summary .dot.unknown{background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink-faint);}
+
+button.secondary.danger:hover{border-color:#B4544E;color:#B4544E;}
+[data-resolved="dark"] button.secondary.danger:hover{border-color:#E08C86;color:#E08C86;}
+.answer-card .stat .label{line-height:1.35;}
+@media (max-width:600px){
+  .honesty-callout{padding:16px 16px 14px;}
+  .curve-legend{gap:12px;}
+}
+
 @media print{
   .line-rail,.q-field[data-enter="pending"]{ display:none !important; }
+  #gateSection,#modeSwitchSection,#formArea,#bulkArea,.csp-note,.answer-card-head .copy-btn,.ledger-actions{ display:none !important; }
+  .honesty-callout{ background:#f3f3f7 !important; border-color:#bbb !important; }
   .plate{ opacity:1 !important; filter:none !important; transform:none !important; }
 }
 @media print{
@@ -775,7 +828,12 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
   </div>
 
   <h1>Survival Mirror</h1>
-  <p class="lede">This isn't a death clock. It doesn't know your death date &mdash; nobody's software does. What it can show you is a survival curve: how a population that looks like you, on paper, tends to age. Every number below comes with its source, its uncertainty, and an honest list of everything it can't see.</p>
+  <p class="lede">This isn't a death clock. It doesn't know your death date &mdash; nobody's software does. What it can show you is a survival curve: how a group of people who look like you on paper would spread out over the years, if today's death rates held still. Every number below comes with its source, its uncertainty, and a plain list of what it can't see.</p>
+  <ul class="hero-facts">
+    <li><b>Runs only in this tab.</b> No account, no server, and nothing gets sent anywhere.</li>
+    <li><b>About three minutes.</b> Ten questions, and “Not sure” is always a fine answer.</li>
+    <li><b>Never validated.</b> It combines published studies sensibly, and that's the whole claim.</li>
+  </ul>
   <p class="small">Population data: national life tables for <span id="heroCount">236</span> locations &mdash; the <a href="https://www.ssa.gov/oact/STATS/table4c6.html" target="_blank" rel="noopener noreferrer">U.S. Social Security Administration's own 2023 table</a> for the United States, and the <a href="https://population.un.org/dataportal/" target="_blank" rel="noopener noreferrer">UN Population Division Data Portal's</a> 2023 estimate (World Population Prospects, 2024 Revision) everywhere else. Pick your country below; the source and its reliability are shown with your result. Full citations, including how ages beyond 100 are modeled, are under &ldquo;Full source citations&rdquo; further down.</p>
   <svg class="hero-svg" viewBox="0 0 720 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <line x1="0" y1="120" x2="720" y2="120" stroke="var(--chart-axis)" stroke-width="1"></line>
@@ -867,10 +925,16 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
     </div>
   </div>
   <p class="small">The underlying table is published as male/female only &mdash; see the limitations panel below for what that means for you.</p>
+  <p class="small import-row">Exported your answers before? <button type="button" class="linklike" data-import-trigger>Import the JSON file</button> <span class="import-status" role="status"></span></p>
+  <input type="file" id="importFileInput" accept=".json,application/json" hidden>
 </section>
 
 <section class="tier-2 plate" id="factorsSection" data-plate="factors">
-  <h2>Ten questions</h2>
+  <div class="factors-head">
+    <h2>Ten questions</h2>
+    <span class="answered-pill" id="answeredPill" aria-live="polite"></span>
+  </div>
+  <p class="small factors-intro">Every question starts at <b>Not sure</b>. Leave it there if you don't know. The model then counts you as the population average for that question and widens its uncertainty band, so it isn't guessing on your behalf. A wrong answer is worse than an honest “not sure.”</p>
   <div id="questionsHost"></div>
 </section>
 
@@ -940,7 +1004,7 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
       <thead><tr>
         <th scope="col">#</th><th scope="col">Name</th><th scope="col">Age</th><th scope="col">Sex</th>
         <th scope="col">Country</th><th scope="col">Median age</th><th scope="col">10th&ndash;90th</th>
-        <th scope="col">Life expectancy</th><th scope="col">vs. age/sex only</th>
+        <th scope="col">Life expectancy</th><th scope="col">vs. age/sex only</th><th scope="col">Not sure</th>
       </tr></thead>
       <tbody id="bulkResultsBody"></tbody>
     </table>
@@ -962,11 +1026,16 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
   <div id="liveSummary" class="visually-hidden" aria-live="polite"></div>
   <div class="stat-row" id="statRow"></div>
   <p class="freq-sentence" id="freqSentence"></p>
+  <aside class="honesty-callout" id="honestyCallout" aria-labelledby="honestyTitle">
+    <p class="honesty-title" id="honestyTitle">Three things to keep in mind with these numbers</p>
+    <ul class="honesty-list" id="honestyList"></ul>
+  </aside>
   <div class="togglebar">
     <button class="switch" id="hideAgesSwitch" type="button" aria-pressed="false" aria-labelledby="hideAgesLabel"><span class="knob"></span></button>
     <span id="hideAgesLabel">Hide the specific ages &mdash; show only what moves the needle</span>
   </div>
-  <p class="small" style="margin:14px 0;">The muted line uses only your age and sex &mdash; the same starting point everyone in this model gets. The indigo line adds your ten answers. The gap between them is everything this questionnaire changed.</p>
+  <p class="small" style="margin:14px 0 4px;">The muted line uses only your age, sex and country, the same starting point everyone gets. The indigo line adds your answers. The shaded gap between them is everything the questionnaire changed. The y-axis is the share of the group still alive.</p>
+  <div class="curve-legend" aria-hidden="true"><span><i class="lg lg-base"></i>Age and sex only</span><span><i class="lg lg-full"></i>With your answers</span><span><i class="lg lg-gap"></i>The difference</span></div>
   <div class="curve-wrap"><svg class="curve" id="curveSvg" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="curveTitle curveDesc"><title id="curveTitle">Survival curves</title><desc id="curveDesc"></desc></svg></div>
   <div class="compare-row" id="compareRow"></div>
   <p class="small" style="margin-top:14px;">A number like this can be hard to sit with. If anything here stays with you, it's worth talking it through with a doctor or someone you trust.</p>
@@ -1003,6 +1072,26 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
     </div>
   </details>
 
+  <details class="method-item" id="sensBlock">
+    <summary>
+      <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="method-heads">
+        <h2>How much the judgment calls matter</h2>
+        <span class="method-teaser" id="sensTeaser">The headline, recomputed under other assumptions</span>
+      </span>
+    </summary>
+    <div class="method-body">
+      <p class="small">The headline depends on a few judgment calls that aren't data. Here the median is recomputed with one of them changed at a time, with everything else exactly as you entered it. The further apart these rows are, the more loosely you should read the headline.</p>
+      <div class="tablescroll">
+        <table class="ledger" id="sensTable">
+          <thead><tr><th scope="col">If instead&hellip;</th><th scope="col">Half still alive at</th><th scope="col">Change</th></tr></thead>
+          <tbody id="sensBody"></tbody>
+        </table>
+      </div>
+      <p class="small" id="sensSummary" style="margin-top:14px;"></p>
+    </div>
+  </details>
+
   <details class="method-item">
     <summary>
       <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1017,6 +1106,7 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
         <button type="button" class="copy-btn" id="ledgerCopyBtn" aria-label="Copy the ledger table"><span class="copy-btn-icon"></span><span class="copy-btn-label">Copy table</span></button>
       </div>
       <div class="effect-summary" id="effectSummary"></div>
+      <p class="small ledger-additivity" id="ledgerAdditivity"></p>
       <div class="tablescroll">
         <table class="ledger" id="ledgerTable">
           <thead><tr><th scope="col">Factor</th><th scope="col">Your answer</th><th scope="col">Hazard ratio</th><th scope="col">Marginal effect</th></tr></thead>
@@ -1069,9 +1159,12 @@ input[type="number"],input[type="text"]{ transition:border-color var(--d-quick) 
 </section>
 
 <footer class="appfoot">
-  <button class="secondary" id="exportBtn" type="button">Export my answers as JSON</button>
-  <button class="secondary" id="wipeBtn" type="button">Wipe everything</button>
   <button class="secondary" id="recalcBtn" type="button">Change my answers</button>
+  <button class="secondary" id="printBtn" type="button">Print or save as PDF</button>
+  <button class="secondary" id="exportBtn" type="button">Export my answers as JSON</button>
+  <button class="secondary" type="button" data-import-trigger>Import answers</button>
+  <span class="small import-status" role="status"></span>
+  <button class="secondary danger" id="wipeBtn" type="button">Wipe everything</button>
 </footer>
 <p class="csp-note">Nothing on this page is sent anywhere. There's no server to send it to, and the page's own Content-Security-Policy sets <code>connect-src 'none'</code>, which blocks scripted network requests outright rather than just promising not to make them. Open DevTools &rarr; Network and reload; you'll see this page and, if the SheetJS library alongside it loaded too, that file as well &mdash; one or two files depending on whether that library is present, both served from the same origin, and nothing else &mdash; if the site's host injects a script of its own, it shows up there as a request the policy blocked. Once the page is open, it keeps working with your wifi off; this page doesn't install anything to make a later cold reload work offline. Two honest caveats: a meta-tag CSP governs scripted requests, not a link you click yourself, and your answers <em>are</em> written to this browser's <code>localStorage</code> so they survive a reload &mdash; &ldquo;Wipe everything&rdquo; deletes them. Bulk mode's spreadsheet upload works the same way: it's read locally through the browser's File API and never leaves your device, and the Network tab stays just as quiet. Bulk mode's spreadsheet reading and writing runs on the SheetJS Community Edition library (Apache License 2.0, version 0.20.3), served as a same-origin file (<code>xlsx.full.min.js</code>) rather than fetched from a third-party CDN, so it still works under the same <code>connect-src 'none'</code> policy &mdash; see <a href="https://sheetjs.com" target="_blank" rel="noopener noreferrer">sheetjs.com</a>. Keep that file alongside this one; without it, bulk mode is disabled automatically rather than left to fail silently. Nothing you upload in bulk mode is written to <code>localStorage</code>; it lives only in this tab and is gone on reload.</p>
 </div>
@@ -1518,6 +1611,8 @@ const EXTRA_CHOICES = [
   { label:"The country picker's reliability tag is deliberately conservative", body:"Countries flagged \u2018higher confidence\u2019 are exactly the " + COUNTRY_ORDER.filter(function(iso3){ return COUNTRIES[iso3].hmd; }).length + " in the Human Mortality Database's own scope \u2014 the strictest standard available, requiring essentially complete death registration and census coverage. Every other country still uses a real U.N. estimate, not a placeholder; the tag only means that estimate leans more on demographic modeling because that country's own vital registration isn't judged complete enough to stand alone. A country outside HMD's scope is not fabricated data \u2014 it is data with a wider, harder-to-quantify error bar." },
   { label:"The \u2018population average\u2019 you're compared against carries no citation of its own", body:"Every factor's prevalence weights \u2014 how many people smoke, sleep seven hours, sit in the middle diet quintile \u2014 have no separate citation anywhere in this tool, unlike the hazard ratios they sit next to. Sitting beside a properly sourced number makes them look sourced too. They also don't vary by country: the same weights are used whether you pick Japan or Indonesia, where actual smoking prevalence looks nothing alike. Every \u2018marginal effect\u2019 in the ledger is measured against that same fixed, uncited average." },
   { label:"Reference categories get zero uncertainty by construction", body:"Any option with a hazard ratio of exactly 1.00 has a confidence interval of 1.00\u20131.00, so the "+MC_RUNS+"-run simulation draws no variation from it at all. If you answered several questions with the reference option, the uncertainty band shown is narrower than it should be \u2014 not because your answer is more certain, but because the reference category has nowhere to record its own error." },
+  { label:"Death rates are frozen at 2023 levels", body:"Every life table here is a period table: it takes the death rates observed across all ages in a single calendar year and applies them to you as if they will never change. In most countries those rates have fallen for decades, so a cohort table for your actual generation would usually put the curve somewhat later. How much later depends on forecasts of medicine, economics and events nobody can see. This tool doesn't add a guessed improvement factor on top, because that would be another made-up number. The cost is that the results lean conservative for most people, and especially for younger users." },
+  { label:"\u201cNot sure\u201d is treated as the population mix, not as a guess", body:"If you answer \u201cNot sure,\u201d the central estimate uses the population-average hazard for that question, so that question doesn't move your curve at all. The "+MC_RUNS+"-run uncertainty simulation then draws a random answer for that question from the population's own mix on every run. That makes the band wider, as it should be when the model knows less about you. The population mix itself carries no citation; see the next item." },
   { label:"This model has never been validated", body:"There is no held-out dataset, no calibration plot, no concordance statistic. Nobody has checked whether people who score well here actually outlive people who score badly. It is a defensible way of combining published numbers, and that is the entire claim." },
   { label:"Diagnoses are self-reported and unverified", body:"The cardiometabolic history, kidney function, and COPD questions all depend on you knowing and accurately reporting your own diagnosis or eGFR number. Undiagnosed disease, a misremembered eGFR, or an unreported severity grade will place you in a lower-risk tier than you actually belong in \u2014 quietly, with no way for this tool to catch it." },
   { label:"The kidney and COPD tiers don't capture control or treatment status", body:"A hazard ratio for \u2018eGFR 30\u201359\u2019 or \u2018moderate COPD\u2019 describes everyone diagnosed at that severity, regardless of how well the condition is treated or controlled. Two people in the same tier with very different disease management will get the same estimate here." },
@@ -1526,7 +1621,17 @@ const EXTRA_CHOICES = [
   { label:"The cardio-kidney shrinkage figure is this tool's own extension, not a fitted number", body:"No published source directly measures how a combined diabetes/stroke/heart-attack history should discount against reduced kidney function when both are true at once. The 0.85 lambda used here extends the cardiometabolic study's own finding \u2014 that its within-cluster combinations were roughly multiplicative \u2014 to include kidney function too, on the reasoning that these conditions plausibly interact the same way. It has not been measured directly." }
 ];
 
-const DEFAULTS = { smoking:"never", bmi:"overweight", activity:"a0", diet:"d3", alcohol:"none", sleep:"s7", self_rated_health:"good", cardio_history:"none", ckd:"egfr60", copd:"none" };
+const UNKNOWN = "unknown";
+const UNKNOWN_LABEL = "Not sure";
+const DEFAULTS = { smoking:UNKNOWN, bmi:UNKNOWN, activity:UNKNOWN, diet:UNKNOWN, alcohol:UNKNOWN, sleep:UNKNOWN, self_rated_health:UNKNOWN, cardio_history:UNKNOWN, ckd:UNKNOWN, copd:UNKNOWN };
+function optionLabel(factor, id){
+  if(id === UNKNOWN) return UNKNOWN_LABEL;
+  const o = factor.options.find(function(x){ return x.id === id; });
+  return o ? o.label : String(id === undefined ? "" : id);
+}
+function countUnknown(selectionsObj){
+  return FACTORS.filter(function(f){ return !selectionsObj[f.id] || selectionsObj[f.id] === UNKNOWN; }).length;
+}
 
 function hazardFromQx(qx){ return -Math.log(1-qx); }
 function qxFromHazard(h){ return 1-Math.exp(-h); }
@@ -1662,7 +1767,13 @@ function monteCarloMedian(qxArray, startAge, selections, factors, groups, runs, 
   const results = [];
   const meta = factors.map(function(f){
     const opt = f.options.find(function(o){ return o.id === selections[f.id]; });
-    return opt ? {group:f.group, mean:betaOfOption(opt), se:seOfOption(opt), popMean:populationMeanBeta(f)} : null;
+    if(opt) return {group:f.group, fixed:true, mean:betaOfOption(opt), se:seOfOption(opt), popMean:populationMeanBeta(f)};
+    if(selections[f.id] === UNKNOWN){
+      let acc = 0;
+      const mix = f.options.map(function(o){ acc += o.prevalence; return {cum:acc, mean:betaOfOption(o), se:seOfOption(o)}; });
+      return {group:f.group, fixed:false, mix:mix, total:acc, popMean:populationMeanBeta(f)};
+    }
+    return null;
   }).filter(Boolean);
   const groupKeys = [];
   const groupLambda = Object.create(null);
@@ -1677,7 +1788,15 @@ function monteCarloMedian(qxArray, startAge, selections, factors, groups, runs, 
   for(let r=0;r<runs;r++){
     const groupSums = Object.create(null);
     for(const m of meta){
-      const beta = m.se > 0 ? m.mean + normal()*m.se : m.mean;
+      let beta;
+      if(m.fixed){
+        beta = m.se > 0 ? m.mean + normal()*m.se : m.mean;
+      } else {
+        const u = rand() * m.total;
+        let pick = m.mix[m.mix.length-1];
+        for(let k=0;k<m.mix.length;k++){ if(u < m.mix[k].cum){ pick = m.mix[k]; break; } }
+        beta = pick.se > 0 ? pick.mean + normal()*pick.se : pick.mean;
+      }
       groupSums[m.group] = (groupSums[m.group] || 0) + (beta - m.popMean);
     }
     let lRel = 0;
@@ -1780,7 +1899,7 @@ let lastResult = null;
 let agesHidden = false;
 let selectedCountry = "USA";
 const STORAGE_KEY = "survivalMirror.v3";
-const STATE_SCHEMA_VERSION = 3;
+const STATE_SCHEMA_VERSION = 4;
 
 let bulkSelections = Object.assign({}, DEFAULTS);
 let bulkUseShared = false;
@@ -2063,6 +2182,7 @@ function el(tag, attrs, kids){
 }
 function fmt1(n){ return n.toFixed(1); }
 function fmtQ(n){ return n === null ? "\u2014 beyond the table" : fmt1(n); }
+function fmtAge(n){ return n === null || n === undefined ? "beyond 119" : String(Math.round(n)); }
 
 const COPY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
 const COPY_ICON_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
@@ -2155,6 +2275,10 @@ function getResultsSummaryText(){
     if(l && v) compares.push(l.textContent.trim() + ": " + v.textContent.trim());
   });
   if(compares.length){ lines.push(""); compares.forEach(function(c){ lines.push(c); }); }
+  const honesty = document.querySelectorAll("#honestyList li");
+  if(honesty.length){ lines.push(""); lines.push("Keep in mind:"); honesty.forEach(function(li){ lines.push("- " + li.textContent.trim()); }); }
+  lines.push("");
+  lines.push("A statistical estimate for a hypothetical group, not a prediction for one person.");
   return lines.join("\n");
 }
 function getLedgerTsv(){
@@ -2212,8 +2336,7 @@ function renderQuestionsInto(hostId, selectionsObj){
       labelRow.appendChild(el("span", {class:"qlabel", id:labelId, text:factor.question}));
       labelRow.appendChild(makeCopyButton(function(){
         const checked = wrap.querySelector("input:checked");
-        const opt = checked ? factor.options.find(function(o){ return o.id === checked.value; }) : null;
-        return opt ? opt.label : "";
+        return checked ? optionLabel(factor, checked.value) : "";
       }, "your answer for " + factor.question, true));
       head.appendChild(labelRow);
       head.appendChild(el("span", {class:"qsource", text:"Source: " + factor.source + (factor.adjusted ? " \u2014 adjusted for: " + factor.adjusted : "")}));
@@ -2228,6 +2351,14 @@ function renderQuestionsInto(hostId, selectionsObj){
         label.appendChild(el("span", {text:opt.label}));
         wrap.appendChild(label);
       });
+      const unkLabel = el("label", {class:"opt opt-unknown", title:"Counted as the population average for this question, and the uncertainty band widens to reflect not knowing."});
+      const unkInput = el("input", {type:"radio", name:hostId + "__" + factor.id, value:UNKNOWN});
+      unkInput.setAttribute("data-factor", factor.id);
+      unkInput.setAttribute("data-host", hostId);
+      if(!selectionsObj[factor.id] || selectionsObj[factor.id] === UNKNOWN) unkInput.checked = true;
+      unkLabel.appendChild(unkInput);
+      unkLabel.appendChild(el("span", {text:UNKNOWN_LABEL}));
+      wrap.appendChild(unkLabel);
       fieldset.appendChild(wrap);
       groupEl.appendChild(fieldset);
     });
@@ -2242,7 +2373,7 @@ function refreshSelectedStylesIn(root){
     label.classList.toggle("selected", !!(input && input.checked));
   });
 }
-function renderQuestions(){ renderQuestionsInto("questionsHost", selections); }
+function renderQuestions(){ renderQuestionsInto("questionsHost", selections); updateAnsweredPill(); }
 
 document.addEventListener("change", function(ev){
   const t = ev.target;
@@ -2259,6 +2390,7 @@ document.addEventListener("change", function(ev){
       refreshSelectedStylesIn(document.getElementById(host));
       persist();
       liveRecalc();
+      updateAnsweredPill();
       if(typeof onFactorTouched === "function") onFactorTouched(factorId);
     }
   }
@@ -2340,19 +2472,19 @@ function renderFreqSentence(r){
   const t = document.getElementById("freqSentence");
   if(agesHidden){ t.textContent = "Ages are hidden. Flip the toggle below to see them."; return; }
   t.textContent = "";
-  t.appendChild(document.createTextNode("Of 1,000 people in this country's table whose age, sex, and ten answers matched what you entered, the model expects about "));
+  t.appendChild(document.createTextNode("Picture 1,000 people your age and sex, with your answers, living under " + COUNTRIES[r.iso3].name + "'s 2023 death rates for the rest of their lives. The model expects about "));
   t.appendChild(el("b",{text:"900"}));
-  t.appendChild(document.createTextNode(" to still be alive at age "));
-  t.appendChild(el("b",{text:fmtQ(r.q10)}));
+  t.appendChild(document.createTextNode(" of them to still be alive at "));
+  t.appendChild(el("b",{text:fmtAge(r.q10)}));
   t.appendChild(document.createTextNode(", about "));
   t.appendChild(el("b",{text:"500"}));
-  t.appendChild(document.createTextNode(" at age "));
-  t.appendChild(el("b",{text:fmtQ(r.q50)}));
+  t.appendChild(document.createTextNode(" at "));
+  t.appendChild(el("b",{text:fmtAge(r.q50)}));
   t.appendChild(document.createTextNode(", and about "));
   t.appendChild(el("b",{text:"100"}));
-  t.appendChild(document.createTextNode(" at age "));
-  t.appendChild(el("b",{text:fmtQ(r.q90)}));
-  t.appendChild(document.createTextNode(". These are population frequencies, not a forecast about one person."));
+  t.appendChild(document.createTextNode(" at "));
+  t.appendChild(el("b",{text:fmtAge(r.q90)}));
+  t.appendChild(document.createTextNode(". Nobody in that group is you. It describes how a group spreads out, not when one person dies."));
 }
 function renderStatRow(r){
   const host = document.getElementById("statRow");
@@ -2361,9 +2493,9 @@ function renderStatRow(r){
     ? [["Direction of your answers", (r.lRelFull < 0 ? "Below average risk" : r.lRelFull > 0 ? "Above average risk" : "About average")],
        ["Relative hazard vs. average", Math.exp(r.lRelFull).toFixed(2) + "\u00d7"],
        ["Ages", "hidden"]]
-    : [["Median age, this model", fmtQ(r.q50)],
-       ["Remaining life expectancy", fmt1(r.exFull) + " yr"],
-       ["90% uncertainty on the median", fmtQ(r.mc.p05) + "\u2013" + fmtQ(r.mc.p95)]];
+    : [["Half of a group like you still alive at", fmtAge(r.q50)],
+       ["Middle 80% of outcomes", fmtAge(r.q10) + "\u2013" + fmtAge(r.q90)],
+       ["How sure the model is about that median", (r.mc.p05 === null ? "\u2014" : fmtAge(r.mc.p05) + "\u2013" + fmtAge(r.mc.p95))]];
   stats.forEach(function(s, i){
     host.appendChild(el("div",{class:"stat" + (i === 0 ? " median" : "")},[el("div",{class:"label",text:s[0]}), el("div",{class:"val",text:s[1]})]));
   });
@@ -2376,9 +2508,10 @@ function renderCompareRow(r){
     return;
   }
   const d = (r.q50 === null || r.q50base === null) ? null : r.q50 - r.q50base;
-  [["Full model median", fmtQ(r.q50)],
-   ["Age-and-sex-only median", fmtQ(r.q50base)],
-   ["What your ten answers changed", d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr"]
+  [["Median with your answers", fmtQ(r.q50)],
+   ["Median from age and sex alone", fmtQ(r.q50base)],
+   ["What your answers changed", d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr"],
+   ["Average years remaining", fmt1(r.exFull) + " yr"]
   ].forEach(function(c){
     host.appendChild(el("div",{class:"compare-item"},[el("div",{class:"label",text:c[0]}), el("div",{class:"val",text:c[1]})]));
   });
@@ -2440,10 +2573,109 @@ function renderGeo(r){
   if(teaser) teaser.textContent = "Country choice can swing this ~" + fmt1(spread) + " yr; your ten answers moved it " +
     (lifestyle === null ? "beyond what this table can measure" : (lifestyle >= 0 ? "+" : "") + fmt1(lifestyle) + " yr") + ".";
 }
+function sensitivityMedian(r, opt){
+  const groups = Object.create(null);
+  for(const k in CORRELATION_GROUPS){
+    groups[k] = { lambda: opt.lambdaAll !== undefined ? opt.lambdaAll : (opt.lambdaOverride && opt.lambdaOverride[k] !== undefined ? opt.lambdaOverride[k] : CORRELATION_GROUPS[k].lambda) };
+  }
+  const lRel = computeLRel(r.selections, FACTORS, groups).total;
+  const floor = opt.floor !== undefined ? opt.floor : ATTEN_FLOOR;
+  const atten = function(age){
+    if(age <= ATTEN_START) return 1;
+    if(age >= ATTEN_END) return floor;
+    return 1 - ((age-ATTEN_START)/(ATTEN_END-ATTEN_START))*(1-floor);
+  };
+  const imp = opt.improvement || 0;
+  const hz = hazardArrayFor(r.qx);
+  const n = r.qx.length;
+  let survival = 1;
+  for(let age=r.age; age<n; age++){
+    const base = (age === n-1) ? Infinity : hz[age] * Math.pow(1 - imp, age - r.age);
+    const next = survival * (1 - qxFromHazard(base * Math.exp(lRel * atten(age))));
+    if(survival >= 0.5 && next < 0.5) return age + (survival-0.5)/(survival-next);
+    survival = next;
+  }
+  return null;
+}
+const SENS_SCENARIOS = [
+  { group:"Death rates over time" },
+  { label:"Death rates stay at 2023 levels (what the headline uses)", opt:{}, current:true },
+  { label:"Death rates keep falling 1% a year, roughly the recent rich-country pace", opt:{improvement:0.01} },
+  { label:"Death rates keep falling 2% a year, an optimistic pace", opt:{improvement:0.02} },
+  { group:"How fast the effects of your answers fade with age" },
+  { label:"Effects fade to 20% of full strength by age 90", opt:{floor:0.2} },
+  { label:"Effects fade to 60% by age 90", opt:{floor:0.6} },
+  { label:"Effects never fade", opt:{floor:1.0} },
+  { group:"Overlap between related questions" },
+  { label:"No overlap discount at all, so every factor counts in full", opt:{lambdaAll:1.0} },
+  { label:"Self-rated health counts in full, not discounted by 45%", opt:{lambdaOverride:{self_rated:1.0}} }
+];
+function renderSensitivity(r){
+  const body = document.getElementById("sensBody");
+  const summary = document.getElementById("sensSummary");
+  const teaser = document.getElementById("sensTeaser");
+  if(!body) return;
+  body.innerHTML = "";
+  if(agesHidden){
+    body.appendChild(el("tr",{},[el("td",{colspan:"3", text:"Hidden while ages are hidden."})]));
+    if(summary) summary.textContent = "";
+    if(teaser) teaser.textContent = "Hidden while ages are hidden.";
+    return;
+  }
+  const baseMed = sensitivityMedian(r, {});
+  const vals = [];
+  SENS_SCENARIOS.forEach(function(s){
+    if(s.group){
+      body.appendChild(el("tr",{class:"sens-group"},[el("td",{colspan:"3", text:s.group})]));
+      return;
+    }
+    const m = s.current ? baseMed : sensitivityMedian(r, s.opt);
+    if(m !== null) vals.push(m);
+    const d = (m === null || baseMed === null) ? null : m - baseMed;
+    body.appendChild(el("tr",{class:s.current ? "sens-current" : ""},[
+      el("td",{text:s.label}),
+      el("td",{"data-label":"Half still alive at", class:"hrnum", text:fmtQ(m)}),
+      el("td",{"data-label":"Change"},[el("span",{class:"yearsdelta" + (d !== null && d > 0 ? " pos" : ""), text: s.current ? "\u2014" : (d === null ? "\u2014 beyond the table" : (d >= 0 ? "+" : "") + fmt1(d) + " yr")})])
+    ]));
+  });
+  if(vals.length){
+    const lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    if(summary) summary.textContent = "Across these alternatives, the same answers put the median anywhere from " + fmt1(lo) + " to " + fmt1(hi) + ", a " + fmt1(hi - lo) + "-year spread that comes purely from assumptions. None of these rows is more \u201ccorrect\u201d than the headline. They show how much of the headline is a matter of choice. The falling-death-rate rows only shift your country's baseline. They aren't a forecast." + (countUnknown(r.selections) === FACTORS.length ? " The fading and overlap rows show no change because every question is still at \u201cNot sure,\u201d so there is no effect for them to fade or discount. Answer some questions to see them move." : "");
+    if(teaser) teaser.textContent = "Other reasonable assumptions move the median across " + fmt1(hi - lo) + " yr";
+  }
+}
+function renderHonesty(r){
+  const host = document.getElementById("honestyList");
+  if(!host) return;
+  host.innerHTML = "";
+  const items = [];
+  items.push("These are " + COUNTRIES[r.iso3].name + "'s 2023 death rates, held fixed for the rest of your life. Death rates have usually kept falling over time, so for most people the real curve is probably somewhat later than this. The tool doesn't try to guess by how much.");
+  const lifestyle = (r.q50 === null || r.q50base === null) ? null : r.q50 - r.q50base;
+  if(!agesHidden){
+    const g = geoRanking(r.age, r.sex);
+    const spread = g.rows[0].med - g.rows[g.rows.length-1].med;
+    items.push("Your answers moved the median by " + (lifestyle === null ? "an amount beyond this table" : (lifestyle >= 0 ? "+" : "") + fmt1(lifestyle) + " years") + ". With the same answers, picking a different country from the list can move it across a " + fmt1(spread) + "-year range. Where you live, and everything that comes with it, counts for more here than your habits.");
+  } else {
+    items.push("Your country's baseline table usually moves the result more than all ten answers together.");
+  }
+  const unk = countUnknown(r.selections);
+  items.push("The \u201chow sure\u201d range only reflects error in the published numbers" + (unk ? ", plus the " + unk + " question" + (unk === 1 ? "" : "s") + " you marked \u201cNot sure\u201d" : "") + ". It doesn't cover the judgment calls in this model or anything it can't see about you. Nobody has tested this model against real outcomes.");
+  items.forEach(function(t){ host.appendChild(el("li",{text:t})); });
+}
+function updateAnsweredPill(){
+  const pill = document.getElementById("answeredPill");
+  if(!pill) return;
+  const answered = FACTORS.length - countUnknown(selections);
+  pill.textContent = answered + " of " + FACTORS.length + " answered";
+  pill.setAttribute("data-complete", answered === FACTORS.length ? "true" : "false");
+}
 function renderMcExplain(r){
   const p = document.getElementById("mcExplain");
   if(agesHidden){ p.textContent = "Hidden while ages are hidden."; return; }
-  let text = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing each of your ten answers' hazard ratios from its own interval and rebuilding the curve "+MC_RUNS+" times, the median age landed between "+fmt1(r.mc.p05)+" and "+fmt1(r.mc.p95)+" in 90% of those runs. The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in ten published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
+  const unk = countUnknown(r.selections);
+  let text = "Each hazard ratio above comes with its own published confidence interval, not a single fixed number. Redrawing each of your ten answers' hazard ratios from its own interval" + (unk ? ", and drawing a random answer from the population mix for the " + unk + " question" + (unk === 1 ? "" : "s") + " you left at \u201cNot sure,\u201d" : "") + " and rebuilding the curve "+MC_RUNS+" times, the median age landed between "+fmtQ(r.mc.p05)+" and "+fmtQ(r.mc.p95)+" in 90% of those runs.";
+  text += " This band is about the median of a group, not about you: even if it were perfectly narrow, people like you would still die across the much wider " + fmtAge(r.q10) + "\u2013" + fmtAge(r.q90) + " range shown above.";
+  text += " The draw is seeded from your answers, so the same answers always give the same interval. Note what this range does and doesn't cover: it is the sampling uncertainty in ten published coefficients, nothing more. It says nothing about whether those coefficients apply to you, and the modeling choices listed further down are not varied at all.";
   if(r.mc.dropped > 0){
     text += " In "+r.mc.dropped+" of "+r.mc.runs+" runs, that simulated curve never crossed 50% survival within this table, so those runs were left out of the range above rather than counted as age 120.";
   }
@@ -2466,10 +2698,24 @@ function qualitative(marginal){
 function renderLedger(r){
   const body = document.getElementById("ledgerBody");
   body.innerHTML = "";
-  const buckets = {later:0, earlier:0, flat:0};
+  const buckets = {later:0, earlier:0, flat:0, unknown:0};
+  let marginalSum = 0, marginalSumValid = r.q50 !== null;
   FACTORS.forEach(function(factor){
     const opt = factor.options.find(function(o){ return o.id === r.selections[factor.id]; });
-    if(!opt) return;
+    if(!opt){
+      buckets.unknown++;
+      const trU = document.createElement("tr");
+      trU.className = "weak unknown-row";
+      const tdN = el("td");
+      tdN.appendChild(el("span",{class:"factor-name", text:factor.question}));
+      tdN.appendChild(el("span",{class:"cite", text:factor.source}));
+      trU.appendChild(tdN);
+      trU.appendChild(el("td",{"data-label":"Your answer", text:UNKNOWN_LABEL}));
+      trU.appendChild(el("td",{"data-label":"Hazard ratio", class:"hrnum", text:"population mix"}));
+      trU.appendChild(el("td",{"data-label":"Marginal effect"},[el("span",{class:"qualdelta", text:"none by construction \u2014 widens the uncertainty band instead"})]));
+      body.appendChild(trU);
+      return;
+    }
     const weak = opt.hr !== 1 && opt.ci[0] <= 1 && opt.ci[1] >= 1;
 
     const override = Object.create(null);
@@ -2477,6 +2723,7 @@ function renderLedger(r){
     const lRelWithout = computeLRel(r.selections, FACTORS, CORRELATION_GROUPS, override).total;
     const rowsWithout = buildSurvival(r.qx, r.age, function(a){ return lRelWithout*ageAttenuation(a); });
     const marginal = r.q50 === null ? null : r.q50 - quantileAge(rowsWithout, 0.5);
+    if(marginal === null) marginalSumValid = false; else marginalSum += marginal;
 
     if(weak || opt.hr === 1 || marginal === null || Math.abs(marginal) < 0.25) buckets.flat++;
     else if(marginal > 0) buckets.later++;
@@ -2533,13 +2780,24 @@ function renderLedger(r){
     } else {
       [["later","Moved the curve later (protective)"],
        ["earlier","Moved the curve earlier (increased hazard)"],
-       ["flat","Little or no measurable change (reference answer, CI crosses 1.0, or under 0.25 yr)"]
+       ["flat","Little or no measurable change (reference answer, CI crosses 1.0, or under 0.25 yr)"],
+       ["unknown","Answered \u201c" + UNKNOWN_LABEL + "\u201d \u2014 treated as average"]
       ].forEach(function(b){
+        if(b[0] === "unknown" && !buckets.unknown) return;
         const span = el("span");
         span.appendChild(el("span",{class:"dot " + b[0]}));
         span.appendChild(document.createTextNode(buckets[b[0]] + " \u2014 " + b[1]));
         summary.appendChild(span);
       });
+    }
+  }
+  const addNote = document.getElementById("ledgerAdditivity");
+  if(addNote){
+    const total = (r.q50 === null || r.q50base === null) ? null : r.q50 - r.q50base;
+    if(agesHidden || !marginalSumValid || total === null){
+      addNote.textContent = "Each row is measured on its own, with every other answer held where you put it. The rows are not designed to add up to the overall change.";
+    } else {
+      addNote.textContent = "These rows don't add up to the total, and they aren't meant to. Added together they come to " + (marginalSum >= 0 ? "+" : "") + fmt1(marginalSum) + " yr, but all ten answers together moved the median " + (total >= 0 ? "+" : "") + fmt1(total) + " yr. The gap comes from the overlap shrinkage and from hazards compounding on a curve that isn't linear. Read each row as \u201cthis answer on its own, with everything else held fixed,\u201d not as a share of the total.";
     }
   }
 }
@@ -2593,6 +2851,8 @@ function renderLimits(){
     "The hazard ratios come from a small number of sources. Smoking, weight, activity and diet come from the Nurses' Health Study and Health Professionals Follow-up Study, whose participants skew white, health-literate, and higher-income than the general population. Sleep, self-rated health, cardiometabolic history, kidney function and COPD come from separate pooled analyses, mostly of cohorts in North America, Europe and East Asia. How well any of them transfer to you personally isn't fully known.",
     hazardCountryNote(),
     "For " + COUNTRY_ORDER.filter(function(iso3){ return iso3 !== "USA" && hasClampArtifact(iso3); }).length + " of the " + (COUNTRY_ORDER.length - 1) + " non-U.S. countries, the modeled ages beyond 100 \u2014 extrapolated past where the UN's real single-year data stops \u2014 reach a flat 0.999 ceiling, which flattens the true shape of the curve at very old age and makes the long-tail (10th-percentile) estimate partly insensitive to your ten answers, rather than merely affecting it more than the median. Ages 0\u201399 come directly from the UN's own published probability-of-dying figures and are not affected. See \u201cFull source citations\u201d for detail.",
+    "These are period life tables. They assume today's death rates at every age stay fixed for the rest of your life. Historically they have kept falling in most countries, so for most people, and especially younger ones, the real curve for their generation is probably later than the one shown.",
+    "The model treats each question as a fixed fact about you. In reality smoking, weight, activity and health all change over a lifetime, and the cohorts behind these hazard ratios measured them mostly once.",
     "These are observational associations, not randomized trials. \u201cPeople who exercise more live longer\u201d and \u201cexercising more makes you live longer\u201d are related claims but not the same claim.",
     "The ten factors are not the ten most important determinants of how long you'll live. They're ten things this tool could find a published hazard ratio for \u2014 lifestyle habits that are cheap to ask about, plus a handful of diagnosed conditions with well-studied risk. That is a different list.",
     countryLimitText(),
@@ -2697,13 +2957,24 @@ function renderCurve(r, animate){
   const full = svgEl("path",{d:pathD(r.rowsFull,r.age,end,xs,ys),fill:"none",stroke:C.full,"stroke-width":2.2,mask:"url(#curveFadeMask)","data-role":"full"});
   svg.appendChild(full);
 
+  [[r.q10, 0.9, "9 in 10"], [r.q90, 0.1, "1 in 10"]].forEach(function(m){
+    if(m[0] === null || m[0] > end) return;
+    const mx = xs(m[0]), my = ys(m[1]);
+    svg.appendChild(svgEl("line",{x1:mx,x2:mx,y1:my,y2:H-padB,stroke:C.base,"stroke-width":1,"stroke-dasharray":"2,3",opacity:0.8}));
+    svg.appendChild(svgEl("circle",{cx:mx,cy:my,r:2.6,fill:"none",stroke:C.full,"stroke-width":1.4}));
+    const fitsRight = mx + 110 <= W - padR;
+    const tl = svgEl("text",{x:mx + (fitsRight ? 7 : -7), y:my + (m[1] > 0.5 ? 14 : -7), fill:C.label, "font-size":10.5, "text-anchor": fitsRight ? "start" : "end"});
+    tl.textContent = m[2] + " alive at " + fmtAge(m[0]);
+    svg.appendChild(tl);
+  });
+
   if(r.q50 !== null){
     svg.appendChild(svgEl("circle",{id:"medianDot",cx:xs(r.q50),cy:ys(0.5),r:3.5,fill:C.full}));
     const dotX = xs(r.q50), dotY = ys(0.5);
     const labelFitsRight = dotX + 90 <= W - padR;
     const dl = svgEl("text",{x:dotX + (labelFitsRight ? 8 : -8),y:dotY-8,fill:C.full,"font-size":11,
       "text-anchor": labelFitsRight ? "start" : "end"});
-    dl.textContent = "median " + fmt1(r.q50);
+    dl.textContent = "half alive at " + fmtAge(r.q50);
     svg.appendChild(dl);
   } else {
     const dl = svgEl("text",{x:padL+8,y:padT+16,fill:C.full,"font-size":11});
@@ -2725,6 +2996,8 @@ function renderAll(r, animateCurve){
   renderCurve(r, !!animateCurve);
   renderGeo(r);
   renderCompareRow(r);
+  renderHonesty(r);
+  renderSensitivity(r);
   renderMcExplain(r);
   renderLedger(r);
   if(typeof observeCibars === "function") observeCibars(document.getElementById("ledgerSection"));
@@ -2733,7 +3006,7 @@ function renderAll(r, animateCurve){
   summary.textContent = agesHidden ? "Results updated. Ages are hidden." : "Results updated. Median age: " + fmtQ(r.q50) + ".";
   const preview = document.getElementById("stickyPreview");
   if(preview){
-    const text = agesHidden ? "Updated" : "Median " + fmtQ(r.q50) + " \u2014 updated";
+    const text = agesHidden ? "Updated" : "Half still alive at " + fmtAge(r.q50) + " \u2014 updated";
     if(typeof crossFadeText === "function") crossFadeText(preview, text); else preview.textContent = text;
   }
 }
@@ -2757,6 +3030,56 @@ document.getElementById("calcBtn").addEventListener("click", function(){
 });
 document.getElementById("recalcBtn").addEventListener("click", function(){
   safeScroll(document.getElementById("formArea"));
+});
+function setImportStatus(text, tone){
+  document.querySelectorAll(".import-status").forEach(function(s){
+    s.textContent = text;
+    s.setAttribute("data-tone", tone || "");
+  });
+}
+function applyImportedState(state){
+  document.getElementById("ageInput").value = state.age;
+  document.getElementById("ageInput").setAttribute("aria-invalid","false");
+  document.getElementById("ageErr").style.display = "none";
+  const sexEl = document.querySelector('input[name="sex"][value="' + state.sex + '"]');
+  if(sexEl) sexEl.checked = true;
+  selectedCountry = state.country;
+  revertCountry();
+  selections = state.selections;
+  renderQuestions();
+  renderCountryQuality();
+  renderLimits();
+  persist();
+  liveRecalc();
+}
+const importInput = document.getElementById("importFileInput");
+document.querySelectorAll("[data-import-trigger]").forEach(function(b){
+  b.addEventListener("click", function(){ importInput.value = ""; importInput.click(); });
+});
+importInput.addEventListener("change", function(){
+  const file = importInput.files && importInput.files[0];
+  if(!file) return;
+  if(file.size > 200 * 1024){ setImportStatus("That file is too large to be an answers export.", "error"); return; }
+  const reader = new FileReader();
+  reader.onerror = function(){ setImportStatus("Couldn't read that file.", "error"); };
+  reader.onload = function(){
+    let data = null;
+    try{ data = JSON.parse(String(reader.result)); }catch(e){ data = null; }
+    const state = validateState(data);
+    if(!state){ setImportStatus("That isn't a valid Survival Mirror export. Nothing was changed.", "error"); return; }
+    applyImportedState(state);
+    if(document.getElementById("formArea").style.display !== "block" && document.getElementById("results").style.display !== "block"){
+      setImportStatus("Answers loaded. Press Continue to see them.", "ok");
+    } else {
+      setImportStatus("Answers loaded.", "ok");
+    }
+  };
+  reader.readAsText(file);
+});
+document.getElementById("printBtn").addEventListener("click", function(){
+  if(typeof finishReckoning === "function") finishReckoning();
+  document.querySelectorAll(".method-item").forEach(function(d){ d.open = true; });
+  try{ window.print(); }catch(e){}
 });
 
 const hideSwitch = document.getElementById("hideAgesSwitch");
@@ -2856,7 +3179,7 @@ function persist(){
 }
 function validateState(data){
   if(!data || typeof data !== "object") return null;
-  if(data.v !== undefined && [1,2,3].indexOf(data.v) === -1) return null;
+  if(data.v !== undefined && [1,2,3,4].indexOf(data.v) === -1) return null;
   const age = Number(data.age);
   if(!Number.isFinite(age) || age < AGE_MIN || age > AGE_MAX) return null;
   if(data.sex !== "male" && data.sex !== "female") return null;
@@ -2867,7 +3190,7 @@ function validateState(data){
     for(const f of FACTORS){
       const val = data.selections[f.id];
       if(val === undefined) continue;
-      if(!f.options.some(function(o){ return o.id === val; })) return null;
+      if(val !== UNKNOWN && !f.options.some(function(o){ return o.id === val; })) return null;
       out.selections[f.id] = val;
     }
   }
@@ -2906,6 +3229,7 @@ function buildOptionIndex(factor){
     idx[normalizeMatch(o.label)] = o.id;
     idx[normalizeMatch(o.id)] = o.id;
   });
+  ["not sure","unknown","don't know","dont know","n/a"].forEach(function(k){ idx[k] = UNKNOWN; });
   return idx;
 }
 const FACTOR_OPTION_INDEX = Object.create(null);
@@ -3030,8 +3354,7 @@ function renderBulkPreview(rows, truncated){
       const td = el("td");
       let valueText;
       if(src === "row" || src === "bulk"){
-        const opt = f.options.find(function(o){ return o.id === r.answers[f.id]; });
-        valueText = opt ? opt.label : r.answers[f.id];
+        valueText = optionLabel(f, r.answers[f.id]);
         td.appendChild(document.createTextNode(valueText));
         if(src === "bulk"){ td.appendChild(el("span",{class:"bulk-shared-tag", text:" (shared)"})); valueText += " (shared)"; }
       } else if(src === "invalid"){ valueText = "\u2717 not recognized"; td.textContent = valueText; }
@@ -3083,7 +3406,7 @@ function renderBulkPreview(rows, truncated){
 function renderBulkResults(results){
   document.getElementById("bulkResultsSummary").textContent =
     "Ran the model for " + results.length + " " + (results.length===1?"person":"people") +
-    " \u2014 the exact same computeForPerson function the single-person form above uses, once per row.";
+    " \u2014 the exact same computeForPerson function the single-person form above uses, once per row. Ages are rounded to one decimal for sorting. They are no more precise than the whole-year figures in single mode. Rows with several \u201cNot sure\u201d answers sit closer to the age-and-sex-only baseline by design, not because those people are average.";
   const body = document.getElementById("bulkResultsBody");
   body.innerHTML = "";
   results.forEach(function(item, i){
@@ -3092,7 +3415,8 @@ function renderBulkResults(results){
     const tr = document.createElement("tr");
     [String(i+1), r.name, String(res.age), res.sex, COUNTRIES[res.iso3].name,
      fmtQ(res.q50), fmtQ(res.q10) + "\u2013" + fmtQ(res.q90), fmt1(res.exFull) + " yr",
-     d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr"
+     d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr",
+     countUnknown(r.answers) + " of " + FACTORS.length
     ].forEach(function(v){ tr.appendChild(el("td",{text:v})); });
     body.appendChild(tr);
   });
@@ -3129,6 +3453,7 @@ function buildCodebookAOA(){
     f.options.forEach(function(o){
       rows.push([BULK_COLUMN_LABELS[f.id], o.label]);
     });
+    rows.push([BULK_COLUMN_LABELS[f.id], UNKNOWN_LABEL + " \u2014 counted as the population average, with a wider uncertainty band"]);
   });
   return rows;
 }
@@ -3308,13 +3633,13 @@ function xlsxQ(v){ return v === null ? "\u2014 beyond the table" : Number(v.toFi
 document.getElementById("bulkDownloadResultsBtn").addEventListener("click", function(){
   if(!lastBulkResults || !lastBulkResults.length) return;
   try{
-    const aoa = [["Name","Age","Sex","Country","Median age","10th percentile age","90th percentile age","Life expectancy (yr)","Change from age/sex only (yr)"]];
+    const aoa = [["Name","Age","Sex","Country","Median age","10th percentile age","90th percentile age","Life expectancy (yr)","Change from age/sex only (yr)","Questions answered Not sure"]];
     lastBulkResults.forEach(function(item){
       const r = item.row, res = item.res;
       const delta = (res.q50 === null || res.q50base === null) ? "\u2014 beyond the table" : Number((res.q50 - res.q50base).toFixed(1));
       aoa.push([sanitizeCell(r.name), res.age, res.sex, COUNTRIES[res.iso3].name,
         xlsxQ(res.q50), xlsxQ(res.q10), xlsxQ(res.q90),
-        Number(res.exFull.toFixed(1)), delta]);
+        Number(res.exFull.toFixed(1)), delta, countUnknown(r.answers)]);
     });
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     const wb = XLSX.utils.book_new();
@@ -3628,7 +3953,7 @@ function updateStickyPreviewLive(){
   if(!preview || !Object.keys(touchedFactors).length) return;
   try{
     const r = computeForPerson(parseAge(), currentSex(), selectedCountry, selections, {withMC:false});
-    crossFadeText(preview, agesHidden ? "Updating" : "Currently: median age " + fmtQ(r.q50));
+    crossFadeText(preview, agesHidden ? "Updating" : "Right now: half still alive at " + fmtAge(r.q50));
   }catch(e){}
 }
 
@@ -3690,7 +4015,7 @@ function finishReckoning(){
   if(reckoningFinisher) reckoningFinisher();
 }
 function revealMedian(node, target){
-  node.textContent = fmt1(target);
+  node.textContent = fmtAge(target);
   node.setAttribute("data-settling", "false");
 }
 function popDot(dot, token){
@@ -3745,7 +4070,7 @@ function runReckoningSequence(r){
     [basePath, fullPath].forEach(function(p){ if(p){ p.style.transition = "none"; p.style.strokeDashoffset = "0"; } });
     if(gapPath) gapPath.setAttribute("data-shown", "true");
     if(dot) dot.removeAttribute("data-pop");
-    if(canCount){ medianVal.textContent = fmt1(r.q50); medianVal.removeAttribute("data-settling"); }
+    if(canCount){ medianVal.textContent = fmtAge(r.q50); medianVal.removeAttribute("data-settling"); }
     reckoningFinisher = null;
   }
   reckoningFinisher = finishNow;
@@ -3753,7 +4078,7 @@ function runReckoningSequence(r){
   if(prefersReduce()){ finishNow(); return; }
   const scale = reckoningRunCount > 1 ? 0.4 : 1;
   if(dot) dot.setAttribute("data-pop", "pending");
-  if(canCount){ medianVal.textContent = fmt1(r.q50); medianVal.setAttribute("data-settling", "true"); }
+  if(canCount){ medianVal.textContent = fmtAge(r.q50); medianVal.setAttribute("data-settling", "true"); }
 
   drawPathAnimated(basePath, 0, 900 * scale, myToken);
   drawPathAnimated(fullPath, 560 * scale, 1100 * scale, myToken);
@@ -4000,6 +4325,48 @@ function runSelfTests(){
     if(problem) return problem;
     if(btn.disabled !== !xlsxAvailable()) return "restored disabled state does not match xlsxAvailable()";
     return true;
+  });
+
+  check("answering Not sure to everything reproduces the age-and-sex-only curve exactly", function(){
+    const r = computeForPerson(45, "female", "JPN", DEFAULTS, {withMC:false});
+    return (r.lRelFull === 0 && r.q50 === r.q50base) ? true : "lRel=" + r.lRelFull + ", q50=" + r.q50 + ", base=" + r.q50base;
+  });
+
+  check("Not sure widens the uncertainty band compared with a definite answer", function(){
+    const known = Object.assign({}, DEFAULTS, {smoking:"never", bmi:"overweight", activity:"a1", diet:"d3", alcohol:"low", sleep:"s7", self_rated_health:"good", cardio_history:"none", ckd:"egfr60", copd:"none"});
+    const a = monteCarloMedian(COUNTRIES.USA.male, 45, known, FACTORS, CORRELATION_GROUPS, MC_RUNS, 99);
+    const b = monteCarloMedian(COUNTRIES.USA.male, 45, DEFAULTS, FACTORS, CORRELATION_GROUPS, MC_RUNS, 99);
+    return (b.p95 - b.p05) > (a.p95 - a.p05) ? true : "known width " + (a.p95-a.p05).toFixed(2) + " vs unknown " + (b.p95-b.p05).toFixed(2);
+  });
+
+  check("sensitivity panel's baseline scenario reproduces the headline median exactly", function(){
+    const sel = Object.assign({}, DEFAULTS, {smoking:"former", activity:"a2", self_rated_health:"fair"});
+    const r = computeForPerson(40, "male", "DEU", sel, {withMC:false});
+    const m = sensitivityMedian(r, {});
+    return Math.abs(m - r.q50) < 1e-9 ? true : "sens " + m + " vs headline " + r.q50;
+  });
+
+  check("sensitivity: falling death rates always push the median later, never earlier", function(){
+    const r = computeForPerson(30, "female", "BRA", DEFAULTS, {withMC:false});
+    const a = sensitivityMedian(r, {}), b = sensitivityMedian(r, {improvement:0.01}), c = sensitivityMedian(r, {improvement:0.02});
+    return (b > a && c > b) ? true : a + " / " + b + " / " + c;
+  });
+
+  check("an exported answers file imports back through validateState, including Not sure answers", function(){
+    const payload = JSON.parse(JSON.stringify({v:STATE_SCHEMA_VERSION, age:33, sex:"male", country:"IND", selections:Object.assign({}, DEFAULTS, {diet:"d4"})}));
+    const s = validateState(payload);
+    return (s && s.selections.diet === "d4" && s.selections.smoking === UNKNOWN) ? true : "import failed";
+  });
+
+  check("bulk parser accepts \u201cNot sure\u201d as an answer in every factor column", function(){
+    const header = BULK_COLUMNS.map(function(c){ return c.label; });
+    const row = BULK_COLUMNS.map(function(c){
+      if(c.key === "name") return "T"; if(c.key === "age") return 50; if(c.key === "sex") return "f"; if(c.key === "country") return "UK";
+      return "Not sure";
+    });
+    const parsed = parseBulkSheet([header, row]);
+    const r = parsed.rows[0];
+    return (r && r.valid && FACTORS.every(function(f){ return r.answers[f.id] === UNKNOWN; })) ? true : (r ? r.errors.join("; ") : "no row");
   });
 
   return results;
