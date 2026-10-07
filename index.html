@@ -1511,6 +1511,30 @@ const COUNTRY_ALIASES = {
 "Burma":"Myanmar",
 "East Timor":"Timor-Leste",
 "Macedonia":"North Macedonia",
+"United States of America":"United States",
+"United Kingdom of Great Britain and Northern Ireland":"United Kingdom",
+"Russian Federation":"Russia",
+"Republic of Korea":"South Korea",
+"Democratic People's Republic of Korea":"Dem. People's Rep. of Korea",
+"Democratic Republic of the Congo":"DR Congo",
+"Iran (Islamic Republic of)":"Iran",
+"Viet Nam":"Vietnam",
+"T\u00fcrkiye":"Turkey",
+"Syrian Arab Republic":"Syria",
+"Lao People's Democratic Republic":"Laos",
+"Republic of Moldova":"Moldova",
+"United Republic of Tanzania":"Tanzania",
+"Bolivia (Plurinational State of)":"Bolivia",
+"Venezuela (Bolivarian Republic of)":"Venezuela",
+"Micronesia (Federated States of)":"Micronesia",
+"C\u00f4te d\u2019Ivoire":"Ivory Coast",
+"C\u00f4te d'Ivoire":"Ivory Coast",
+"Cote d'Ivoire":"Ivory Coast",
+"Cabo Verde":"Cape Verde",
+"Czechia":"Czech Republic",
+"Brunei Darussalam":"Brunei",
+"Netherlands (Kingdom of the)":"Netherlands",
+"occupied Palestinian territory, including east Jerusalem":"Palestine",
 };
 function normalizeMatch(s){
   return String(s === undefined || s === null ? "" : s).trim().toLowerCase().replace(/[\u2010-\u2015]/g,"-").replace(/\s+/g," ");
@@ -1548,6 +1572,7 @@ const CITATIONS = [
   { label:"Country population mix \u2014 current smoking", body:"World Health Organization, Global Health Observatory, indicator M_Est_smk_curr_std \u201cEstimate of current tobacco smoking prevalence (%) (age-standardized)\u201d, by sex, 2022 estimate (WHO global report on trends in prevalence of tobacco use). Only the current-vs-not split comes from this source; how former, light, moderate and heavy smokers divide within it is still this tool's uncited global split.", url:"https://www.who.int/data/gho/data/indicators/indicator-details/GHO/estimate-of-current-tobacco-smoking-prevalence-age-standardized-rate" },
   { label:"Country population mix \u2014 alcohol abstainers", body:"World Health Organization, Global Health Observatory, indicator SA_0000001411 \u201cAlcohol, abstainers past 12 months (%), age-standardized\u201d, by sex, 2020 (Global status report on alcohol and health and treatment of substance use disorders, 2024). Only the drinker-vs-non-drinker split comes from this source; how drinkers divide across light, moderate, higher and heavy is still the global split.", url:"https://www.who.int/data/gho/data/indicators/indicator-details/GHO/alcohol-abstainers-past-12-months-(-)-age-standardized" },
   { label:"Country population mix \u2014 physical activity", body:"World Health Organization, Global Health Observatory, indicator NCD_PAA \u201cPrevalence of insufficient physical activity among adults aged 18+ years (age-standardized estimate) (%)\u201d, by sex, 2022. Strain T, et al. National, regional, and global trends in insufficient physical activity among adults from 2000 to 2022. Lancet Global Health. 2024;12(8):e1232\u2013e1243.", url:"https://doi.org/10.1016/S2214-109X(24)00150-5" },
+  { label:"Country population mix \u2014 physical activity at 60+, by age band", body:"Same WHO indicator (NCD_PAA), 2022, by sex and age group 60\u201369, 70\u201379 and 80+, as exported from the WHO Global Health Observatory portal. If you are 60 or older, your activity answer is compared with people in your own age band. WHO publishes no country bands under 60, so younger users are compared with all adults.", url:"https://www.who.int/data/gho/data/indicators/indicator-details/GHO/prevalence-of-insufficient-physical-activity-among-adults-aged-18-years-(age-standardized-estimate)-(-)" },
   { label:"Country population mix \u2014 body mass index", body:"NCD Risk Factor Collaboration (NCD-RisC). Worldwide trends in underweight and obesity from 1990 to 2022. The Lancet. 2024;403(10431):1027\u20131050. Age-standardised prevalence by BMI band, by sex, 2022.", url:"https://www.ncdrisc.org/data-downloads-adiposity.html" },
   { label:"Country population mix \u2014 diabetes", body:"NCD Risk Factor Collaboration (NCD-RisC). Worldwide trends in diabetes prevalence and treatment from 1990 to 2022. The Lancet. 2024;404(10467):2077\u20132093. Crude prevalence of diabetes, adults 18+, by sex, 2022. Stroke and heart-attack shares are not from this source and stay global.", url:"https://www.ncdrisc.org/data-downloads-diabetes.html" },
   { label:"COPD prevalence and severity distribution (used for population weighting)", body:HAUGHNEY_2014 + " Diagnosed prevalence from UK primary-care records, not general-population screened prevalence \u2014 see \u201cModeling choices I made up\u201d.", url:"https://doi.org/10.1183/09031936.00065013" }
@@ -1667,7 +1692,7 @@ const EXTRA_CHOICES = [
   { label:"Alcohol is not modeled as a J-curve", body:"Li 2018 and many older cohorts show non-drinkers dying sooner than moderate drinkers. That pattern is now largely attributed to sick-quitter bias \u2014 people who stopped drinking because they were already ill \u2014 and abstainer misclassification. Mendelian-randomization and burden-of-proof analyses find no protective effect. This tool therefore uses non-drinking as the reference and treats risk as flat-then-rising. It will not tell you to start drinking." },
   { label:"Ages 100\u2013119 are extrapolated for every country except the U.S.", body:"The U.N. data this tool uses publishes single-year mortality rates only through age 100. SSA's own U.S. table already runs to age 119, so for every other country this tool extends the curve from 100 to 119 by applying SSA's own late-life shape \u2014 the ratio by which SSA's rate climbs from age 100 to each later age \u2014 scaled to that country's actual age-100 rate. It is a disclosed approximation, not a published figure, and it only affects the small sliver of the curve describing survival past 100." },
   { label:"The country picker's reliability tag is deliberately conservative", body:"Countries flagged \u2018higher confidence\u2019 are exactly the " + COUNTRY_ORDER.filter(function(iso3){ return COUNTRIES[iso3].hmd; }).length + " in the Human Mortality Database's own scope \u2014 the strictest standard available, requiring essentially complete death registration and census coverage. Every other country still uses a real U.N. estimate, not a placeholder; the tag only means that estimate leans more on demographic modeling because that country's own vital registration isn't judged complete enough to stand alone. A country outside HMD's scope is not fabricated data \u2014 it is data with a wider, harder-to-quantify error bar." },
-  { label:"The \u2018population average\u2019 is now partly country-specific, and partly still made up", body:"Your answers are scored against the people already inside your country's life table. Since version 5, five questions use that country's own published mix where WHO or NCD-RisC has a 2020\u20132022 estimate for your sex: the share who currently smoke, the share who don't drink, the share who are insufficiently active, the full BMI distribution, and the share with diabetes. The other five (sleep, diet, self-rated health, kidney function, COPD) still use one global mix with no citation of its own, and so do the splits inside the country figures, for example how current smokers divide into light and heavy. The country figures are age-standardised or all-adult, not specific to your age, and a few are WHO model projections rather than surveys. \u201cAge and sex only\u201d still means the raw life table; this only changes what \u2018average\u2019 your answers are measured against." },
+  { label:"The \u2018population average\u2019 is now partly country-specific, and partly still made up", body:"Your answers are scored against the people already inside your country's life table. Since version 5, five questions use that country's own published mix where WHO or NCD-RisC has a 2020\u20132022 estimate for your sex: the share who currently smoke, the share who don't drink, the share who are insufficiently active, the full BMI distribution, and the share with diabetes. The other five (sleep, diet, self-rated health, kidney function, COPD) still use one global mix with no citation of its own, and so do the splits inside the country figures, for example how current smokers divide into light and heavy. The country figures are age-standardised or all-adult, not specific to your age, with one exception: from age 60, activity uses WHO's own 60\u201369, 70\u201379 and 80+ figures. A few are WHO model projections rather than surveys. \u201cAge and sex only\u201d still means the raw life table; this only changes what \u2018average\u2019 your answers are measured against." },
   { label:"How the country figures were mapped onto this tool's answer bands", body:"WHO activity data is a single yes/no line at 150 minutes a week. Here it is assigned to everyone under 2 hours plus a third of the 2\u20133.5 hour band, which is a judgment call. NCD-RisC's 20\u201325 BMI band is split 60/40 into this tool's 18.5\u201322.9 and 23\u201324.9 bands, also a judgment call. Diabetes prevalence is spread across the four diabetes answers in their global proportions, while stroke-only and heart-attack-only stay at their global shares. The source files hold uncertainty intervals that this tool doesn't propagate." },
   { label:"Reference categories get zero uncertainty by construction", body:"Any option with a hazard ratio of exactly 1.00 has a confidence interval of 1.00\u20131.00, so the "+MC_RUNS+"-run simulation draws no variation from it at all. If you answered several questions with the reference option, the uncertainty band shown is narrower than it should be \u2014 not because your answer is more certain, but because the reference category has nowhere to record its own error." },
   { label:"Death rates are frozen at 2023 levels", body:"Every life table here is a period table: it takes the death rates observed across all ages in a single calendar year and applies them to you as if they will never change. In most countries those rates have fallen for decades, so a cohort table for your actual generation would usually put the curve somewhat later. How much later depends on forecasts of medicine, economics and events nobody can see. This tool doesn't add a guessed improvement factor on top, because that would be another made-up number. The cost is that the results lean conservative for most people, and especially for younger users." },
@@ -1716,6 +1741,34 @@ const CPREV_RAW = "AFG,16.2,2,97,98.9,20,46,17.9,23.1,37.3,17.5,30.4,11.6,3.3,31
 "9.5,13.2,25.8,14.6,38.8,14.9,5.9,30.6,13.5,28.3,18,9.5;URY,23.2,17.3,24.3,40.2,30.8,36.8,16,17.9,18.3,9.8,40.3,21.4,10.3,22.1,11.2,30,19.5,17.1;USA,18.7,12.5,21.3,36.1,27.6,39.8,17,14.7,15.7,8.2,34.5,24.9,16.7,19.6,9.3,27.3,19,24.7;UZB,20.2,0.9,79.8,91.5,26,37.1,15.1,20.6,24.7,12.8,34.7,21,7,22.6,11.1,32.1,21.5,12.6;VCT,,,39.5,59.8,21.4,39.9,13.1,20.2,34.5,16.1,30.2,13.3,5.9,16.4,6.6,27.4,23.5,26.1;VEN,,,53.9,72.6,38.5,52.8,12.2,10.8,31.3,14.6,33.3,14.1,6.8,30.5,13.9,29.8,15.3,10.6;VNM,40.9,0.8,35.1,56.8,25.6,34.5,10.4,12.1,58.8,22,17.2,1.7,0.3,58.8,22.8,16.2,1.8,0.3;VUT,41.5,8.5,63.3,80.3,5.8,9.2,20.8,19.8,34.2,18.8,29.9,10.8,6.2,28.1,13.3,31.5,16.6,10.5;WSM,33.8,14.4,62.2,79.8,9.3,17.6,15.3,17,9.8,6,31.4,27.7,25.1,4.8,2.3,17.9,26.5,48.5;YEM,,,98.3,99.4,24,34.1,12.9,14.3,46.9,18.9,23.7,6.8,3.7,43,14,25.2,12.3,5.5;ZAF,38.4,8.7,59.9,79.9,41.2,48.1,10.2,14.7,45.1,16.4,24,10,4.6,18.5,8.6,25.6,23.3,24.1;ZMB,23.1,2.8,53.5,72.7,9.6,17.9,8.1,11,57.1,21.8,15.7,3.5,1.8,43.3,17.1,22.6," +
 "11.1,5.9;ZWE,20,0.8,73,87,13.3,21.1,8.2,10.8,58.2,21.4,14.7,4.5,1.3,36.1,16.4,25.7,13.8,8";
 const CPREV_CHECKSUM = 841289;
+const PA_AGE_RAW = "AFG,27,57,42,74,61,87;AGO,20,28,30,40,43,53;ALB,29,32,38,45,51,60;AND,32,33,42,45,54,61;ARE,72,82,80,91,88,97;ARG,48,48,57,60,68,73;ARM,36,33,46,49,59,69;ATG,41,52,50,63,60,74;AUS,29,32,39,45,53,62;AUT,25,24,34,36,47,53;AZE,32,30,42,46,55,66;BDI,20,21,30,31,42,44;BEL,28,33,38,46,51,63;BEN,23,29,34,41,47,56;BFA,21,28,32,40,46,55;BGD,27,29,42,46,61,66;BGR,42,39,53,53,66,70;BHR,44,51,54,66,66,81;BHS,36,54,45,66,56,78;BIH,25,29,34,41,47,57;BLR,20,17,30,28,42,44;BLZ,45,55,54,66,64,77;BOL,26,33,34,45,45,59;BRA,46,53,56,65,66,77;BRB,47,59,56,69,66,80;BRN,34,49,50,68,68,84;BTN,13,16,23,29,40,49;BWA,25,37,36,50,50,64;CAF,21,26,30,38,43,51;CAN,43,44,54,58,67,73;CHE,22,24,31,36,43,52;CHL,40,54,50,66,61,77;CHN,25,18,33,28,44,45;CIV,23,32,33,44,46,58;CMR,24,30,34,42,47,55;COD,18,25,27,36,40,49;COG,18,26,27,37,40,50;COK,24,39,33,52,45,67;COL,37,48,46,59,56,71;COM,16,33,25,45,37,60;CPV,32,51,44,65,58,7" +
+"7;CRI,52,65,62,76,72,85;CUB,61,79,70,87,79,93;CYP,42,52,53,66,65,80;CZE,30,30,41,43,55,61;DEU,16,14,24,23,35,38;DJI,20,29,30,40,43,54;DMA,29,47,38,58,48,70;DNK,17,14,25,23,36,37;DOM,40,50,49,61,59,72;DZA,27,48,36,64,48,81;ECU,25,34,33,46,44,60;EGY,38,47,49,64,61,80;ERI,11,23,18,34,29,48;ESP,25,28,34,41,47,58;EST,23,20,33,31,46,48;ETH,10,18,17,28,28,42;FIN,14,10,21,17,33,30;FJI,14,26,20,37,30,52;FRA,25,31,34,44,47,61;FSM,31,41,42,54,53,68;GAB,25,34,35,46,48,59;GBR,23,23,32,35,45,52;GEO,31,31,41,48,54,67;GHA,26,33,38,46,52,61;GIN,20,26,30,37,43,51;GMB,25,34,35,47,49,61;GNB,22,28,32,39,45,52;GNQ,22,33,32,45,45,59;GRC,40,43,51,56,64,72;GRD,38,50,47,62,58,74;GTM,38,52,47,64,58,76;GUY,33,53,42,65,53,76;HND,40,50,49,61,59,73;HRV,37,35,48,49,62,66;HTI,28,42,36,53,46,65;HUN,37,37,48,51,62,68;IDN,27,23,42,41,61,63;IND,52,68,68,82,83,93;IRL,25,28,34,41,47,58;IRN,45,67,55,81,68,92;IRQ,51,71,61,84,73" +
+",93;ISL,29,31,38,43,51,59;ISR,30,33,39,45,52,60;ITA,43,49,54,63,67,78;JAM,41,53,50,64,61,76;JOR,38,34,49,51,61,70;JPN,46,54,53,66,62,79;KAZ,36,35,46,51,58,69;KEN,13,14,21,23,33,36;KGZ,23,29,32,45,44,64;KHM,16,20,29,36,47,58;KIR,30,47,40,60,51,74;KNA,44,56,53,67,64,78;KOR,62,65,69,75,77,86;KWT,70,74,79,85,86,94;LAO,12,31,22,50,38,70;LBN,67,69,76,82,85,92;LBR,20,23,31,34,44,49;LBY,46,64,57,78,69,90;LCA,25,30,34,42,44,56;LKA,37,56,54,73,72,87;LSO,13,11,21,19,33,30;LTU,28,25,39,37,52,55;LUX,18,17,26,27,38,43;LVA,22,17,31,28,44,45;MAR,26,37,36,54,48,73;MCO,28,32,38,44,50,60;MDA,17,12,26,21,38,36;MDG,18,21,28,31,40,44;MDV,31,33,48,52,66,73;MEX,35,38,44,50,55,64;MHL,24,37,33,49,44,63;MKD,28,38,38,51,50,67;MLI,36,44,47,56,61,69;MLT,45,49,56,63,68,78;MMR,25,33,40,52,59,72;MNE,29,28,39,40,51,56;MNG,33,37,44,54,56,73;MOZ,13,16,20,25,31,37;MRT,41,56,53,68,66,79;MUS,35,46,47,60,61,73;MWI,4,5,7,9,14,1" +
+"7;MYS,45,54,62,73,78,88;NAM,30,39,41,51,54,65;NER,20,28,29,40,43,55;NGA,22,29,32,40,45,54;NIC,43,51,52,62,62,74;NIU,10,10,15,17,23,28;NLD,11,13,17,22,26,36;NOR,38,44,49,57,61,72;NPL,15,9,26,19,44,36;NRO,37,49,48,62,60,75;NZL,23,23,32,35,44,52;OMN,44,60,54,76,66,88;PAK,43,68,60,82,76,92;PAN,60,74,68,83,78,90;PER,42,44,52,56,62,69;PHL,43,67,60,83,76,93;PLW,24,42,33,55,44,69;PNG,12,21,19,30,28,44;POL,46,45,57,59,70,75;PRI,46,53,55,64,65,75;PRK,30,38,45,56,62,75;PRT,54,62,64,75,76,86;PRY,42,47,51,58,61,70;PSE,34,42,44,59,56,77;QAT,59,72,69,84,79,93;ROU,47,43,58,58,71,74;RUS,25,23,34,34,47,50;RWA,12,15,20,25,31,38;SAU,56,68,66,81,77,92;SDN,25,29,36,42,50,57;SEN,17,30,26,43,38,58;SGP,29,25,35,36,44,51;SLB,19,27,27,38,38,54;SLE,13,24,21,36,32,50;SLV,42,53,51,65,62,77;SMR,28,32,37,44,50,59;SOM,20,30,30,42,42,56;SRB,51,55,62,67,74,80;SSD,19,26,28,37,41,50;STP,21,31,31,44,45,59;SUR,53,63,63,73,72," +
+"83;SVK,30,30,41,43,54,61;SVN,25,24,35,37,49,54;SWE,12,10,19,17,29,30;SWZ,23,31,33,44,47,59;SYC,28,30,40,42,54,57;SYR,41,51,51,66,63,81;TCD,24,27,34,38,48,52;TGO,18,25,28,37,42,52;THA,35,40,51,60,70,79;TJK,34,55,44,71,56,85;TKM,15,18,22,31,32,50;TLS,26,43,41,62,59,80;TON,31,44,42,57,54,71;TTO,45,62,54,72,65,82;TUN,36,47,46,62,58,78;TUR,44,63,54,78,66,90;TUV,23,38,32,51,44,66;TZA,8,6,13,12,23,21;UGA,10,8,16,15,27,25;UKR,18,16,27,27,39,43;URY,41,44,50,56,60,68;USA,34,45,44,59,57,74;UZB,34,46,44,64,56,80;VCT,30,47,38,59,49,72;VEN,49,61,59,72,69,82;VNM,32,46,48,66,67,83;VUT,9,11,14,19,22,31;WSM,14,21,21,32,31,47;YEM,30,42,40,58,52,74;ZAF,53,60,65,72,77,83;ZMB,15,26,23,38,36,53;ZWE,20,29,29,41,42,55";
+const PA_AGE_CHECKSUM = 54241;
+const PA_AGE = (function(){
+  const out = Object.create(null);
+  PA_AGE_RAW.split(";").forEach(function(rec){
+    const p = rec.split(",");
+    const n = function(i){ return p[i] === "" ? null : parseFloat(p[i]) / 100; };
+    out[p[0]] = [[n(1),n(2)],[n(3),n(4)],[n(5),n(6)]];
+  });
+  return out;
+})();
+function paAgeChecksum(){
+  let s = 0;
+  PA_AGE_RAW.split(";").forEach(function(rec){ rec.split(",").slice(1).forEach(function(v){ if(v !== "") s += parseInt(v, 10); }); });
+  return s;
+}
+function ageBand(age){ return age >= 80 ? 2 : (age >= 70 ? 1 : (age >= 60 ? 0 : -1)); }
+const AGE_BAND_LABELS = ["60\u201369", "70\u201379", "80+"];
+function activityAgeSpecific(iso3, sex, age){
+  const b = ageBand(age);
+  if(b < 0 || !PA_AGE[iso3]) return null;
+  const v = PA_AGE[iso3][b][sex === "female" ? 1 : 0];
+  return v === null ? null : v;
+}
 const CPREV = (function(){
   const out = Object.create(null);
   CPREV_RAW.split(";").forEach(function(rec){
@@ -1737,7 +1790,7 @@ function cprevChecksum(){
 }
 const COUNTRY_MIX_FACTORS = ["smoking","alcohol","activity","bmi","cardio_history"];
 function globalPrev(factor){ return factor.options.map(function(o){ return o.prevalence; }); }
-function countryPrev(factor, iso3, sex){
+function countryPrev(factor, iso3, sex, age){
   const c = iso3 ? CPREV[iso3] : null;
   if(!c) return null;
   const si = sex === "female" ? 1 : 0;
@@ -1754,7 +1807,8 @@ function countryPrev(factor, iso3, sex){
     return [a, g[1]/drG*(1-a), g[2]/drG*(1-a), g[3]/drG*(1-a), g[4]/drG*(1-a)];
   }
   if(factor.id === "activity"){
-    const x = c.pa[si]; if(x === null) return null;
+    const xa = (age !== undefined && age !== null) ? activityAgeSpecific(iso3, sex, age) : null;
+    const x = xa !== null ? xa : c.pa[si]; if(x === null) return null;
     const w = [1, 1, 1/3, 0, 0];
     const insG = g.reduce(function(a,v,i){ return a + v*w[i]; }, 0);
     return g.map(function(v,i){ return v*w[i]/insG*x + v*(1-w[i])/(1-insG)*(1-x); });
@@ -1779,23 +1833,28 @@ function countryPrev(factor, iso3, sex){
 const _prevCache = Object.create(null);
 function prevalencesFor(factor, ctx){
   const useC = !!(ctx && ctx.iso3 && ctx.useCountry !== false);
-  const key = factor.id + "|" + (useC ? ctx.iso3 + "|" + ctx.sex : "global");
+  const key = ctxKey(factor, ctx);
   if(_prevCache[key] === undefined){
-    _prevCache[key] = (useC && countryPrev(factor, ctx.iso3, ctx.sex)) || globalPrev(factor);
+    _prevCache[key] = (useC && countryPrev(factor, ctx.iso3, ctx.sex, ctx.age)) || globalPrev(factor);
   }
   return _prevCache[key];
 }
+function ctxKey(factor, ctx){
+  const useC = !!(ctx && ctx.iso3 && ctx.useCountry !== false);
+  if(!useC) return factor.id + "|global";
+  const band = (factor.id === "activity" && ctx.age !== undefined) ? ageBand(ctx.age) : -1;
+  return factor.id + "|" + ctx.iso3 + "|" + ctx.sex + "|" + band;
+}
 function prevSourceFor(factor, ctx){
   if(!(ctx && ctx.iso3 && ctx.useCountry !== false)) return "global";
-  return countryPrev(factor, ctx.iso3, ctx.sex) ? "country" : "global";
+  return countryPrev(factor, ctx.iso3, ctx.sex, ctx.age) ? "country" : "global";
 }
 function countryMixCoverage(iso3, sex){
   return FACTORS.filter(function(f){ return prevSourceFor(f, {iso3:iso3, sex:sex}) === "country"; }).map(function(f){ return f.id; });
 }
 const _popBetaCache = Object.create(null);
 function populationMeanBeta(factor, ctx){
-  const useC = !!(ctx && ctx.iso3 && ctx.useCountry !== false);
-  const key = factor.id + "|" + (useC ? ctx.iso3 + "|" + ctx.sex : "global");
+  const key = ctxKey(factor, ctx);
   if(_popBetaCache[key] === undefined){
     const prev = prevalencesFor(factor, ctx);
     let s = 0;
@@ -2077,6 +2136,7 @@ function resolveCountryInput(typed){
   if(contains.length === 1) return contains[0];
   return null;
 }
+window.survivalMirrorBuild = { resolve:resolveCountryInput, countries:COUNTRIES };
 function hasClampArtifact(iso3){
   const c = COUNTRIES[iso3];
   if(!c) return false;
@@ -2611,7 +2671,7 @@ function computeForPerson(age, sex, iso3, selectionsObj, opts){
   const withMC = !opts || opts.withMC !== false;
   const c = COUNTRIES[iso3] || COUNTRIES.USA;
   const qx = sex === "female" ? c.female : c.male;
-  const ctx = { iso3:iso3, sex:sex, useCountry: !(opts && opts.globalMix) };
+  const ctx = { iso3:iso3, sex:sex, age:age, useCountry: !(opts && opts.globalMix) };
   const lRel = computeLRel(selectionsObj, FACTORS, CORRELATION_GROUPS, null, ctx).total;
   const rowsFull = buildSurvival(qx, age, function(a){ return lRel*ageAttenuation(a); });
   const rowsBase = buildSurvival(qx, age, function(){ return 0; });
@@ -2749,7 +2809,7 @@ function exploreRows(r, opt){
   for(const k in CORRELATION_GROUPS){
     groups[k] = { lambda: opt.lambdaAll !== undefined ? opt.lambdaAll : (opt.lambdaOverride && opt.lambdaOverride[k] !== undefined ? opt.lambdaOverride[k] : CORRELATION_GROUPS[k].lambda) };
   }
-  const ctx = { iso3:r.iso3, sex:r.sex, useCountry: opt.globalMix ? false : r.ctx.useCountry };
+  const ctx = { iso3:r.iso3, sex:r.sex, age:r.age, useCountry: opt.globalMix ? false : r.ctx.useCountry };
   const lRel = computeLRel(r.selections, FACTORS, groups, null, ctx).total;
   const floor = opt.floor !== undefined ? opt.floor : ATTEN_FLOOR;
   const atten = function(age){
@@ -3120,7 +3180,7 @@ function renderLimits(){
     "Healthcare access, income, and where you live shift real mortality risk substantially and aren't asked about here.",
     "The hazard ratios come from a small number of sources. Smoking, weight, activity and diet come from the Nurses' Health Study and Health Professionals Follow-up Study, whose participants skew white, health-literate, and higher-income than the general population. Sleep, self-rated health, cardiometabolic history, kidney function and COPD come from separate pooled analyses, mostly of cohorts in North America, Europe and East Asia. How well any of them transfer to you personally isn't fully known.",
     hazardCountryNote(),
-    mixCoverageText(selectedCountry, currentSex()) + " Those country figures describe adults of all ages, not people your age, and their splits into this tool's finer answer bands are judgment calls listed under \u201cModeling choices I made up.\u201d",
+    mixCoverageText(selectedCountry, currentSex()) + " Those country figures describe adults of all ages, not people your age (except activity from 60 onward, which uses your age band), and their splits into this tool's finer answer bands are judgment calls listed under \u201cModeling choices I made up.\u201d",
     "For " + COUNTRY_ORDER.filter(function(iso3){ return iso3 !== "USA" && hasClampArtifact(iso3); }).length + " of the " + (COUNTRY_ORDER.length - 1) + " non-U.S. countries, the modeled ages beyond 100 \u2014 extrapolated past where the UN's real single-year data stops \u2014 reach a flat 0.999 ceiling, which flattens the true shape of the curve at very old age and makes the long-tail (10th-percentile) estimate partly insensitive to your ten answers, rather than merely affecting it more than the median. Ages 0\u201399 come directly from the UN's own published probability-of-dying figures and are not affected. See \u201cFull source citations\u201d for detail.",
     "These are period life tables. They assume today's death rates at every age stay fixed for the rest of your life. Historically they have kept falling in most countries, so for most people, and especially younger ones, the real curve for their generation is probably later than the one shown.",
     "The model treats each question as a fixed fact about you. In reality smoking, weight, activity and health all change over a lifetime, and the cohorts behind these hazard ratios measured them mostly once.",
@@ -3487,7 +3547,7 @@ function restore(){
   return true;
 }
 
-document.getElementById("ageInput").addEventListener("change", function(){ persist(); liveRecalc(); });
+document.getElementById("ageInput").addEventListener("change", function(){ renderLimits(); persist(); liveRecalc(); });
 document.getElementById("ageInput").addEventListener("input", function(){ validateAgeUI(); });
 document.querySelectorAll('input[name="sex"]').forEach(function(r){
   r.addEventListener("change", function(){ renderCountryQuality(); renderLimits(); persist(); liveRecalc(); });
@@ -4652,6 +4712,20 @@ function runSelfTests(){
     const a = computeForPerson(40, "male", "IDN", sel, {withMC:false});
     const b = computeForPerson(40, "male", "SWE", sel, {withMC:false});
     return (a.lRelFull < b.lRelFull && a.lRelFull < 0) ? true : a.lRelFull + " vs " + b.lRelFull;
+  });
+
+  check("embedded 60+ activity table matches its build checksum, and the age band reaches the model", function(){
+    if(paAgeChecksum() !== PA_AGE_CHECKSUM) return "checksum " + paAgeChecksum() + " vs " + PA_AGE_CHECKSUM;
+    const act = FACTORS.find(function(f){ return f.id === "activity"; });
+    const young = countryPrev(act, "USA", "female", 45), old = countryPrev(act, "USA", "female", 82);
+    const g = globalPrev(act), w = [1, 1, 1/3, 0, 0];
+    const insG = g.reduce(function(a,v,i){ return a + v*w[i]; }, 0);
+    const expect = function(x){ return g.map(function(v,i){ return v*w[i]/insG*x + v*(1-w[i])/(1-insG)*(1-x); }); };
+    const close = function(a, b){ return a.every(function(v,i){ return Math.abs(v - b[i]) < 1e-12; }); };
+    if(!close(young, expect(0.398))) return "under-60 should use the all-adult 39.8%";
+    if(!close(old, expect(0.74))) return "80+ should use WHO's 74%";
+    const r = computeForPerson(82, "female", "USA", DEFAULTS, {withMC:false});
+    return (r.lRelFull === 0 && r.q50 === r.q50base) ? true : "all-Not-sure at 82 drifted from the life table";
   });
 
   check("explorer at default settings reproduces the headline curve exactly", function(){

@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><body>
+<p style="font-family:sans-serif">Rebuild tool for PA_AGE_RAW in index.html. Source: WHO GHO NCD_PAA "Prevalence of insufficient physical activity among adults aged 18+ years", 2022, by sex and age group, as exported from the GHO portal (data.xlsx). Place data.xlsx next to this file, open it, and copy the console output. CHECKSUM must match PA_AGE_CHECKSUM.</p>
+<iframe id="app" src="../index.html" style="display:none"></iframe>
+<script src="../xlsx.full.min.js"></script>
+<script>
+setTimeout(async function(){
+  const buf = await (await fetch("data.xlsx")).arrayBuffer();
+  const wb = XLSX.read(buf, {type:"array"});
+  const aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:""});
+  const sexRow = aoa[1];
+  const mCol = sexRow.indexOf("Male"), fCol = sexRow.indexOf("Female");
+  const groups = {}, byName = {};
+  aoa.slice(3).forEach(function(r){
+    if(String(r[1]) !== "2022") return;
+    const g = String(r[2]).replace(/\s+/g," ").trim();
+    groups[g] = 1;
+    const num = function(s){ const m = String(s).match(/^\s*([\d.]+)/); return m ? Math.round(parseFloat(m[1])) : null; };
+    if(!byName[r[0]]) byName[r[0]] = {};
+    byName[r[0]][g] = [num(r[mCol]), num(r[fCol])];
+  });
+  console.log("GROUPS", Object.keys(groups).join(" | "));
+  const order = ["60-69 years","70-79 years","80+ years"];
+  console.log("ORDER v2", order.join(" | "));
+  const B = document.getElementById("app").contentWindow.survivalMirrorBuild;
+  const map = {}, unmatched = [];
+  Object.keys(byName).forEach(function(name){
+    let iso = null;
+    try{ iso = B.resolve(name); }catch(e){ if(!window._e){ window._e=1; console.log("RESOLVE ERR", e.message, typeof B); } }
+    if(!iso) unmatched.push(name); else map[iso] = byName[name];
+  });
+  console.log("UNMATCHED", unmatched.join(" | "));
+  let checksum = 0;
+  const parts = Object.keys(map).sort().map(function(iso){
+    const vals = [];
+    order.forEach(function(g){ const p = map[iso][g] || [null,null]; p.forEach(function(v){ if(v !== null) checksum += v; vals.push(v === null ? "" : v); }); });
+    return iso + "," + vals.join(",");
+  });
+  const txt = parts.join(";");
+  console.log("CHECKSUM", checksum, "COUNT", parts.length, "LEN", txt.length);
+  for(let i=0;i<txt.length;i+=900) console.log("P" + String(i/900|0).padStart(2,"0") + " " + txt.slice(i,i+900));
+}, 4000);
+</script></body></html>

@@ -56,6 +56,14 @@ A static, offline-capable mortality calculator. It shows population-level surviv
 - **Self-tests: 26.** They include a data checksum, a check that every distribution is valid, WHO spot checks, an all-Not-sure check across countries, and a check that the explorer at default settings matches the headline.
 - `tools/build-country-mix.html` rebuilds the embedded table from the raw files. The raw files aren't committed, to keep the deploy small.
 
+### v6 — age-specific activity comparison
+- From age 60, the activity answer is compared with WHO's own 2022 figures for that person's age band (60–69, 70–79, 80+), by sex, for 196 countries. The source is WHO GHO `NCD_PAA` by age group, which is the `data.xlsx` export.
+- WHO publishes no country bands under 60, so under 60 the all-adult figure is still used. This is disclosed in the citations, the modeling choices and the limitations list.
+- The data has its own checksum test. With every answer "Not sure", the result at age 82 still equals the life table.
+- The importer recognises WHO's official country names (Viet Nam, Türkiye, Russian Federation, and so on), for bulk sheets too.
+- `tools/build-activity-age.html` rebuilds the table. It uses `data.xlsx`, which isn't committed.
+- Self-tests: 27.
+
 ## Entry points
 - `index.html` — the app
 - `index.html?selftest=1` — in-page self-test harness (20 checks)
@@ -73,9 +81,9 @@ A static, offline-capable mortality calculator. It shows population-level surviv
 - No tables or backend are used.
 
 ## Not yet implemented / ideas
-- Age-specific country mixes (GBD/NCD-RisC by age group) instead of all-adult figures.
-- Country figures for stroke, heart attack, kidney disease and COPD (GBD 2021 Results Tool).
-- Carry the source files' uncertainty intervals into the Monte Carlo.
+- Age-specific country figures for smoking, BMI and diabetes (needs NCD-RisC/GBD age-group downloads, which haven't been supplied yet).
+- Country figures for stroke, heart attack, kidney disease and COPD (needs a GBD 2021 Results Tool export, which hasn't been supplied yet).
+- Feed the source files' uncertainty ranges into the "how sure" simulation. This was deliberately not done: only point estimates are embedded, and adding it would mean re-embedding interval data for every figure.
 - Localization.
 
 ## Deploy
