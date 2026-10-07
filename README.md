@@ -1,4 +1,4 @@
-# Survival Mirror — v4
+# Survival Mirror — v6
 
 A static, offline-capable mortality calculator. It shows population-level survival curves from age, sex, country (236 life tables) and ten lifestyle and health questions. Every modeling choice and limitation is shown next to the numbers.
 
