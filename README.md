@@ -34,6 +34,28 @@ A static, offline-capable mortality calculator. It shows population-level surviv
 - **Bulk results show a "Not sure" count per row**, both on screen and in the downloaded .xlsx file. There's also a note that bulk ages are rounded to one decimal only for sorting.
 - 3 new self-tests, for 20 in total.
 
+### v5 — country population mix + assumption sliders
+- **Country-specific population averages.** Answers are now measured against the people already inside the country's life table, for 5 of the 10 questions. The data is by sex, for 201 countries:
+
+  | Question | Source | Year | What the country data sets |
+  |---|---|---|---|
+  | Smoking | WHO GHO `M_Est_smk_curr_std` | 2022 | the current-vs-not split |
+  | Alcohol | WHO GHO `SA_0000001411` | 2020 | the abstainer share |
+  | Activity | WHO GHO `NCD_PAA`, adults 18+ | 2022 | the share insufficiently active |
+  | BMI | NCD-RisC (Lancet 2024), age-standardised | 2022 | the full 7-band distribution, collapsed to 5 bands |
+  | Diabetes | NCD-RisC (Lancet 2024), crude | 2022 | the diabetes share inside cardiometabolic history |
+
+  - The splits inside each country figure stay global (for example, light vs. heavy smokers), and the remaining 5 questions stay global. All of this is disclosed per country next to the country picker and in the limitations list.
+  - The mapping judgment calls are listed under "Modeling choices I made up": the 150-minute activity line, the 60/40 split of the 20–25 BMI band, and how diabetes is spread across the four diabetes answers.
+  - All-"Not sure" still reproduces the raw life table exactly.
+- **Not used:** heavy-episodic drinking (`SA_0000001739`) and per-capita litres (`SA_0000001822`), because there's no defensible mapping onto the alcohol bands. Also unused: diabetes age-standardised (crude matches the life tables' real age mix better), the age-group activity export (`data.xlsx`), and the GBD guide (it holds no data).
+- **"Try your own assumptions" sandbox.** Sliders for a yearly fall in death rates (0–2.5%), how strong your answers' effects still are at age 90 (0–100%), and each overlap discount, plus a switch between the country mix and one global mix.
+  - It shows the median, the difference, the middle 80% and an overlaid curve.
+  - It's clearly labeled as exploration. The headline never changes, nothing is saved, and it isn't printed.
+- **Sensitivity panel** gains a "global mix instead of country mix" row.
+- **Self-tests: 26.** They include a data checksum, a check that every distribution is valid, WHO spot checks, an all-Not-sure check across countries, and a check that the explorer at default settings matches the headline.
+- `tools/build-country-mix.html` rebuilds the embedded table from the raw files. The raw files aren't committed, to keep the deploy small.
+
 ## Entry points
 - `index.html` — the app
 - `index.html?selftest=1` — in-page self-test harness (20 checks)
@@ -51,8 +73,9 @@ A static, offline-capable mortality calculator. It shows population-level surviv
 - No tables or backend are used.
 
 ## Not yet implemented / ideas
-- Country-specific prevalence weights for the population-average baseline.
-- Sensitivity sliders for the age-attenuation floor and the shrinkage lambdas.
+- Age-specific country mixes (GBD/NCD-RisC by age group) instead of all-adult figures.
+- Country figures for stroke, heart attack, kidney disease and COPD (GBD 2021 Results Tool).
+- Carry the source files' uncertainty intervals into the Monte Carlo.
 - Localization.
 
 ## Deploy

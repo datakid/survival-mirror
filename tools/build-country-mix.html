@@ -1,0 +1,80 @@
+<!DOCTYPE html><html><body>
+<p style="font-family:sans-serif">Rebuild tool for CPREV_RAW in index.html. Place smk.json (WHO M_Est_smk_curr_std), sa1411.json (WHO SA_0000001411), paa.json (WHO NCD_PAA, 18+), diab_crude.csv (NCD-RisC diabetes crude) and bmi.csv (NCD-RisC BMI age-standardised) next to this file, open it, and copy the console output. CHECKSUM must match CPREV_CHECKSUM.</p>
+<script>
+function parseCSV(text){
+  const rows=[]; let row=[], cur="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(cur); cur=""; }
+    else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=""; }
+    else if(c!=='\r') cur+=c;
+  }
+  if(cur!==""||row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+function r1(x){ return x===null||x===undefined||isNaN(x) ? null : Math.round(x*10)/10; }
+function norm(s){ return s.replace(/[^\x20-\x7E]/g,"").replace(/\s+/g," ").trim(); }
+(async function(){
+  const out = {};
+  function slot(iso){ if(!out[iso]) out[iso] = {sm:[null,null],ab:[null,null],in:[null,null],dp:[null,null],dt:[null,null],bm:[null,null]}; return out[iso]; }
+  async function gho(file, key, year){
+    const j = await (await fetch(file)).json();
+    j.value.forEach(function(r){
+      if(r.SpatialDimType!=="COUNTRY" || r.TimeDim!==year) return;
+      const si = r.Dim1==="SEX_MLE"?0:(r.Dim1==="SEX_FMLE"?1:-1);
+      if(si<0 || r.NumericValue===null) return;
+      slot(r.SpatialDim)[key][si] = r1(r.NumericValue);
+    });
+  }
+  await gho("smk.json","sm",2022);
+  await gho("sa1411.json","ab",2020);
+  await gho("paa.json","in",2022);
+  const d = parseCSV(await (await fetch("diab_crude.csv")).text());
+  const dh = d[0].map(norm);
+  const di = {iso:dh.indexOf("ISO"), sex:dh.indexOf("Sex"), yr:dh.indexOf("Year"), p:dh.indexOf("Prevalence of diabetes (18+ years)"), t:dh.indexOf("Proportion of people with diabetes who were treated (30+ years)")};
+  console.log("diab idx", JSON.stringify(di));
+  d.slice(1).forEach(function(r){
+    if(r[di.yr]!=="2022") return;
+    const si = r[di.sex]==="Men"?0:(r[di.sex]==="Women"?1:-1); if(si<0) return;
+    const s = slot(r[di.iso]);
+    s.dp[si] = r1(parseFloat(r[di.p])*100);
+    s.dt[si] = r1(parseFloat(r[di.t])*100);
+  });
+  const b = parseCSV(await (await fetch("bmi.csv")).text());
+  const bh = b[0].map(norm);
+  const names = ["Prevalence of BMI<18.5 kg/m (underweight)","Prevalence of BMI 18.5 kg/m to <20 kg/m","Prevalence of BMI 20 kg/m to <25 kg/m","Prevalence of BMI 25 kg/m to <30 kg/m","Prevalence of BMI 30 kg/m to <35 kg/m","Prevalence of BMI 35 kg/m to <40 kg/m","Prevalence of BMI >=40 kg/m (morbid obesity)"];
+  const cols = names.map(function(n){ return bh.indexOf(n); });
+  console.log("bmi col idx", cols.join(","));
+  if(cols.indexOf(-1)!==-1) console.log("bmi headers", JSON.stringify(bh.filter(function(h){ return h.indexOf("uncertainty")===-1; })));
+  const bi = {iso:bh.indexOf("ISO"), sex:bh.indexOf("Sex"), yr:bh.indexOf("Year")};
+  let sumBad = 0;
+  b.slice(1).forEach(function(r){
+    if(r[bi.yr]!=="2022") return;
+    const si = r[bi.sex]==="Men"?0:(r[bi.sex]==="Women"?1:-1); if(si<0) return;
+    const v = cols.map(function(c){ return r1(parseFloat(r[c])*100); });
+    const s = v.reduce(function(a,x){return a+x;},0);
+    if(Math.abs(s-100)>1.5) sumBad++;
+    slot(r[bi.iso]).bm[si] = v;
+  });
+  console.log("bmi rows not summing to 100:", sumBad);
+  const isos = Object.keys(out).sort();
+  let checksum = 0;
+  function v(x){ if(x===null||x===undefined) return ""; checksum += Math.round(x*10); return String(x); }
+  function collapse(a){
+    if(!a) return [null,null,null,null,null];
+    return [r1(a[0]+a[1]+a[2]*0.6), r1(a[2]*0.4), a[3], a[4], r1(a[5]+a[6])];
+  }
+  const parts = isos.map(function(iso){
+    const s = out[iso];
+    const bmM = collapse(s.bm[0]), bmF = collapse(s.bm[1]);
+    return [iso, v(s.sm[0]), v(s.sm[1]), v(s.ab[0]), v(s.ab[1]), v(s.in[0]), v(s.in[1]), v(s.dp[0]), v(s.dp[1])]
+      .concat(bmM.map(v)).concat(bmF.map(v)).join(",");
+  });
+  const txt = parts.join(";");
+  console.log("CHECKSUM", checksum);
+  console.log("COUNT", isos.length, "LEN", txt.length);
+  for(let i=0;i<txt.length;i+=990) console.log("P"+String(i/990|0).padStart(2,"0")+" "+txt.slice(i,i+990));
+})();
+</script></body></html>
