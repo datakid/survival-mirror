@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><body>
+<p style="font-family:sans-serif">Rebuild tool for DI_AGE_RAW in index.html. Source: NCD-RisC (Lancet 2016) age-specific diabetes prevalence by country, men and women, latest year in file. Place diab_m.csv and diab_f.csv next to this file, open it, and copy the console output. CHECKSUM must match DI_AGE_CHECKSUM.</p>
+<iframe id="app" src="../index.html" style="display:none"></iframe>
+<script>
+function rows(t){ return t.split(/\r?\n/).filter(Boolean).map(function(l){ return l.split(","); }); }
+setTimeout(async function(){
+  const B = document.getElementById("app").contentWindow.survivalMirrorBuild;
+  const data = {}, bands = {}, unmatched = {};
+  let maxYear = 0;
+  for(const [file, si] of [["diab_m.csv",0],["diab_f.csv",1]]){
+    const r = rows(await (await fetch(file)).text());
+    r.slice(1).forEach(function(x){ const y = parseInt(x[1]); if(y > maxYear) maxYear = y; });
+    r.slice(1).forEach(function(x){
+      if(parseInt(x[1]) !== maxYear) return;
+      const name = x[0].replace(/^"|"$/g,""), band = x[x.length-1].replace(/^"|"$/g,"").trim();
+      bands[band] = 1;
+      const iso = B.resolve(name);
+      if(!iso){ unmatched[name] = 1; return; }
+      if(!data[iso]) data[iso] = {};
+      if(!data[iso][band]) data[iso][band] = [null,null];
+      data[iso][band][si] = Math.round(parseFloat(x[2]) * 1000) / 10;
+    });
+  }
+  const order = Object.keys(bands).sort(function(a,b){ return parseInt(a) - parseInt(b); });
+  console.log("YEAR", maxYear, "BANDS", order.join(" "));
+  console.log("UNMATCHED", Object.keys(unmatched).join(" | "));
+  const groups = [["18-19","20-24","25-29"],["30-34","35-39"],["40-44","45-49"],["50-54","55-59"],["60-64","65-69"],["70-74","75-79"],["80-84","85plus"]];
+  let checksum = 0;
+  const parts = Object.keys(data).sort().map(function(iso){
+    const v = [];
+    [0,1].forEach(function(si){ groups.forEach(function(gr){
+      const xs = gr.map(function(b){ const p = data[iso][b]; return p ? p[si] : null; });
+      if(xs.some(function(x){ return x === null; })){ v.push(""); return; }
+      const m = Math.round(xs.reduce(function(a,x){ return a + x; }, 0) / xs.length * 10) / 10;
+      checksum += Math.round(m*10); v.push(m);
+    }); });
+    return iso + "," + v.join(",");
+  });
+  const txt = parts.join(";");
+  console.log("CHECKSUM", checksum, "COUNT", parts.length, "LEN", txt.length);
+  for(let i=0;i<txt.length;i+=950) console.log("P" + String(i/950|0).padStart(2,"0") + " " + txt.slice(i,i+950));
+}, 4000);
+</script></body></html>

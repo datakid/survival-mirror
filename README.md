@@ -1,4 +1,4 @@
-# Survival Mirror — v6
+# Survival Mirror — v7
 
 A static, offline-capable mortality calculator. It shows population-level survival curves from age, sex, country (236 life tables) and ten lifestyle and health questions. Every modeling choice and limitation is shown next to the numbers.
 
@@ -64,9 +64,22 @@ A static, offline-capable mortality calculator. It shows population-level surviv
 - `tools/build-activity-age.html` rebuilds the table. It uses `data.xlsx`, which isn't committed.
 - Self-tests: 27.
 
+### v7 — age-specific diabetes comparison (final data round)
+- The diabetes share inside "cardiometabolic history" is now compared with the user's own 10-year age band (18–29, 30–39, …, 70–79, 80+), by sex, for 199 countries and territories. The source is NCD-RisC (Lancet 2016), age-specific prevalence, **2014** (the latest year in that file).
+  - The 5-year bands are averaged into 10-year bands without population weights.
+  - If a country isn't in the table, it falls back to the 2022 all-adult crude figure.
+  - This data is 8 years older than the 2022 figures. This is disclosed in the citations and the modeling choices.
+- Country aliases were added for NCD-RisC names (Guinea Bissau, Lao PDR, Macedonia (TFYR), North Korea, China (Hong Kong SAR), Occupied Palestinian Territory). Nauru has no life table, so it's skipped.
+- The data has its own checksum test (398664). The test spot-checks USA men at 18–29 (1.0%) and 70–79 (20.6%), confirms the cache is keyed by age band and that stroke and heart-attack shares stay global, and checks that all-"Not sure" at 75 still equals the life table.
+- `tools/build-diabetes-age.html` rebuilds the table from `diab_m.csv` and `diab_f.csv`, which aren't committed.
+- Self-tests: 28.
+- **Supplied but not usable:**
+  - The GBD 2023 Results export contains only *Global*, both sexes, deaths and DALYs attributable to 18 dietary risks. It has no country data and no disease prevalence, so it can't set country stroke, heart-attack, kidney or COPD mixes.
+  - The NCD-RisC 2024 age-specific BMI files are about 63 MB each, over this build environment's 20 MB fetch limit. BMI therefore stays age-standardised.
+
 ## Entry points
 - `index.html` — the app
-- `index.html?selftest=1` — in-page self-test harness (20 checks)
+- `index.html?selftest=1` — in-page self-test harness (28 checks)
 - `flowtest.html` — automated flow check (gate → calculate → animation end state)
 
 ## Files
@@ -81,10 +94,9 @@ A static, offline-capable mortality calculator. It shows population-level surviv
 - No tables or backend are used.
 
 ## Not yet implemented / ideas
-- Age-specific country figures for smoking, BMI and diabetes (needs NCD-RisC/GBD age-group downloads, which haven't been supplied yet).
-- Country figures for stroke, heart attack, kidney disease and COPD (needs a GBD 2021 Results Tool export, which hasn't been supplied yet).
+- Age-specific BMI. The NCD-RisC 2024 age-specific files exist, but they need to be pre-filtered to the latest year (for example with a spreadsheet) before `tools/` can process them.
+- Age-specific smoking (no source supplied).
+- Country figures for stroke, heart attack, kidney disease and COPD. This needs a GBD Results export of *prevalence* by country and sex; the supplied export holds global diet-attributable burden only.
+- Newer age-specific diabetes data, if a more recent age-specific file than 2014 is available.
 - Feed the source files' uncertainty ranges into the "how sure" simulation. This was deliberately not done: only point estimates are embedded, and adding it would mean re-embedding interval data for every figure.
 - Localization.
-
-## Deploy
-Use the **Publish tab**. Keep `xlsx.full.min.js` next to `index.html`.
