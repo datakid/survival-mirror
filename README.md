@@ -122,6 +122,3 @@ A static, offline-capable mortality calculator. It shows population-level surviv
 - Newer age-specific diabetes data, if a more recent age-specific file than 2014 is available.
 - Feed the source files' uncertainty ranges into the "how sure" simulation. This was deliberately not done: only point estimates are embedded, and adding it would mean re-embedding interval data for every figure.
 - Localization.
-
-## Deploy
-Use the **Publish tab**. Keep `xlsx.full.min.js` next to `index.html`.
