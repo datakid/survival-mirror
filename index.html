@@ -439,7 +439,7 @@ input[type="file"]::file-selector-button:hover,input[type="file"]::-webkit-file-
 #medianDot{transform-box:fill-box;transform-origin:center;}
 #medianDot[data-pop="pending"]{transform:scale(0);}
 #medianDot[data-pop="in"]{transform:scale(1);transition:transform 460ms var(--e-settle);}
-@media (prefers-reduced-motion: no-preference){ #medianDot:not([data-pop="pending"]){animation:mirrorpulse 3.4s ease-in-out infinite;} }
+@media (prefers-reduced-motion: no-preference){ #medianDot:not([data-pop="pending"]){animation:mirrorpulse 3.4s ease-in-out 3;} }
 @keyframes mirrorpulse{0%,100%{opacity:1;}50%{opacity:.45;}}
 
 @media (max-width:600px){
@@ -793,7 +793,6 @@ input[type="range"]{width:100%;accent-color:var(--accent);height:24px;cursor:poi
 .curve-legend .lg-explore{border-color:#C07A3E;border-top-style:dashed;border-top-width:2.2px;}
 [data-resolved="dark"] .curve-legend .lg-explore{border-color:#E0A56E;}
 @media (max-width:600px){ .explore-grid,.explore-lambdas{grid-template-columns:1fr;} }
-@media print{ #exploreBlock{display:none !important;} }
 .ledger-additivity{margin:0 0 14px;padding:10px 14px;border-radius:var(--r-sm);background:var(--field-quiet);border:1px solid var(--glass-border);}
 table.ledger tr.unknown-row td{font-style:italic;}
 table.ledger tr.unknown-row .factor-name{font-style:normal;}
@@ -807,22 +806,66 @@ button.secondary.danger:hover{border-color:#B4544E;color:#B4544E;}
   .curve-legend{gap:12px;}
 }
 
-@media print{
-  .line-rail,.q-field[data-enter="pending"]{ display:none !important; }
-  #gateSection,#modeSwitchSection,#formArea,#bulkArea,.csp-note,.answer-card-head .copy-btn,.ledger-actions{ display:none !important; }
-  .honesty-callout{ background:#f3f3f7 !important; border-color:#bbb !important; }
-  .plate{ opacity:1 !important; filter:none !important; transform:none !important; }
+svg.curve text{paint-order:stroke fill;stroke:var(--bg);stroke-width:3.5px;stroke-linejoin:round;}
+@keyframes cardFlash{ from{ background:var(--accent-wash); box-shadow:0 0 0 2px var(--accent-soft); } to{ box-shadow:0 0 0 0 transparent; } }
+@media (prefers-reduced-motion:no-preference){
+  .stat[data-flash="true"],.compare-item[data-flash="true"]{ animation:cardFlash 1100ms var(--e-quiet); }
+  #results[data-reveal="run"] .stat-row .stat:not(.median),
+  #results[data-reveal="run"] .freq-sentence,
+  #results[data-reveal="run"] .honesty-callout,
+  #results[data-reveal="run"] #compareRow .compare-item{ animation:sceneIn 560ms var(--e-settle) backwards; }
+  #results[data-reveal="run"] .stat-row .stat:nth-child(2){ animation-delay:110ms; }
+  #results[data-reveal="run"] .stat-row .stat:nth-child(3){ animation-delay:200ms; }
+  #results[data-reveal="run"] .freq-sentence{ animation-delay:280ms; }
+  #results[data-reveal="run"] .honesty-callout{ animation-delay:360ms; }
+  #results[data-reveal="run"] #compareRow .compare-item{ animation-delay:calc(var(--reveal-late, 1700ms) + var(--i, 0) * 70ms); }
 }
+
+#printReport{display:none;}
 @media print{
-  .grain,.themeswitch,footer.appfoot,.togglebar,button{display:none !important;}
-  body{background:#fff;color:#000;}
-  header.hero,.tier-1,.tier-2{background:#fff;border:1px solid #ccc;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;break-inside:avoid;}
-  svg.curve path{stroke-dasharray:none !important;stroke-dashoffset:0 !important;transition:none !important;}
-  .gap-wash,.answer-card .stat.median .val{opacity:1 !important;transform:none !important;}
-  #medianDot{transform:none !important;}
-  .cibar .fill{transform:none !important;}
-  .method-item:not([open]) .method-body{display:block !important;}
-  .method-item .chev{display:none !important;}
+  @page{ margin:16mm 15mm; }
+  html,body{background:#fff !important;color:#111 !important;}
+  body::before,body::after{display:none !important;}
+  body > *:not(#printReport){display:none !important;}
+  #printReport{display:block;font-family:var(--serif);font-size:10.5pt;line-height:1.45;color:#111;}
+  #printReport *{box-shadow:none !important;text-shadow:none !important;}
+  .pr-head{border-bottom:1.5px solid #333;padding-bottom:8pt;margin-bottom:12pt;}
+  .pr-eyebrow{font-family:var(--sans);font-size:7.5pt;letter-spacing:.14em;text-transform:uppercase;color:#666;margin:0 0 3pt;}
+  .pr-head h1{font-size:20pt;margin:0 0 3pt;font-weight:600;}
+  .pr-meta{font-family:var(--sans);font-size:8pt;color:#555;margin:0;}
+  .pr-section{margin:0 0 13pt;break-inside:avoid;}
+  .pr-section.pr-flow{break-inside:auto;}
+  .pr-section h2{font-family:var(--sans);font-size:8.5pt;letter-spacing:.1em;text-transform:uppercase;color:#444;margin:0 0 6pt;padding-bottom:3pt;border-bottom:.5pt solid #bbb;}
+  .pr-inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:4pt 14pt;margin:0;}
+  .pr-inputs div{min-width:0;}
+  .pr-inputs dt{font-family:var(--sans);font-size:7pt;text-transform:uppercase;letter-spacing:.08em;color:#666;}
+  .pr-inputs dd{margin:1pt 0 0;font-size:10.5pt;}
+  .pr-source{font-family:var(--sans);font-size:8pt;color:#555;margin:6pt 0 0;}
+  .pr-stats{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8pt;margin:0 0 8pt;}
+  .pr-stat{border:.75pt solid #bbb;border-radius:6pt;padding:7pt 9pt;}
+  .pr-stat .l{font-family:var(--sans);font-size:7pt;text-transform:uppercase;letter-spacing:.07em;color:#666;}
+  .pr-stat .v{font-size:17pt;font-variant-numeric:tabular-nums;margin-top:2pt;}
+  .pr-stat.main .v{font-size:26pt;}
+  .pr-compare{display:grid;grid-template-columns:repeat(4,1fr);gap:8pt;margin-top:6pt;}
+  .pr-compare .pr-stat .v{font-size:12.5pt;}
+  .pr-freq{margin:0;}
+  .pr-curve{width:100%;height:auto;display:block;margin:4pt 0 2pt;}
+  .pr-legend{font-family:var(--sans);font-size:7.5pt;color:#555;display:flex;gap:14pt;}
+  .pr-legend i{display:inline-block;width:14pt;height:0;border-top:1.6pt solid;vertical-align:middle;margin-right:4pt;}
+  .pr-callout{border-left:2.5pt solid #444;padding:4pt 0 4pt 10pt;}
+  .pr-callout ul,.pr-limits{margin:0;padding-left:13pt;}
+  .pr-callout li,.pr-limits li{margin-bottom:3pt;}
+  .pr-limits{font-size:9pt;color:#222;}
+  table.pr-table{width:100%;border-collapse:collapse;font-size:9pt;font-variant-numeric:tabular-nums;}
+  table.pr-table th{font-family:var(--sans);font-size:7pt;text-transform:uppercase;letter-spacing:.07em;color:#555;text-align:left;border-bottom:.75pt solid #888;padding:0 6pt 4pt 0;font-weight:600;}
+  table.pr-table td{border-bottom:.5pt solid #ddd;padding:4pt 6pt 4pt 0;vertical-align:top;}
+  table.pr-table tr{break-inside:avoid;}
+  table.pr-table tr.pr-unknown td{color:#666;font-style:italic;}
+  .pr-note{font-family:var(--sans);font-size:8pt;color:#555;margin:5pt 0 0;}
+  .pr-sources{font-family:var(--sans);font-size:7.5pt;color:#333;margin:0;padding-left:13pt;}
+  .pr-sources li{margin-bottom:2pt;word-break:break-word;}
+  .pr-foot{border-top:1pt solid #333;padding-top:6pt;margin-top:14pt;font-family:var(--sans);font-size:8pt;color:#444;break-inside:avoid;}
+  .pr-empty{font-size:12pt;margin-top:20pt;}
 }
 </style>
 </head>
@@ -1213,7 +1256,7 @@ button.secondary.danger:hover{border-color:#B4544E;color:#B4544E;}
 
 <footer class="appfoot">
   <button class="secondary" id="recalcBtn" type="button">Change my answers</button>
-  <button class="secondary" id="printBtn" type="button">Print or save as PDF</button>
+  <button class="secondary" id="printBtn" type="button">Print report / save as PDF</button>
   <button class="secondary" id="exportBtn" type="button">Export my answers as JSON</button>
   <button class="secondary" type="button" data-import-trigger>Import answers</button>
   <span class="small import-status" role="status"></span>
@@ -1223,6 +1266,8 @@ button.secondary.danger:hover{border-color:#B4544E;color:#B4544E;}
 </div>
 
 </div>
+
+<div id="printReport"></div>
 
 <script>
 "use strict";
@@ -2186,7 +2231,7 @@ function resolveCountryInput(typed){
   if(contains.length === 1) return contains[0];
   return null;
 }
-window.survivalMirrorBuild = { resolve:resolveCountryInput, countries:COUNTRIES };
+window.survivalMirrorBuild = { resolve:resolveCountryInput, countries:COUNTRIES, printReport:function(){ return buildPrintReport(); } };
 function hasClampArtifact(iso3){
   const c = COUNTRIES[iso3];
   if(!c) return false;
@@ -2793,8 +2838,10 @@ function renderCompareRow(r){
    ["Median from age and sex alone", fmtQ(r.q50base)],
    ["What your answers changed", d === null ? "\u2014 beyond the table" : (d>=0?"+":"") + fmt1(d) + " yr"],
    ["Average years remaining", fmt1(r.exFull) + " yr"]
-  ].forEach(function(c){
-    host.appendChild(el("div",{class:"compare-item"},[el("div",{class:"label",text:c[0]}), el("div",{class:"val",text:c[1]})]));
+  ].forEach(function(c, i){
+    const item = el("div",{class:"compare-item"},[el("div",{class:"label",text:c[0]}), el("div",{class:"val",text:c[1]})]);
+    item.style.setProperty("--i", String(i));
+    host.appendChild(item);
   });
 }
 let _geoCache = null;
@@ -3230,7 +3277,7 @@ function renderLimits(){
     "Healthcare access, income, and where you live shift real mortality risk substantially and aren't asked about here.",
     "The hazard ratios come from a small number of sources. Smoking, weight, activity and diet come from the Nurses' Health Study and Health Professionals Follow-up Study, whose participants skew white, health-literate, and higher-income than the general population. Sleep, self-rated health, cardiometabolic history, kidney function and COPD come from separate pooled analyses, mostly of cohorts in North America, Europe and East Asia. How well any of them transfer to you personally isn't fully known.",
     hazardCountryNote(),
-    mixCoverageText(selectedCountry, currentSex()) + " Those country figures describe adults of all ages, not people your age (except activity from 60 onward, which uses your age band), and their splits into this tool's finer answer bands are judgment calls listed under \u201cModeling choices I made up.\u201d",
+    mixCoverageText(selectedCountry, currentSex()) + " Those country figures describe adults of all ages, not people your age (except diabetes, which uses 2014 figures for your 10-year age band, and activity from 60 onward, which uses your age band), and their splits into this tool's finer answer bands are judgment calls listed under \u201cModeling choices I made up.\u201d",
     "For " + COUNTRY_ORDER.filter(function(iso3){ return iso3 !== "USA" && hasClampArtifact(iso3); }).length + " of the " + (COUNTRY_ORDER.length - 1) + " non-U.S. countries, the modeled ages beyond 100 \u2014 extrapolated past where the UN's real single-year data stops \u2014 reach a flat 0.999 ceiling, which flattens the true shape of the curve at very old age and makes the long-tail (10th-percentile) estimate partly insensitive to your ten answers, rather than merely affecting it more than the median. Ages 0\u201399 come directly from the UN's own published probability-of-dying figures and are not affected. See \u201cFull source citations\u201d for detail.",
     "These are period life tables. They assume today's death rates at every age stay fixed for the rest of your life. Historically they have kept falling in most countries, so for most people, and especially younger ones, the real curve for their generation is probably later than the one shown.",
     "The model treats each question as a fixed fact about you. In reality smoking, weight, activity and health all change over a lifetime, and the cohorts behind these hazard ratios measured them mostly once.",
@@ -3370,7 +3417,24 @@ function renderCurve(r, animate){
   if(animate && typeof runReckoningSequence === "function") runReckoningSequence(r);
 }
 
+function snapshotVals(selector){
+  return Array.prototype.map.call(document.querySelectorAll(selector), function(n){ const v = n.querySelector(".val"); return v ? v.textContent : ""; });
+}
+function flashChanged(selector, before){
+  if(prefersReduce()) return;
+  document.querySelectorAll(selector).forEach(function(n, i){
+    const v = n.querySelector(".val");
+    if(!v || before[i] === undefined || before[i] === v.textContent) return;
+    n.removeAttribute("data-flash");
+    void n.offsetWidth;
+    n.setAttribute("data-flash", "true");
+    setTimeout(function(){ n.removeAttribute("data-flash"); }, 1200);
+  });
+}
 function renderAll(r, animateCurve){
+  const wasShown = document.getElementById("results").style.display === "block" && !animateCurve;
+  const beforeStats = wasShown ? snapshotVals("#statRow .stat") : null;
+  const beforeCompare = wasShown ? snapshotVals("#compareRow .compare-item") : null;
   lastResult = r;
   renderFreqSentence(r);
   renderStatRow(r);
@@ -3384,6 +3448,9 @@ function renderAll(r, animateCurve){
   renderLedger(r);
   if(typeof observeCibars === "function") observeCibars(document.getElementById("ledgerSection"));
   document.getElementById("results").style.display = "block";
+  if(wasShown){ flashChanged("#statRow .stat", beforeStats); flashChanged("#compareRow .compare-item", beforeCompare); }
+  const calcBtn = document.getElementById("calcBtn");
+  if(calcBtn) calcBtn.textContent = "Redraw the curve";
   const summary = document.getElementById("liveSummary");
   summary.textContent = agesHidden ? "Results updated. Ages are hidden." : "Results updated. Median age: " + fmtQ(r.q50) + ".";
   const preview = document.getElementById("stickyPreview");
@@ -3397,9 +3464,15 @@ document.getElementById("calcBtn").addEventListener("click", function(){
   if(typeof liveRecalcTimer !== "undefined" && liveRecalcTimer){ clearTimeout(liveRecalcTimer); liveRecalcTimer = null; }
   try{
     const r = computeAll();
+    const res = document.getElementById("results");
+    res.removeAttribute("data-reveal");
+    void res.offsetWidth;
+    res.style.setProperty("--reveal-late", (reckoningRunCount > 0 ? 760 : 1700) + "ms");
+    res.setAttribute("data-reveal", "run");
+    if(res._revealTimer) clearTimeout(res._revealTimer);
+    res._revealTimer = setTimeout(function(){ res.removeAttribute("data-reveal"); }, 3200);
     renderAll(r, true);
     persist();
-    const res = document.getElementById("results");
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         safeScroll(res);
@@ -3411,7 +3484,10 @@ document.getElementById("calcBtn").addEventListener("click", function(){
   }
 });
 document.getElementById("recalcBtn").addEventListener("click", function(){
-  safeScroll(document.getElementById("formArea"));
+  const target = document.getElementById("factorsSection") || document.getElementById("formArea");
+  safeScroll(target);
+  const first = target.querySelector(".opt.selected, input, button");
+  if(first){ try{ first.focus({preventScroll:true}); }catch(e){} }
 });
 function setImportStatus(text, tone){
   document.querySelectorAll(".import-status").forEach(function(s){
@@ -3458,9 +3534,136 @@ importInput.addEventListener("change", function(){
   };
   reader.readAsText(file);
 });
+function printCurveSvg(r){
+  const W = 680, H = 260, padL = 46, padR = 16, padT = 14, padB = 30;
+  const svg = svgEl("svg",{viewBox:"0 0 " + W + " " + H, class:"pr-curve", role:"img", "aria-label":"Survival curves"});
+  const lastAbove = function(rows){ let l = rows[0].age; rows.forEach(function(x){ if(x.survival > 0.02) l = x.age; }); return l; };
+  const end = Math.min(Math.max(lastAbove(r.rowsFull), lastAbove(r.rowsBase), r.age + 15), r.rowsBase[r.rowsBase.length-1].age);
+  const xs = function(a){ return padL + (a - r.age)/(end - r.age)*(W-padL-padR); };
+  const ys = function(v){ return padT + (1 - v)*(H-padT-padB); };
+  const txt = function(x, y, s, anchor, size, fill){ const t = svgEl("text",{x:x, y:y, fill:fill || "#555", "font-size":size || 10.5, "text-anchor":anchor || "start", "font-family":"Helvetica, Arial, sans-serif"}); t.textContent = s; svg.appendChild(t); };
+  svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:H-padB,y2:H-padB,stroke:"#999","stroke-width":0.8}));
+  [[1,"100%"],[0.5,"50%"],[0,"0%"]].forEach(function(g){
+    if(g[0] === 0.5) svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:ys(0.5),y2:ys(0.5),stroke:"#bbb","stroke-width":0.8,"stroke-dasharray":"3,3"}));
+    txt(padL-6, ys(g[0])+3.5, g[1], "end");
+  });
+  const mid = Math.round((r.age + end)/2);
+  ((end - r.age) >= 24 ? [r.age, mid, end] : [r.age, end]).forEach(function(a){
+    txt(xs(a), H-padB+16, "age " + a, a === r.age ? "start" : (a === end ? "end" : "middle"));
+  });
+  svg.appendChild(svgEl("path",{d:gapWashD(r.rowsFull,r.rowsBase,r.age,end,xs,ys), fill:"rgba(0,0,0,0.07)"}));
+  svg.appendChild(svgEl("path",{d:pathD(r.rowsBase,r.age,end,xs,ys), fill:"none", stroke:"#9a9a9a", "stroke-width":1.4, "stroke-dasharray":"5,3"}));
+  svg.appendChild(svgEl("path",{d:pathD(r.rowsFull,r.age,end,xs,ys), fill:"none", stroke:"#222", "stroke-width":2}));
+  [[r.q10, 0.9, "9 in 10 alive at "], [r.q50, 0.5, "half alive at "], [r.q90, 0.1, "1 in 10 alive at "]].forEach(function(m){
+    if(m[0] === null || m[0] > end) return;
+    const mx = xs(m[0]), my = ys(m[1]);
+    svg.appendChild(svgEl("circle",{cx:mx, cy:my, r:m[1] === 0.5 ? 3.4 : 2.4, fill:m[1] === 0.5 ? "#222" : "#fff", stroke:"#222", "stroke-width":1.2}));
+    const right = mx + 110 <= W - padR;
+    txt(mx + (right ? 7 : -7), my + (m[1] > 0.5 ? 14 : -7), m[2] + fmtAge(m[0]), right ? "start" : "end", 10, "#222");
+  });
+  return svg;
+}
+function prSection(title, kids, flow){
+  const s = el("section",{class:"pr-section" + (flow ? " pr-flow" : "")});
+  s.appendChild(el("h2",{text:title}));
+  kids.forEach(function(k){ if(k) s.appendChild(k); });
+  return s;
+}
+function prStatGrid(cls, selector, mainFirst){
+  const grid = el("div",{class:cls});
+  document.querySelectorAll(selector).forEach(function(s, i){
+    const l = s.querySelector(".label"), v = s.querySelector(".val");
+    if(!l || !v) return;
+    grid.appendChild(el("div",{class:"pr-stat" + (mainFirst && i === 0 ? " main" : "")},[el("div",{class:"l", text:l.textContent.trim()}), el("div",{class:"v", text:v.textContent.trim()})]));
+  });
+  return grid;
+}
+function buildPrintReport(){
+  const host = document.getElementById("printReport");
+  if(!host) return;
+  host.innerHTML = "";
+  const r = lastResult;
+  const now = new Date();
+  const dateStr = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
+  const head = el("header",{class:"pr-head"},[
+    el("p",{class:"pr-eyebrow", text:"A statistical mirror, not a prophecy"}),
+    el("h1",{text:"Survival Mirror \u2014 report"}),
+    el("p",{class:"pr-meta", text:"Generated " + dateStr + " in this browser. Nothing was sent anywhere. This is an estimate for a hypothetical group of people, not a prediction for one person."})
+  ]);
+  host.appendChild(head);
+  if(!r || document.getElementById("results").style.display !== "block"){
+    host.appendChild(el("p",{class:"pr-empty", text:"There are no results to print yet. Answer the questions, press \u201cDraw the curve\u201d, then print again."}));
+    return;
+  }
+  const c = COUNTRIES[r.iso3];
+  const answered = FACTORS.length - countUnknown(r.selections);
+  const inputs = el("dl",{class:"pr-inputs"});
+  [["Age", String(r.age)], ["Sex (as in the life table)", r.sex === "female" ? "Female" : "Male"], ["Country", c.name], ["Questions answered", answered + " of " + FACTORS.length + (answered < FACTORS.length ? " (rest \u201cNot sure\u201d)" : "")]].forEach(function(p){
+    inputs.appendChild(el("div",{},[el("dt",{text:p[0]}), el("dd",{text:p[1]})]));
+  });
+  const info = countrySourceInfo(r.iso3);
+  host.appendChild(prSection("Who this describes", [inputs, el("p",{class:"pr-source", text:"Life table: " + info.source + ". " + mixCoverageText(r.iso3, r.sex)})]));
+
+  const headline = [prStatGrid("pr-stats", "#statRow .stat", true)];
+  if(!agesHidden){
+    headline.push(el("p",{class:"pr-freq", text:document.getElementById("freqSentence").textContent.trim()}));
+  } else {
+    headline.push(el("p",{class:"pr-note", text:"Ages were hidden on screen when this was printed, so this report leaves them out too."}));
+  }
+  host.appendChild(prSection("What the model says", headline));
+
+  if(!agesHidden){
+    const legend = el("div",{class:"pr-legend"});
+    [["#9a9a9a","dashed","Age, sex and country only"],["#222","solid","With your answers"]].forEach(function(l){
+      const i = el("i"); i.style.borderTopColor = l[0]; i.style.borderTopStyle = l[1];
+      legend.appendChild(el("span",{},[i, document.createTextNode(l[2])]));
+    });
+    host.appendChild(prSection("Survival curve", [printCurveSvg(r), legend, prStatGrid("pr-compare", "#compareRow .compare-item", false)]));
+  }
+
+  const ul = el("ul");
+  document.querySelectorAll("#honestyList li").forEach(function(li){ ul.appendChild(el("li",{text:li.textContent.trim()})); });
+  host.appendChild(prSection("Three things to keep in mind", [el("div",{class:"pr-callout"},[ul])]));
+
+  const table = el("table",{class:"pr-table"});
+  table.appendChild(el("thead",{},[el("tr",{},["Question","Your answer","Hazard ratio (95% CI)","Effect on median"].map(function(h){ return el("th",{text:h}); }))]));
+  const tb = el("tbody");
+  document.querySelectorAll("#ledgerBody tr").forEach(function(tr){
+    const cells = tr.querySelectorAll("td");
+    const name = tr.querySelector(".factor-name");
+    const hr = cells[2] ? (cells[2].querySelector(".hrnum") || cells[2]).textContent.replace(/\s+/g," ").trim() : "";
+    tb.appendChild(el("tr",{class:tr.classList.contains("unknown-row") ? "pr-unknown" : ""},[
+      el("td",{text:name ? name.textContent.trim() : ""}),
+      el("td",{text:cells[1] ? cells[1].textContent.trim() : ""}),
+      el("td",{text:hr}),
+      el("td",{text:cells[3] ? cells[3].textContent.trim() : ""})
+    ]));
+  });
+  table.appendChild(tb);
+  host.appendChild(prSection("Your answers and what each one moved", [table, el("p",{class:"pr-note", text:document.getElementById("ledgerAdditivity").textContent.trim()})], true));
+
+  const sens = document.getElementById("sensSummary");
+  const mc = document.getElementById("mcExplain");
+  const unc = [];
+  if(mc && mc.textContent.trim()) unc.push(el("p",{class:"pr-note", text:mc.textContent.trim()}));
+  if(sens && sens.textContent.trim()) unc.push(el("p",{class:"pr-note", text:sens.textContent.trim()}));
+  if(unc.length) host.appendChild(prSection("How sure this is", unc));
+
+  const lim = el("ul",{class:"pr-limits"});
+  document.querySelectorAll("#limitsList li").forEach(function(li){ lim.appendChild(el("li",{text:li.textContent.trim()})); });
+  host.appendChild(prSection("What this can't see", [lim], true));
+
+  const src = el("ol",{class:"pr-sources"});
+  CITATIONS.forEach(function(ci){ src.appendChild(el("li",{text:ci.label + ": " + ci.url})); });
+  host.appendChild(prSection("Sources", [src, el("p",{class:"pr-note", text:"Full citations and every judgment call behind the numbers (\u201cModeling choices I made up\u201d) are on the page itself."})], true));
+
+  host.appendChild(el("footer",{class:"pr-foot", text:"Survival Mirror has never been validated against real outcomes. It combines published studies in a reasonable way, and that is all it claims. If anything in this report weighs on you, talk it through with a doctor or someone you trust."}));
+}
+window.addEventListener("beforeprint", function(){
+  try{ if(typeof finishReckoning === "function") finishReckoning(); buildPrintReport(); }catch(e){}
+});
 document.getElementById("printBtn").addEventListener("click", function(){
-  if(typeof finishReckoning === "function") finishReckoning();
-  document.querySelectorAll(".method-item").forEach(function(d){ d.open = true; });
+  try{ if(typeof finishReckoning === "function") finishReckoning(); buildPrintReport(); }catch(e){}
   try{ window.print(); }catch(e){}
 });
 

@@ -1,4 +1,4 @@
-# Survival Mirror — v7
+# Survival Mirror — v8
 
 A static, offline-capable mortality calculator. It shows population-level survival curves from age, sex, country (236 life tables) and ten lifestyle and health questions. Every modeling choice and limitation is shown next to the numbers.
 
@@ -77,6 +77,28 @@ A static, offline-capable mortality calculator. It shows population-level surviv
   - The GBD 2023 Results export contains only *Global*, both sexes, deaths and DALYs attributable to 18 dietary risks. It has no country data and no disease prevalence, so it can't set country stroke, heart-attack, kidney or COPD mixes.
   - The NCD-RisC 2024 age-specific BMI files are about 63 MB each, over this build environment's 20 MB fetch limit. BMI therefore stays age-standardised.
 
+### v8 — ship polish
+- **A dedicated print report.** "Print report / save as PDF" no longer prints the app page. It builds a document only for print (`#printReport`; on screen everything else is hidden), with:
+  - a header with the date;
+  - "Who this describes" (age, sex, country, questions answered, life-table source, which population mix was used);
+  - the headline stats and the frequency sentence;
+  - a black-and-white survival curve with 9-in-10, half and 1-in-10 markers, plus the comparison figures;
+  - the three honesty notes;
+  - a compact ledger table with the additivity note;
+  - "How sure this is" (Monte Carlo and sensitivity summaries);
+  - the limitations, a numbered source list, and a footer disclaimer.
+  
+  The report is rebuilt on `beforeprint`, so Ctrl/Cmd+P gives the same document. If no result exists yet, it prints a short "nothing to print yet" note. If ages are hidden on screen, they're left out of the print too.
+- **Animation and flow:**
+  - On first draw, the secondary results come in one after another: the stat cards, the frequency sentence, the honesty callout, then the comparison cards once the curve finishes. Redraws are faster.
+  - When an answer changes live, only the stat and comparison cards whose values changed briefly highlight.
+  - The median dot pulses 3 times and then stops, instead of forever.
+  - Curve labels get a background-coloured halo so they stay readable where they cross a line.
+  - After the first result, the main button reads "Redraw the curve".
+  - "Change my answers" scrolls to the questions and moves keyboard focus there.
+  - All motion respects `prefers-reduced-motion`.
+- The limitations text now mentions the age-specific diabetes comparison.
+
 ## Entry points
 - `index.html` — the app
 - `index.html?selftest=1` — in-page self-test harness (28 checks)
@@ -100,3 +122,6 @@ A static, offline-capable mortality calculator. It shows population-level surviv
 - Newer age-specific diabetes data, if a more recent age-specific file than 2014 is available.
 - Feed the source files' uncertainty ranges into the "how sure" simulation. This was deliberately not done: only point estimates are embedded, and adding it would mean re-embedding interval data for every figure.
 - Localization.
+
+## Deploy
+Use the **Publish tab**. Keep `xlsx.full.min.js` next to `index.html`.
